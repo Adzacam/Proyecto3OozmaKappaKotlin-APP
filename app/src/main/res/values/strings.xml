@@ -1,5 +1,39 @@
-<resources>
-    <string name="app_name">DevelArqApp</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources><string name="app_name">DevelArqApp</string>
+<string name="app_logo">Logo de la aplicación</string>
+
+<!-- Login -->
+<string name="bim_management_office">BIM Management Office</string>
+<string name="iniciar_sesion">Iniciar Sesión</string>
+<string name="accede_panel_bim">Accede a tu panel de proyectos BIM</string>
+<string name="email">Email</string>
+<string name="email_hint">tu@email.com</string>
+<string name="contrasena">Contraseña</string>
+<string name="password_hint">******</string>
+<string name="recordarme">Recordarme</string>
+<string name="olvidaste_contrasena">¿Olvidaste tu contraseña?</string>
+<string name="volver_inicio">← Volver al inicio</string>
+
+<!-- Forgot Password -->
+<string name="forgot_password_message">¿Olvidaste tu contraseña? No hay problema. Simplemente ingresa tu dirección de correo electrónico a continuación y te enviaremos un enlace para restablecer tu contraseña que te permitirá elegir una nueva.</string>
+<string name="cancelar">Cancelar</string>
+<string name="enviar_enlace">ENVIAR ENLACE DE RESTABLECIMIENTO</string>
+
+<!-- Dashboard -->
+<string name="dashboard">Dashboard</string>
+<string name="usuarios">Usuarios</string>
+<string name="user_name">Adriano Leandro</string>
+<string name="perfil">Perfil</string>
+<string name="cerrar_sesion">Cerrar sesión</string>
+
+<!-- Validaciones -->
+<string name="error_email_vacio">El email es requerido</string>
+<string name="error_email_invalido">Email inválido</string>
+<string name="error_password_vacio">La contraseña es requerida</string>
+<string name="error_login">Credenciales incorrectas</string>
+<string name="error_network">Error de conexión</string>
+
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -10,4 +44,44 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="develarq">DEVELARQ</string>
+
+    <!-- Common -->
+    <string name="menu">Menú</string>
+    <string name="dropdown">Menú desplegable</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="forgot_password_instructions">¿Olvidaste tu contraseña? No hay problema. Simplemente ingresa tu dirección de correo electrónico a continuación y te enviaremos un enlace para restablecer tu contraseña que te permitirá elegir una nueva.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="send_reset_link">ENVIAR ENLACE DE RESTABLECIMIENTO</string>
+
+    <!-- Dashboard Screen -->
+    <string name="welcome">Bienvenido, %1$s</string>
+    <string name="your_role">Tu rol es:</string>
+    <string name="engineer_section">Sección de ingenieros</string>
+    <string name="engineer_section_desc">Opciones exclusivas para ingenieros.</string>
+
+    <!-- Navigation Menu -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_projects">Proyectos</string>
+    <string name="nav_employees">Empleados</string>
+    <string name="nav_register_employee">Registrar Empleado</string>
+    <string name="nav_profile">Mi Perfil</string>
+    <string name="nav_settings">Configuración</string>
+    <string name="nav_logout">Cerrar Sesión</string>
+    <string name="nav_account">Cuenta</string>
+
+    <!-- Roles -->
+    <string name="role_engineer">ingeniero</string>
+    <string name="role_architect">arquitecto</string>
+    <string name="role_admin">administrador</string>
+    <string name="role_manager">gerente</string>
+
+    <!-- Messages -->
+    <string name="error_email_required">El correo electrónico es requerido</string>
+    <string name="error_email_invalid">Correo electrónico inválido</string>
+    <string name="error_password_required">La contraseña es requerida</string>
+    <string name="error_login_failed">Error al iniciar sesión</string>
+    <string name="success_reset_email_sent">Correo de restablecimiento enviado</string>
+
 </resources>

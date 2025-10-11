@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <!-- Dashboard -->
+        <item
+                android:id="@+id/nav_dashboard"
+                android:icon="@drawable/ic_dashboard"
+                android:title="Dashboard" />
+
+        <!-- Projects -->
+        <item
+                android:id="@+id/nav_projects"
+                android:icon="@drawable/ic_projects"
+                android:title="Proyectos" />
+
+        <!-- Employees (Only for admin/manager roles) -->
+        <item
+                android:id="@+id/nav_employees"
+                android:icon="@drawable/ic_employees"
+                android:title="Empleados"
+                android:visible="false" />
+
+        <!-- Register Employee (Only for admin) -->
+        <item
+                android:id="@+id/nav_register_employee"
+                android:icon="@drawable/ic_person_add"
+                android:title="Registrar Empleado"
+                android:visible="false" />
+
+    </group>
+
+    <item android:title="Cuenta">
+        <menu>
+            <!-- Profile -->
+            <item
+                    android:id="@+id/nav_profile"
+                    android:icon="@drawable/ic_profile"
+                    android:title="Mi Perfil" />
+
+            <!-- Settings -->
+            <item
+                    android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_settings"
+                    android:title="Configuración" />
+
+            <!-- Logout -->
+            <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_logout"
+                    android:title="Cerrar Sesión" />
+        </menu>
+    </item>
+
+</menu>
