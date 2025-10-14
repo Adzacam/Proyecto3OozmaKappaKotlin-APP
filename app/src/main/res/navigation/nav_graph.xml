@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/nav_graph"
+            app:startDestination="@id/loginFragment">
+
+    <!-- Login Fragment -->
+    <fragment
+            android:id="@+id/loginFragment"
+            android:name="com.example.develarqapp.ui.login.LoginFragment"
+            android:label="Iniciar Sesión"
+            tools:layout="@layout/fragment_login">
+
+        <action
+                android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
+                app:destination="@id/forgotPasswordFragment"
+                app:enterAnim="@android:anim/slide_in_left"
+                app:exitAnim="@android:anim/slide_out_right"
+                app:popEnterAnim="@android:anim/slide_in_left"
+                app:popExitAnim="@android:anim/slide_out_right" />
+
+        <action
+                android:id="@+id/action_loginFragment_to_dashboardFragment"
+                app:destination="@id/dashboardFragment"
+                app:popUpTo="@id/loginFragment"
+                app:popUpToInclusive="true"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+
+    <!-- Forgot Password Fragment -->
+    <fragment
+            android:id="@+id/forgotPasswordFragment"
+            android:name="com.example.develarqapp.ui.login.ForgotPasswordFragment"
+            android:label="Recuperar Contraseña"
+            tools:layout="@layout/fragment_forgot_password">
+
+        <action
+                android:id="@+id/action_forgotPasswordFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/loginFragment"
+                app:popUpToInclusive="false" />
+    </fragment>
+
+    <!-- Dashboard Fragment -->
+    <fragment
+            android:id="@+id/dashboardFragment"
+            android:name="com.example.develarqapp.ui.dashboard.DashboardFragment"
+            android:label="Dashboard"
+            tools:layout="@layout/fragment_dashboard">
+
+        <action
+                android:id="@+id/action_dashboardFragment_to_registerEmployeeFragment"
+                app:destination="@id/registerEmployeeFragment"
+                app:enterAnim="@android:anim/slide_in_left"
+                app:exitAnim="@android:anim/slide_out_right"
+                app:popEnterAnim="@android:anim/slide_in_left"
+                app:popExitAnim="@android:anim/slide_out_right" />
+
+        <action
+                android:id="@+id/action_dashboardFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/nav_graph"
+                app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Register Employee Fragment -->
+    <fragment
+            android:id="@+id/registerEmployeeFragment"
+            android:name="com.example.develarqapp.ui.register_employee.RegisterEmployeeFragment"
+            android:label="Registrar Empleado"
+            tools:layout="@layout/fragment_register_employee" />
+
+</navigation>
