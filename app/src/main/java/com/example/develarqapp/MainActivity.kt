@@ -10,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.example.develarqapp.utils.SessionManager // 1. Importar SessionManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,9 +19,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    // 2. Declarar la variable para SessionManager
+    private lateinit var sessionManager: SessionManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // 3. Inicializar SessionManager
+        sessionManager = SessionManager(this)
 
         // Inicializar vistas
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -45,41 +52,43 @@ class MainActivity : AppCompatActivity() {
 
         // Manejar clics en items del menú
         navigationView.setNavigationItemSelectedListener { menuItem ->
+            // Primero cerramos el drawer para una transición más limpia
+            drawerLayout.closeDrawer(GravityCompat.START)
+
             when (menuItem.itemId) {
                 R.id.nav_dashboard -> {
                     navController.navigate(R.id.dashboardFragment)
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_projects -> {
                     // TODO: Navegar a proyectos cuando esté implementado
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_employees -> {
                     // TODO: Navegar a empleados cuando esté implementado
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_register_employee -> {
                     navController.navigate(R.id.registerEmployeeFragment)
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_profile -> {
                     // TODO: Navegar a perfil cuando esté implementado
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_settings -> {
                     // TODO: Navegar a configuración cuando esté implementado
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_logout -> {
-                    // Cerrar sesión y volver al login
-                    navController.navigate(R.id.loginFragment)
-                    drawerLayout.closeDrawer(GravityCompat.START)
+                    // 4. LÓGICA COMPLETA PARA CERRAR SESIÓN
+                    // Primero, borrar todos los datos guardados de la sesión.
+                    sessionManager.clearSession()
+
+                    // Luego, navegar a la pantalla de login.
+                    // Usamos la acción específica del nav_graph que limpia el historial
+                    // para que el usuario no pueda volver al dashboard.
+                    navController.navigate(R.id.action_dashboardFragment_to_loginFragment)
                     true
                 }
                 else -> false
