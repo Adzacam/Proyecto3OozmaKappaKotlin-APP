@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.container {
+    background-color: #1E1E1E;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #3B82F6;
+    width: 340px;
+}
+h2 {
+    color: #C4F847;
+    text-align: center;
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin-top: 15px;
+    color: #DDD;
+    font-weight: bold;
+}
+input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: none;
+    background: #2C2C2C;
+    color: #FFF;
+    transition: box-shadow 0.3s;
+}
+input[type="password"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #3B82F6;
+}
+button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #3B82F6;
+    border: none;
+    color: #FFF;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #2563EB;
+}
+
+/* --- ESTILOS DE MENSAJES Y REQUERIMIENTOS --- */
+.success {
+    color: #4ADE80;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.error {
+    color: #F87171;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    border: 1px solid #F87171;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #331f1f;
+}
+.requirements {
+    margin-top: 10px;
+    font-size: 0.9em;
+    padding-left: 5px;
+}
+.requirement {
+    color: #F87171; /* Color por defecto (fallido) */
+    transition: color 0.3s;
+    margin: 5px 0;
+}
