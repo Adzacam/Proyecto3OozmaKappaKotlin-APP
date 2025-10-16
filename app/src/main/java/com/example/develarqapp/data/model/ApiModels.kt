@@ -26,8 +26,6 @@ data class LoginResponse(
     @SerializedName("token")
     val token: String?
 )
-
-
 // --- Objetos de Datos ---
 
 data class UserData(
