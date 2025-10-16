@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit
 object ApiConfig {
     // Cambia esta URL según tu configuración
     // Para emulador Android: http://10.0.2.2:8000/api/
-    // Para dispositivo físico: http://192.168.1.9/develarq_api/
-    private const val BASE_URL = "http://192.168.1.9/develarq_api/"
+    // Para dispositivo físico: http://172.16.8.21/develarq_api/
+    private const val BASE_URL = "http://192.168.1.4/develarq_api/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
