@@ -5,6 +5,10 @@
             android:id="@+id/nav_graph"
             app:startDestination="@id/loginFragment">
 
+    <!-- ========================================== -->
+    <!-- AUTH FRAGMENTS -->
+    <!-- ========================================== -->
+
     <!-- Login Fragment -->
     <fragment
             android:id="@+id/loginFragment"
@@ -43,6 +47,24 @@
                 app:popUpToInclusive="false" />
     </fragment>
 
+    <!-- Verify Email Fragment -->
+    <fragment
+            android:id="@+id/verifyEmailFragment"
+            android:name="com.example.develarqapp.ui.auth.VerifyEmailFragment"
+            android:label="Verificar Email"
+            tools:layout="@layout/fragment_verify_email">
+
+        <action
+                android:id="@+id/action_verifyEmailFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/loginFragment"
+                app:popUpToInclusive="false" />
+    </fragment>
+
+    <!-- ========================================== -->
+    <!-- MAIN APP FRAGMENTS -->
+    <!-- ========================================== -->
+
     <!-- Dashboard Fragment -->
     <fragment
             android:id="@+id/dashboardFragment"
@@ -51,7 +73,39 @@
             tools:layout="@layout/fragment_dashboard">
 
         <action
-                android:id="@+id/action_dashboardFragment_to_registerEmployeeFragment"
+                android:id="@+id/action_dashboardFragment_to_usersFragment"
+                app:destination="@id/usersFragment"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out" />
+
+        <action
+                android:id="@+id/action_dashboardFragment_to_projectsFragment"
+                app:destination="@id/projectsFragment"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out" />
+
+        <action
+                android:id="@+id/action_dashboardFragment_to_kanbanFragment"
+                app:destination="@id/kanbanFragment"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out" />
+
+        <action
+                android:id="@+id/action_dashboardFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/nav_graph"
+                app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Users Fragment (Gestión de Usuarios) -->
+    <fragment
+            android:id="@+id/usersFragment"
+            android:name="com.example.develarqapp.ui.users.UsersFragment"
+            android:label="Usuarios"
+            tools:layout="@layout/fragment_users">
+
+        <action
+                android:id="@+id/action_usersFragment_to_registerEmployeeFragment"
                 app:destination="@id/registerEmployeeFragment"
                 app:enterAnim="@android:anim/slide_in_left"
                 app:exitAnim="@android:anim/slide_out_right"
@@ -59,7 +113,65 @@
                 app:popExitAnim="@android:anim/slide_out_right" />
 
         <action
-                android:id="@+id/action_dashboardFragment_to_loginFragment"
+                android:id="@+id/action_usersFragment_to_dashboardFragment"
+                app:destination="@id/dashboardFragment"
+                app:popUpTo="@id/dashboardFragment"
+                app:popUpToInclusive="false" />
+
+        <action
+                android:id="@+id/action_usersFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/nav_graph"
+                app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Projects Fragment (Gestión de Proyectos) -->
+    <fragment
+            android:id="@+id/projectsFragment"
+            android:name="com.example.develarqapp.ui.projects.ProjectsFragment"
+            android:label="Proyectos"
+            tools:layout="@layout/fragment_projects">
+
+        <action
+                android:id="@+id/action_projectsFragment_to_dashboardFragment"
+                app:destination="@id/dashboardFragment"
+                app:popUpTo="@id/dashboardFragment"
+                app:popUpToInclusive="false" />
+
+        <action
+                android:id="@+id/action_projectsFragment_to_kanbanFragment"
+                app:destination="@id/kanbanFragment"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out" />
+
+        <action
+                android:id="@+id/action_projectsFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/nav_graph"
+                app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Kanban Fragment (Tablero Kanban) -->
+    <fragment
+            android:id="@+id/kanbanFragment"
+            android:name="com.example.develarqapp.ui.kanban.KanbanFragment"
+            android:label="Tablero Kanban"
+            tools:layout="@layout/fragment_kanban">
+
+        <action
+                android:id="@+id/action_kanbanFragment_to_dashboardFragment"
+                app:destination="@id/dashboardFragment"
+                app:popUpTo="@id/dashboardFragment"
+                app:popUpToInclusive="false" />
+
+        <action
+                android:id="@+id/action_kanbanFragment_to_projectsFragment"
+                app:destination="@id/projectsFragment"
+                app:enterAnim="@android:anim/fade_in"
+                app:exitAnim="@android:anim/fade_out" />
+
+        <action
+                android:id="@+id/action_kanbanFragment_to_loginFragment"
                 app:destination="@id/loginFragment"
                 app:popUpTo="@id/nav_graph"
                 app:popUpToInclusive="true" />
@@ -70,6 +182,35 @@
             android:id="@+id/registerEmployeeFragment"
             android:name="com.example.develarqapp.ui.register_employee.RegisterEmployeeFragment"
             android:label="Registrar Empleado"
-            tools:layout="@layout/fragment_register_employee" />
+            tools:layout="@layout/fragment_register_employee">
+
+        <action
+                android:id="@+id/action_registerEmployeeFragment_to_usersFragment"
+                app:destination="@id/usersFragment"
+                app:popUpTo="@id/usersFragment"
+                app:popUpToInclusive="false" />
+    </fragment>
+
+    <!-- ========================================== -->
+    <!-- PROFILE & SETTINGS (Para futuro) -->
+    <!-- ========================================== -->
+
+    <!-- Profile Fragment (Por implementar) -->
+    <!--
+    <fragment
+            android:id="@+id/profileFragment"
+            android:name="com.example.develarqapp.ui.profile.ProfileFragment"
+            android:label="Mi Perfil"
+            tools:layout="@layout/fragment_profile" />
+    -->
+
+    <!-- Settings Fragment (Por implementar) -->
+    <!--
+    <fragment
+            android:id="@+id/settingsFragment"
+            android:name="com.example.develarqapp.ui.settings.SettingsFragment"
+            android:label="Configuración"
+            tools:layout="@layout/fragment_settings" />
+    -->
 
 </navigation>

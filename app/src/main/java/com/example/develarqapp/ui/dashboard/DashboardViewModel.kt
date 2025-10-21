@@ -7,15 +7,19 @@ import com.example.develarqapp.utils.SessionManager
 
 class DashboardViewModel : ViewModel() {
 
-    private val _userName = MutableLiveData<String>() //
-    val userName: LiveData<String> = _userName //
+    private val _userName = MutableLiveData<String>()
+    val userName: LiveData<String> = _userName
 
-    private val _userRole = MutableLiveData<String>() //
-    val userRole: LiveData<String> = _userRole //
+    private val _userRole = MutableLiveData<String>()
+    val userRole: LiveData<String> = _userRole
 
-    // Función para cargar los datos del usuario desde SessionManager
     fun loadUserData(sessionManager: SessionManager) {
         _userName.value = sessionManager.getUserName()
         _userRole.value = sessionManager.getUserRol()
+    }
+
+    fun setUserData(name: String, role: String) {
+        _userName.value = name
+        _userRole.value = role
     }
 }

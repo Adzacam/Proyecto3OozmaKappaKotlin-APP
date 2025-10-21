@@ -83,5 +83,43 @@
     <string name="error_password_required">La contraseña es requerida</string>
     <string name="error_login_failed">Error al iniciar sesión</string>
     <string name="success_reset_email_sent">Correo de restablecimiento enviado</string>
+    <string name="users_management">Gestión de Usuarios</string>
+    <string name="active_users_list">Lista de Usuarios Activos</string>
+    <string name="create_user">Crear nuevo usuario</string>
+    <string name="edit">Editar</string>
+    <string name="deactivate">Desactivar</string>
+    <string name="delete">Eliminar</string>
 
+    <string name="projects_management">Gestión de Proyectos</string>
+    <string name="filter_by_status">Filtrar por estado:</string>
+    <string name="all">Todos</string>
+    <string name="new_project">NUEVO PROYECTO</string>
+    <string name="no_projects">No hay proyectos</string>
+
+    <string name="kanban_board">Tablero Kanban</string>
+    <string name="select_project">Seleccionar Proyecto:</string>
+    <string name="responsible">Responsable:</string>
+    <string name="select_project_message">Selecciona un proyecto para ver su tablero de tareas.</string>
+
+    <string name="status_pending">Pendiente</string>
+    <string name="status_in_progress">En Progreso</string>
+    <string name="status_completed">Completado</string>
+
+    <string name="priority_high">Alta</string>
+    <string name="priority_medium">Media</string>
+    <string name="priority_low">Baja</string>
+
+    <string name="assigned_to">Asignado: %1$s</string>
+
+    <string name="verify_email_title">Hola 👋</string>
+    <string name="verify_email_message">Haz clic en el botón de abajo para verificar tu correo electrónico:</string>
+    <string name="verify_email_button">Verificar Correo</string>
+    <string name="verify_email_skip">Si no creaste esta cuenta, puedes ignorar este correo.</string>
+    <string name="copyright">© 2025 DEVELARQ | Todos los derechos reservados.</string>
+
+    <string name="my_profile">Mi Perfil</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="logout_confirm">¿Estás seguro que deseas cerrar sesión?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
 </resources>

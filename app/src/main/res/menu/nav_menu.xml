@@ -16,6 +16,12 @@
                 android:id="@+id/nav_projects"
                 android:icon="@drawable/ic_projects"
                 android:title="Proyectos" />
+        <!-- Tablero Kanban -->
+        <item
+                android:id="@+id/nav_kanban"
+                android:icon="@drawable/ic_kanban"
+                android:title="Tablero Kanban" />
+
 
         <!-- Employees (Only for admin/manager roles) -->
         <item
@@ -23,14 +29,6 @@
                 android:icon="@drawable/ic_employees"
                 android:title="Empleados"
                 android:visible="false" />
-
-        <!-- Register Employee (Only for admin) -->
-        <item
-                android:id="@+id/nav_register_employee"
-                android:icon="@drawable/ic_person_add"
-                android:title="Registrar Empleado"
-                android:visible="false" />
-
     </group>
 
     <item android:title="Cuenta">

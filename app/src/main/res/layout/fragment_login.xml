@@ -11,8 +11,8 @@
     <!-- Logo -->
     <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="88dp"
-            android:layout_height="67dp"
+            android:layout_width="109dp"
+            android:layout_height="101dp"
             android:src="@drawable/logodevelarq"
             android:contentDescription="@string/app_logo"
             app:layout_constraintTop_toTopOf="parent"
@@ -217,6 +217,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:visibility="visible" app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintVertical_bias="0.976"/>
+            app:layout_constraintVertical_bias="0.885"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
