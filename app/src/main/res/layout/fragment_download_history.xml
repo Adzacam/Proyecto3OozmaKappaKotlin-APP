@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0F172A">
+
+    <!-- Top App Bar -->
+    <include
+            android:id="@+id/topAppBar"
+            layout="@layout/layout_top_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Content Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Title -->
+        <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Historial de Descargas (Admin)"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Info Card -->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Historial Global de Descargas"
+                        android:textColor="#60A5FA"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                <TextView
+                        android:id="@+id/tvEmptyMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No se ha registrado ninguna descarga en el sistema."
+                        android:textColor="#94A3B8"
+                        android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Filters Section (Future) -->
+        <LinearLayout
+                android:id="@+id/llFilters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/cvInfo">
+
+            <Spinner
+                    android:id="@+id/spinnerUsuario"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:layout_marginEnd="8dp" />
+
+            <Spinner
+                    android:id="@+id/spinnerFecha"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white" />
+        </LinearLayout>
+
+        <!-- Downloads RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvDownloads"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/llFilters"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Placeholder -->
+        <TextView
+                android:id="@+id/tvPlaceholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Historial de Descargas\n\n(Por implementar)"
+                android:textAlignment="center"
+                android:textColor="#64748B"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/cvInfo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="32dp" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

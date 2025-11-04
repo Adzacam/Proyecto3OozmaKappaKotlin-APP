@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="#1E293B"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+        <!-- Unread Indicator -->
+        <View
+                android:id="@+id/viewUnreadIndicator"
+                android:layout_width="4dp"
+                android:layout_height="0dp"
+                android:background="#B8FF3C"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Content Container -->
+        <LinearLayout
+                android:id="@+id/llContent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/viewUnreadIndicator"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Type and New Badge Row -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                <TextView
+                        android:id="@+id/tvType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="documento"
+                        android:textColor="#FFFFFF"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:background="#EC4899"
+                        android:layout_marginEnd="8dp" />
+
+                <TextView
+                        android:id="@+id/tvNewBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NUEVA"
+                        android:textColor="#000000"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:background="#B8FF3C"
+                        android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Title -->
+            <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Archivo BIM cargado"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+            <!-- Message -->
+            <TextView
+                    android:id="@+id/tvMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Se ha subido el primer archivo BIM del proyecto 'Mocca Master'."
+                    android:textColor="#94A3B8"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp" />
+
+            <!-- Project Name (Optional) -->
+            <TextView
+                    android:id="@+id/tvProjectName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Proyecto: Mocca Master"
+                    android:textColor="#60A5FA"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone" />
+
+            <!-- Date and Action Row -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                <TextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="28/10/2025, 8:57:53"
+                        android:textColor="#64748B"
+                        android:textSize="12sp" />
+
+                <Button
+                        android:id="@+id/btnMarkAsRead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Marcar como leída"
+                        android:textSize="11sp"
+                        android:textColor="#000000"
+                        android:backgroundTint="#B8FF3C"
+                        android:paddingHorizontal="12dp"
+                        app:cornerRadius="6dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

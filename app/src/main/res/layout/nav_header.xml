@@ -40,7 +40,7 @@
             android:id="@+id/tvNavUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Adriano Leandro"
+            android:text="Usuario"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Ingeniero"
+            android:text="Rol"
             android:textColor="#B8FF3C"
             android:textSize="14sp" />
 

@@ -54,8 +54,8 @@ if ($insertStmt->execute()) {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'fidelrey000@gmail.com';          
-        $mail->Password   = 'qnrwvlmrcovalrso';  
+        $mail->Username   = 'fidelrey000@gmail.com';
+        $mail->Password   = 'qnrwvlmrcovalrso';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
@@ -66,7 +66,7 @@ if ($insertStmt->execute()) {
         // Contenido del correo
         $mail->isHTML(true);
         $mail->Subject = 'Restablecer tu contraseña de DevelArq';
-        $resetLink = "http://192.168.1.4/develarq_api/reset-password/index.php?token=" . $token;
+        $resetLink = "http://192.168.1.7/develarq_api/reset-password/index.php?token=" . $token;
         $mail->Body = "
             <h2>Hola,</h2>
             <p>Has solicitado restablecer tu contraseña. Haz clic en el enlace siguiente:</p>

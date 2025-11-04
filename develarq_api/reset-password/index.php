@@ -23,9 +23,9 @@ if ($token) {
     // Si estamos en la redirección de éxito, no necesitamos verificar el token en la DB.
     if ($status !== 'success') {
         // Ejecución normal (petición inicial o error POST): Verificar el token en DB.
-        
-        // Verificar si el token existe y si está expirado (e.g., más de 1 hora)
-        $query = "SELECT email, created_at FROM password_reset_tokens WHERE token = :token AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
+
+        // Verificar si el token existe y si está expirado (e.g., más de 10 minutos)
+        $query = "SELECT email, created_at FROM password_reset_tokens WHERE token = :token AND created_at > DATE_SUB(NOW(), INTERVAL 10 MINUTE)";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':token', $token);
         $stmt->execute();
@@ -37,8 +37,7 @@ if ($token) {
         $tokenData = $stmt->fetch(PDO::FETCH_ASSOC);
         $email = $tokenData['email'];
     } else {
-        // Para la redirección de éxito, necesitamos recuperar el email del token para
-        // mostrar el mensaje correcto o manejar cualquier lógica futura.
+    
         $query = "SELECT email FROM password_reset_tokens WHERE token = :token";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':token', $token);

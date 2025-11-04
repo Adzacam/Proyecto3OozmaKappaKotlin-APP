@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#1A1A1A"
+            android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+
+        <!-- Logo -->
+        <ImageView
+                android:id="@+id/ivLogo"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="48dp"
+                android:contentDescription="@string/app_logo"
+                android:src="@drawable/ic_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- App Name -->
+        <TextView
+                android:id="@+id/tvAppName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="DevelArq"
+                android:textColor="#2563EB"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+
+        <!-- Card Container -->
+        <androidx.cardview.widget.CardView
+                android:id="@+id/cvVerifyCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                app:cardBackgroundColor="#252525"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAppName">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                <!-- Title -->
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hola 👋"
+                        android:textColor="#FFFFFF"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                <!-- Instructions -->
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:lineSpacingExtra="4dp"
+                        android:text="Haz clic en el botón de abajo para verificar tu correo electrónico:"
+                        android:textColor="#9CA3AF"
+                        android:textSize="16sp" />
+
+                <!-- Verify Button -->
+                <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnVerifyEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="24dp"
+                        android:backgroundTint="#2563EB"
+                        android:text="Verificar Correo"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="8dp" />
+
+                <!-- Skip Text -->
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:text="Si no creaste esta cuenta, puedes ignorar este correo."
+                        android:textColor="#6B7280"
+                        android:textSize="14sp" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Footer -->
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="© 2025 DEVELARQ | Todos los derechos reservados."
+                android:textColor="#6B7280"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cvVerifyCard" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
