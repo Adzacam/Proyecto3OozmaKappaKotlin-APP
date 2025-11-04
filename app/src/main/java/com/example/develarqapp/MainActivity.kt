@@ -1,285 +1,225 @@
 package com.example.develarqapp
 
 import android.os.Bundle
-import android.widget.TextView
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
+import com.example.develarqapp.databinding.ActivityMainBinding
 import com.example.develarqapp.utils.SessionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-    private lateinit var navController: NavController
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Inicializar SessionManager
         sessionManager = SessionManager(this)
 
-        // Inicializar vistas
-        drawerLayout = findViewById(R.id.drawerLayout)
-        navigationView = findViewById(R.id.navigationView)
+        setupNavigation()
+        updateMenuVisibility(sessionManager.getUserRol())
+    }
 
-        // Configurar Navigation Component
+    private fun setupNavigation() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Configurar AppBar con el drawer
-        appBarConfiguration = AppBarConfiguration(
+        drawerLayout = binding.drawerLayout
+        navigationView = binding.navigationView
+        navigationView.setNavigationItemSelectedListener(this)
+
+        // Configurar el drawer solo para destinos principales
+        val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.dashboardFragment,
                 R.id.usersFragment,
                 R.id.projectsFragment,
                 R.id.kanbanFragment,
-                R.id.loginFragment
+                R.id.calendarFragment,
+                R.id.documentsFragment,
+                R.id.downloadHistoryFragment
             ),
             drawerLayout
         )
 
-        // Configurar NavigationView con NavController
-        navigationView.setupWithNavController(navController)
-
-        // Actualizar header inicial
-        updateNavigationHeader()
-
-        // Manejar clics en items del menú
-        setupNavigationItemListener()
-
-        // Listener para ocultar/mostrar el drawer según el destino
-        setupDestinationChangedListener()
-    }
-
-    private fun setupNavigationItemListener() {
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_dashboard -> {
-                    navigateToDestination(R.id.dashboardFragment)
-                    true
-                }
-                R.id.nav_projects -> {
-                    navigateToDestination(R.id.projectsFragment)
-                    true
-                }
-                R.id.nav_kanban -> {
-                    navigateToDestination(R.id.kanbanFragment)
-                    true
-                }
-                R.id.nav_employees -> {
-                    navigateToDestination(R.id.usersFragment)
-                    true
-                }
-
-                R.id.nav_profile -> {
-                    // TODO: Implementar navegación a perfil
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                R.id.nav_settings -> {
-                    // TODO: Implementar navegación a configuración
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                R.id.nav_logout -> {
-                    logout()
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-
-    private fun setupDestinationChangedListener() {
+        // Ocultar/mostrar drawer según el destino
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.loginFragment,
                 R.id.forgotPasswordFragment,
                 R.id.verifyEmailFragment -> {
-                    // Deshabilitar el drawer en pantallas de autenticación
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 }
                 else -> {
-                    // Habilitar el drawer en otros fragmentos
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-
-                    // Actualizar header del drawer cuando navegamos
-                    updateNavigationHeader()
-
-                    // Actualizar visibilidad del menú según rol
-                    val userRole = sessionManager.getUserRol()
-                    if (userRole.isNotEmpty()) {
-                        updateMenuVisibility(userRole)
-                    }
                 }
             }
         }
     }
 
-    private fun navigateToDestination(destinationId: Int) {
-        try {
-            // Verificar si no estamos ya en ese destino
-            if (navController.currentDestination?.id != destinationId) {
-                navController.navigate(destinationId)
-            }
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            drawerLayout.closeDrawer(GravityCompat.START)
-        }
-    }
-
-    // Hacer pública para que DashboardFragment pueda llamarla
+    /**
+     * Actualiza la visibilidad de los items del menú según el rol del usuario
+     */
     fun updateMenuVisibility(role: String) {
         val menu = navigationView.menu
 
         when (role.lowercase()) {
             "admin" -> {
-                // Admin puede ver todo
-                menu.findItem(R.id.nav_dashboard)?.isVisible = true
-                menu.findItem(R.id.nav_projects)?.isVisible = true
-                menu.findItem(R.id.nav_kanban)?.isVisible = true
+                // Admin ve todo
                 menu.findItem(R.id.nav_employees)?.isVisible = true
-
+                menu.findItem(R.id.nav_calendar)?.isVisible = true
+                menu.findItem(R.id.nav_documents)?.isVisible = true
+                menu.findItem(R.id.nav_download_history)?.isVisible = true
             }
             "ingeniero", "arquitecto" -> {
-                // Ingenieros y arquitectos ven proyectos y kanban, pero no gestión de empleados
-                menu.findItem(R.id.nav_dashboard)?.isVisible = true
-                menu.findItem(R.id.nav_projects)?.isVisible = true
-                menu.findItem(R.id.nav_kanban)?.isVisible = true
+                // Ingeniero y arquitecto ven calendario y documentos
                 menu.findItem(R.id.nav_employees)?.isVisible = false
-
+                menu.findItem(R.id.nav_calendar)?.isVisible = true
+                menu.findItem(R.id.nav_documents)?.isVisible = true
+                menu.findItem(R.id.nav_download_history)?.isVisible = false
             }
             "cliente" -> {
-                // Clientes solo ven dashboard y proyectos
-                menu.findItem(R.id.nav_dashboard)?.isVisible = true
-                menu.findItem(R.id.nav_projects)?.isVisible = true
-                menu.findItem(R.id.nav_kanban)?.isVisible = false
+                // Cliente solo ve lo básico
                 menu.findItem(R.id.nav_employees)?.isVisible = false
-
+                menu.findItem(R.id.nav_calendar)?.isVisible = false
+                menu.findItem(R.id.nav_documents)?.isVisible = false
+                menu.findItem(R.id.nav_download_history)?.isVisible = false
             }
             else -> {
-                // Otros roles solo ven lo básico
-                menu.findItem(R.id.nav_dashboard)?.isVisible = true
-                menu.findItem(R.id.nav_projects)?.isVisible = false
-                menu.findItem(R.id.nav_kanban)?.isVisible = false
+                // Por defecto, ocultar todo excepto lo básico
                 menu.findItem(R.id.nav_employees)?.isVisible = false
-
+                menu.findItem(R.id.nav_calendar)?.isVisible = false
+                menu.findItem(R.id.nav_documents)?.isVisible = false
+                menu.findItem(R.id.nav_download_history)?.isVisible = false
             }
         }
     }
 
-    private fun updateNavigationHeader() {
-        try {
-            val headerView = navigationView.getHeaderView(0)
-            val tvNavUserName: TextView = headerView.findViewById(R.id.tvNavUserName)
-            val tvNavUserRole: TextView = headerView.findViewById(R.id.tvNavUserRole)
-
-            if (sessionManager.isLoggedIn()) {
-                val userName = sessionManager.getUserName()
-                val userApellido = sessionManager.getUserApellido()
-                val userRole = sessionManager.getUserRol()
-
-                // Actualizar nombre
-                tvNavUserName.text = if (userName.isNotEmpty() && userApellido.isNotEmpty()) {
-                    "$userName $userApellido"
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_dashboard -> {
+                navController.navigate(R.id.dashboardFragment)
+            }
+            R.id.nav_employees -> {
+                if (hasAccess("admin")) {
+                    navController.navigate(R.id.usersFragment)
                 } else {
-                    "Usuario"
+                    showAccessDeniedDialog()
                 }
-
-                // Actualizar rol con formato bonito
-                tvNavUserRole.text = when (userRole.lowercase()) {
-                    "admin" -> "Administrador"
-                    "ingeniero" -> "Ingeniero"
-                    "arquitecto" -> "Arquitecto"
-                    "cliente" -> "Cliente"
-                    else -> if (userRole.isNotEmpty()) {
-                        userRole.replaceFirstChar { it.uppercase() }
-                    } else {
-                        "Rol"
-                    }
-                }
-            } else {
-                tvNavUserName.text = "Usuario"
-                tvNavUserRole.text = "Invitado"
             }
-        } catch (e: Exception) {
-            // Si hay error al obtener el header, simplemente no actualizamos
-            e.printStackTrace()
+            R.id.nav_projects -> {
+                navController.navigate(R.id.projectsFragment)
+            }
+            R.id.nav_kanban -> {
+                navController.navigate(R.id.kanbanFragment)
+            }
+            R.id.nav_calendar -> {
+                if (hasAccess("admin", "ingeniero", "arquitecto")) {
+                    navController.navigate(R.id.calendarFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_documents -> {
+                if (hasAccess("admin", "ingeniero", "arquitecto")) {
+                    navController.navigate(R.id.documentsFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_download_history -> {
+                if (hasAccess("admin")) {
+                    navController.navigate(R.id.downloadHistoryFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_profile -> {
+                navController.navigate(R.id.action_global_to_profileFragment)
+            }
+            R.id.nav_notifications -> {
+                navController.navigate(R.id.action_global_to_notificationsFragment)
+            }
+            R.id.nav_settings -> {
+                // TODO: Implementar configuración
+            }
+            R.id.nav_logout -> {
+                showLogoutDialog()
+            }
         }
+
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
+    /**
+     * Verifica si el usuario tiene acceso según su rol
+     */
+    private fun hasAccess(vararg allowedRoles: String): Boolean {
+        val userRole = sessionManager.getUserRol().lowercase()
+        return allowedRoles.any { it.lowercase() == userRole }
+    }
+
+    /**
+     * Muestra un diálogo de acceso denegado
+     */
+    private fun showAccessDeniedDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Acceso Denegado")
+            .setMessage("No tienes permisos para acceder a esta sección.")
+            .setPositiveButton("Entendido", null)
+            .show()
+    }
+
+    /**
+     * Muestra un diálogo de confirmación para cerrar sesión
+     */
+    private fun showLogoutDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Cerrar Sesión")
+            .setMessage("¿Estás seguro de que deseas cerrar sesión?")
+            .setPositiveButton("Sí") { _, _ ->
+                logout()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    /**
+     * Cierra la sesión del usuario
+     */
     private fun logout() {
-        try {
-            // Limpiar sesión
-            sessionManager.clearSession()
-
-            // Cerrar drawer
-            drawerLayout.closeDrawer(GravityCompat.START)
-
-            // Navegar al login y limpiar el back stack
-            navController.navigate(R.id.action_dashboardFragment_to_loginFragment)
-        } catch (e: Exception) {
-            // Si falla la navegación con action, intentar navegación directa
-            e.printStackTrace()
-            navController.navigate(R.id.loginFragment)
-            drawerLayout.closeDrawer(GravityCompat.START)
-        }
+        sessionManager.clearSession()
+        navController.navigate(R.id.action_global_to_loginFragment)
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        when {
-            drawerLayout.isDrawerOpen(GravityCompat.START) -> {
-                drawerLayout.closeDrawer(GravityCompat.START)
-            }
-            navController.currentDestination?.id == R.id.dashboardFragment -> {
-                // Si estamos en dashboard, salir de la app
-                finish()
-            }
-            else -> {
-                super.onBackPressed()
-            }
-        }
-    }
-
-    // Funciones públicas para ser llamadas desde fragments
-
+    /**
+     * Abre el drawer desde los fragments
+     */
     fun openDrawer() {
-        if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.openDrawer(GravityCompat.START)
-        }
+        drawerLayout.openDrawer(GravityCompat.START)
     }
 
-    fun closeDrawer() {
+    override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
-        }
-    }
-
-    fun refreshNavigationHeader() {
-        updateNavigationHeader()
-    }
-
-    fun refreshMenuVisibility() {
-        val userRole = sessionManager.getUserRol()
-        if (userRole.isNotEmpty()) {
-            updateMenuVisibility(userRole)
+        } else {
+            super.onBackPressed()
         }
     }
 }

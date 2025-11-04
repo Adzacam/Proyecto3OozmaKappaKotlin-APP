@@ -30,7 +30,7 @@
                         android:id="@+id/tvUserName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Fidel Eliseo Reyes Ramirez"
+                        android:text="User"
                         android:textColor="#FFFFFF"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -40,10 +40,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="fideleliseoreyesramirez@gmail.com"
+                        android:text="email@gmail.com"
                         android:textColor="#9CA3AF"
                         android:textSize="12sp" />
-
             </LinearLayout>
 
         </LinearLayout>

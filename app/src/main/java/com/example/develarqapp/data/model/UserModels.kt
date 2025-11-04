@@ -43,7 +43,10 @@ data class UpdateUserRequest(
     val telefono: String?,
 
     @SerializedName("rol")
-    val rol: String
+    val rol: String,
+
+    @SerializedName("password")
+    val password: String?
 )
 
 // Request para eliminar/desactivar usuario

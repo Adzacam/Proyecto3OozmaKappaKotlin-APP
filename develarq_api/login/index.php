@@ -1,3 +1,4 @@
+
 <?php
 // Incluir el archivo de conexión a la base de datos
 include_once '../db_config/database.php';

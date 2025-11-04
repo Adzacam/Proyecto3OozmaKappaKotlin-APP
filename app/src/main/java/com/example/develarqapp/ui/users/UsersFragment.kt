@@ -4,16 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.develarqapp.MainActivity
 import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentUsersBinding
 import com.example.develarqapp.utils.SessionManager
+import com.example.develarqapp.utils.TopBarManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class UsersFragment : Fragment() {
@@ -23,6 +24,7 @@ class UsersFragment : Fragment() {
 
     private val viewModel: UsersViewModel by viewModels()
     private lateinit var sessionManager: SessionManager
+    private lateinit var topBarManager: TopBarManager
     private lateinit var usersAdapter: UsersAdapter
 
     override fun onCreateView(
@@ -32,12 +34,14 @@ class UsersFragment : Fragment() {
     ): View {
         _binding = FragmentUsersBinding.inflate(inflater, container, false)
         sessionManager = SessionManager(requireContext())
+        topBarManager = TopBarManager(this, sessionManager)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupTopBar()
         setupUI()
         setupRecyclerView()
         setupObservers()
@@ -46,33 +50,29 @@ class UsersFragment : Fragment() {
         viewModel.loadUsers()
     }
 
+    private fun setupTopBar() {
+        topBarManager.setupTopBar(binding.topAppBar.root)
+    }
+
+
     private fun setupUI() {
-        // Configurar menú hamburguesa
-        binding.ivMenuIcon.setOnClickListener {
-            (activity as? MainActivity)?.openDrawer()
-        }
-
-        // Mostrar nombre del usuario logueado
-        val userName = sessionManager.getUserName()
-        val userApellido = sessionManager.getUserApellido()
-        binding.tvUserName.text = "$userName $userApellido"
-
         // Botón crear usuario
         binding.btnCreateUser.setOnClickListener {
             findNavController().navigate(R.id.action_usersFragment_to_registerEmployeeFragment)
         }
 
-        // Botón ver eliminados (por implementar)
+        // Botón ver eliminados
         binding.btnViewDeleted.setOnClickListener {
-            Toast.makeText(requireContext(), "Función por implementar", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_usersFragment_to_deletedUsersFragment)
         }
     }
 
     private fun setupRecyclerView() {
         usersAdapter = UsersAdapter(
             onEditClick = { user ->
-                // TODO: Navegar a pantalla de editar o mostrar dialog
-                Toast.makeText(requireContext(), "Editar: ${user.fullName}", Toast.LENGTH_SHORT).show()
+                // Abrir dialog de editar
+                val dialog = EditUserDialogFragment.newInstance(user)
+                dialog.show(childFragmentManager, "EditUserDialog")
             },
             onToggleStatusClick = { user ->
                 showToggleStatusDialog(user.id, user.fullName, user.estado)

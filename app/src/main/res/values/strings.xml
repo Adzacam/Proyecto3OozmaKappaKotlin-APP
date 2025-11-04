@@ -122,4 +122,67 @@
     <string name="logout_confirm">¿Estás seguro que deseas cerrar sesión?</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
+
+    <!-- Top Bar -->
+
+
+    <string name="notificaciones">Notificaciones</string>
+
+    <!-- Navigation Drawer -->
+
+    <string name="proyectos">Proyectos</string>
+    <string name="tablero_kanban">Tablero Kanban</string>
+    <string name="calendario">Calendario</string>
+    <string name="documentos">Documentos</string>
+    <string name="historial_descargas">Historial Descargas</string>
+    <string name="mi_perfil">Mi Perfil</string>
+    <string name="configuracion">Configuración</string>
+
+    <!-- Common -->
+    <string name="guardar">Guardar</string>
+
+    <string name="confirmar">Confirmar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="editar">Editar</string>
+    <string name="buscar">Buscar</string>
+    <string name="filtros">Filtros</string>
+
+    <!-- Profile -->
+
+    <string name="informacion_perfil">Información del Perfil</string>
+    <string name="actualizar_contrasena">Actualizar Contraseña</string>
+    <string name="contrasena_actual">Contraseña actual</string>
+    <string name="nueva_contrasena">Nueva contraseña</string>
+    <string name="confirmar_contrasena">Confirmar contraseña</string>
+
+    <!-- Notifications -->
+    <string name="sin_notificaciones">No tienes notificaciones</string>
+    <string name="marcar_como_leida">Marcar como leída</string>
+    <string name="marcar_todas_leidas">Marcar todas como leídas</string>
+    <string name="mostrar_filtros">Mostrar filtros</string>
+
+    <!-- Calendar -->
+    <string name="calendario_reuniones">Calendario de Reuniones</string>
+    <string name="todas">Todas</string>
+    <string name="proximas">Próximas</string>
+    <string name="pasadas">Pasadas</string>
+    <string name="proyecto">Proyecto</string>
+    <string name="participantes">Participantes</string>
+
+    <!-- Documents -->
+    <string name="biblioteca_documentos">Biblioteca de Documentos</string>
+    <string name="subir_documento">Subir Documento</string>
+    <string name="ver_papelera">Ver Papelera</string>
+    <string name="limpiar_filtros">Limpiar filtros</string>
+    <string name="buscar_documento">Buscar título o descripción...</string>
+
+    <!-- Download History -->
+    <string name="historial_descargas_admin">Historial de Descargas (Admin)</string>
+    <string name="historial_global">Historial Global de Descargas</string>
+    <string name="sin_descargas">No se ha registrado ninguna descarga en el sistema</string>
+
+    <!-- Messages -->
+    <string name="acceso_denegado">No tienes permisos para acceder a esta sección</string>
+    <string name="sesion_cerrada">Sesión cerrada exitosamente</string>
+    <string name="error_generico">Ha ocurrido un error</string>
 </resources>

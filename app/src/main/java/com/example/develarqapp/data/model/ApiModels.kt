@@ -144,3 +144,4 @@ data class Task(
     @SerializedName("asignado_nombre")
     val asignadoNombre: String?
 )
+

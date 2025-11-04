@@ -4,15 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.example.develarqapp.MainActivity
-import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentDashboardBinding
 import com.example.develarqapp.utils.SessionManager
+import com.example.develarqapp.utils.TopBarManager
+import com.example.develarqapp.MainActivity
+import com.example.develarqapp.R
 
 class DashboardFragment : Fragment() {
 
@@ -21,6 +20,7 @@ class DashboardFragment : Fragment() {
 
     private val viewModel: DashboardViewModel by viewModels()
     private lateinit var sessionManager: SessionManager
+    private lateinit var topBarManager: TopBarManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,6 +29,7 @@ class DashboardFragment : Fragment() {
     ): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         sessionManager = SessionManager(requireContext())
+        topBarManager = TopBarManager(this, sessionManager)
         return binding.root
     }
 
@@ -38,55 +39,23 @@ class DashboardFragment : Fragment() {
         // Cargar los datos del usuario en el ViewModel
         viewModel.loadUserData(sessionManager)
 
+        setupTopBar()
         setupUI()
         observeViewModel()
     }
 
+    private fun setupTopBar() {
+        // Usa el acceso directo de ViewBinding, es más limpio y seguro
+        topBarManager.setupTopBar(binding.topAppBar.root)
+    }
+
     private fun setupUI() {
-        // Configurar el botón del menú hamburguesa para abrir el drawer
-        binding.ivMenuIcon.setOnClickListener {
-            (activity as? MainActivity)?.openDrawer()
-        }
-
-        // Configurar el menú desplegable del usuario
-        binding.llUserProfile.setOnClickListener {
-            showUserMenu(it)
-        }
-    }
-
-    private fun showUserMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
-        popupMenu.menuInflater.inflate(R.menu.user_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_profile -> {
-                    // TODO: Navegar a perfil
-                    true
-                }
-                R.id.action_logout -> {
-                    logout()
-                    true
-                }
-                else -> false
-            }
-        }
-
-        popupMenu.show()
-    }
-
-    private fun logout() {
-        // Limpiar sesión
-        sessionManager.clearSession()
-
-        // Navegar al login
-        findNavController().navigate(R.id.action_dashboardFragment_to_loginFragment)
+        // Configuración adicional del dashboard si es necesaria
     }
 
     private fun observeViewModel() {
         viewModel.userName.observe(viewLifecycleOwner) { name ->
             val fullName = "$name ${sessionManager.getUserApellido()}"
-            binding.tvUserName.text = fullName
             binding.tvWelcome.text = "Bienvenido, $fullName"
         }
 

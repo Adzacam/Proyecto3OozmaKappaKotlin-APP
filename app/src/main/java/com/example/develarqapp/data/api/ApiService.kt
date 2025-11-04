@@ -19,6 +19,9 @@ interface ApiService {
     @GET("Users/get_users.php")
     suspend fun getUsers(): Response<UsersResponse>
 
+    @GET("Users/get_deleted_users.php")
+    suspend fun getDeletedUsers(): Response<UsersResponse>
+
     @POST("Users/create_user.php")
     suspend fun createUser(@Body request: CreateUserRequest): Response<UserResponse>
 
@@ -28,6 +31,23 @@ interface ApiService {
     @POST("Users/delete_user.php")
     suspend fun deleteUser(@Body request: DeleteUserRequest): Response<GenericResponse>
 
+    @POST("Users/restore_user.php")
+    suspend fun restoreUser(@Body request: DeleteUserRequest): Response<GenericResponse>
+
     @POST("Users/toggle_status.php")
     suspend fun toggleUserStatus(@Body request: DeleteUserRequest): Response<GenericResponse>
+
+    @POST("Users/update_password.php")
+    suspend fun updatePassword(
+        @Body request: UpdatePasswordRequest,
+        @Header("Authorization") token: String
+    ): Response<GenericResponse>
+
+    @POST("Users/update_user.php")
+    suspend fun updateUser(
+        @Body request: UpdateUserRequest,
+        @Header("Authorization") token: String
+    ): Response<GenericResponse>
+
+
 }

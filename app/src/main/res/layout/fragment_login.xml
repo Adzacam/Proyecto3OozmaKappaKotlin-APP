@@ -11,8 +11,8 @@
     <!-- Logo -->
     <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="109dp"
-            android:layout_height="101dp"
+            android:layout_width="157dp"
+            android:layout_height="134dp"
             android:src="@drawable/logodevelarq"
             android:contentDescription="@string/app_logo"
             app:layout_constraintTop_toTopOf="parent"
@@ -163,25 +163,25 @@
 
                 <CheckBox
                         android:id="@+id/cbRememberMe"
-                        android:layout_width="wrap_content"
+                        android:layout_width="157dp"
                         android:layout_height="wrap_content"
                         android:text="@string/recordarme"
                         android:textColor="#9CA3AF"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
                         android:buttonTint="#C4F847"/>
 
                 <View
                         android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
+                        android:layout_height="2dp"
+                        android:layout_weight="2"/>
 
                 <TextView
                         android:id="@+id/tvForgotPassword"
-                        android:layout_width="wrap_content"
+                        android:layout_width="165dp"
                         android:layout_height="wrap_content"
                         android:text="@string/olvidaste_contrasena"
                         android:textColor="#3B82F6"
-                        android:textSize="14sp"
+                        android:textSize="16dp"
                         android:clickable="true"
                         android:focusable="true"/>
             </LinearLayout>
@@ -217,6 +217,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:visibility="visible" app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintVertical_bias="0.885"/>
+            app:layout_constraintVertical_bias="0.901"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

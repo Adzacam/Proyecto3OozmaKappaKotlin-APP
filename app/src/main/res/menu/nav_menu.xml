@@ -5,47 +5,74 @@
 
     <group android:checkableBehavior="single">
 
-        <!-- Dashboard -->
+        <!-- Dashboard - Visible para todos -->
         <item
                 android:id="@+id/nav_dashboard"
                 android:icon="@drawable/ic_dashboard"
                 android:title="Dashboard" />
 
-        <!-- Projects -->
+        <!-- Usuarios - Solo admin -->
+        <item
+                android:id="@+id/nav_employees"
+                android:icon="@drawable/ic_employees"
+                android:title="Usuarios"
+                android:visible="false" />
+
+        <!-- Proyectos - Visible para todos -->
         <item
                 android:id="@+id/nav_projects"
                 android:icon="@drawable/ic_projects"
                 android:title="Proyectos" />
-        <!-- Tablero Kanban -->
+
+        <!-- Tablero Kanban - Visible para todos -->
         <item
                 android:id="@+id/nav_kanban"
                 android:icon="@drawable/ic_kanban"
                 android:title="Tablero Kanban" />
 
-
-        <!-- Employees (Only for admin/manager roles) -->
+        <!-- Calendario - Roles específicos -->
         <item
-                android:id="@+id/nav_employees"
-                android:icon="@drawable/ic_employees"
-                android:title="Empleados"
+                android:id="@+id/nav_calendar"
+                android:icon="@drawable/ic_calendar"
+                android:title="Calendario"
+                android:visible="false" />
+
+        <!-- Documentos - Roles específicos -->
+        <item
+                android:id="@+id/nav_documents"
+                android:icon="@drawable/ic_documents"
+                android:title="Documentos"
+                android:visible="false" />
+
+        <!-- Historial Descargas - Solo admin -->
+        <item
+                android:id="@+id/nav_download_history"
+                android:icon="@drawable/ic_downloads"
+                android:title="Historial Descargas"
                 android:visible="false" />
     </group>
 
     <item android:title="Cuenta">
         <menu>
-            <!-- Profile -->
+            <!-- Perfil -->
             <item
                     android:id="@+id/nav_profile"
                     android:icon="@drawable/ic_profile"
                     android:title="Mi Perfil" />
 
-            <!-- Settings -->
+            <!-- Notificaciones -->
+            <item
+                    android:id="@+id/nav_notifications"
+                    android:icon="@drawable/ic_notifications"
+                    android:title="Notificaciones" />
+
+            <!-- Configuración -->
             <item
                     android:id="@+id/nav_settings"
                     android:icon="@drawable/ic_settings"
                     android:title="Configuración" />
 
-            <!-- Logout -->
+            <!-- Cerrar Sesión -->
             <item
                     android:id="@+id/nav_logout"
                     android:icon="@drawable/ic_logout"
