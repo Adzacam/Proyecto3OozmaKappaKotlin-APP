@@ -17,6 +17,7 @@ import com.example.develarqapp.R
 import com.example.develarqapp.data.model.User
 import com.example.develarqapp.databinding.DialogEditUserBinding
 import com.example.develarqapp.utils.PasswordValidator
+import com.example.develarqapp.utils.SessionManager
 
 class EditUserDialogFragment : DialogFragment() {
 
@@ -180,7 +181,15 @@ class EditUserDialogFragment : DialogFragment() {
             } else {
                 null
             }
+            val sessionManager = SessionManager(requireContext())
+            val token = sessionManager.getToken()
 
+            if (token == null) {
+                // Aquí puedes mostrar un Toast o navegar al login
+                // Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
+                dismiss() // Cierra el diálogo para evitar más acciones
+                return@let // Sale de la función 'let'
+            }
             viewModel.updateUser(
                 id = it.id,
                 name = name,
@@ -188,7 +197,8 @@ class EditUserDialogFragment : DialogFragment() {
                 email = email,
                 phone = phone.ifEmpty { null },
                 rol = rol,
-                password = password
+                password = password,
+                token = token
             )
 
             dismiss()

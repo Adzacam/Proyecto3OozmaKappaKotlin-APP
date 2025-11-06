@@ -147,6 +147,22 @@
             android:name="com.example.develarqapp.ui.calendar.CalendarFragment"
             android:label="Calendario"
             tools:layout="@layout/fragment_calendar" />
+    <fragment
+            android:id="@+id/calendarFragment"
+            android:name="com.example.develarqapp.ui.calendar.CalendarFragment"
+            android:label="Calendario"
+            tools:layout="@layout/fragment_calendar">
+
+        <action
+                android:id="@+id/action_calendarFragment_to_createMeetingDialogFragment"
+                app:destination="@id/createMeetingDialogFragment"/>
+    </fragment>
+
+    <dialog
+            android:id="@+id/createMeetingDialogFragment"
+            android:name="com.example.develarqapp.ui.calendar.CreateMeetingDialogFragment"
+            android:label="Programar Reunión"
+            tools:layout="@layout/dialog_create_meeting" />
 
     <fragment
             android:id="@+id/documentsFragment"
@@ -159,6 +175,18 @@
             android:name="com.example.develarqapp.ui.downloads.DownloadHistoryFragment"
             android:label="Historial de Descargas"
             tools:layout="@layout/fragment_download_history" />
+    <fragment
+            android:id="@+id/auditoriaFragment"
+            android:name="com.example.develarqapp.ui.audit.AuditoriaFragment"
+            android:label="Auditoría"
+            tools:layout="@layout/fragment_auditoria" />
+
+    <fragment
+            android:id="@+id/bimPlanosFragment"
+            android:name="com.example.develarqapp.ui.bimplanos.BimPlanosFragment"
+            android:label="Planos BIM"
+            tools:layout="@layout/fragment_bim_planos" />
+
 
     <!-- ========================================== -->
     <!-- PROFILE & NOTIFICATIONS -->

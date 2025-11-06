@@ -1,7 +1,3 @@
-// ==========================================
-// RegisterEmployeeViewModel.kt
-// Ubicación: ui/register_employee/RegisterEmployeeViewModel.kt
-// ==========================================
 package com.example.develarqapp.ui.register_employee
 
 import androidx.lifecycle.LiveData
@@ -29,7 +25,8 @@ class RegisterEmployeeViewModel : ViewModel() {
         email: String,
         phone: String?,
         password: String,
-        rol: String
+        rol: String,
+        token: String
     ) {
         // Validaciones
         val validation = validateInputs(name, apellido, email, password, rol)
@@ -51,7 +48,8 @@ class RegisterEmployeeViewModel : ViewModel() {
                     rol = rol
                 )
 
-                val response = apiService.createUser(request)
+                // --- 2. PASA EL TOKEN A LA API AQUÍ ---
+                val response = apiService.createUser(request, "Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _registerResult.value = RegisterResult.Success(

@@ -52,7 +52,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 R.id.kanbanFragment,
                 R.id.calendarFragment,
                 R.id.documentsFragment,
-                R.id.downloadHistoryFragment
+                R.id.downloadHistoryFragment,
+                R.id.auditoriaFragment,
+                R.id.bimPlanosFragment,
             ),
             drawerLayout
         )
@@ -80,32 +82,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (role.lowercase()) {
             "admin" -> {
-                // Admin ve todo
                 menu.findItem(R.id.nav_employees)?.isVisible = true
                 menu.findItem(R.id.nav_calendar)?.isVisible = true
                 menu.findItem(R.id.nav_documents)?.isVisible = true
                 menu.findItem(R.id.nav_download_history)?.isVisible = true
+                menu.findItem(R.id.nav_auditoria)?.isVisible = true
+                menu.findItem(R.id.nav_bim_plans)?.isVisible = true
             }
             "ingeniero", "arquitecto" -> {
-                // Ingeniero y arquitecto ven calendario y documentos
                 menu.findItem(R.id.nav_employees)?.isVisible = false
                 menu.findItem(R.id.nav_calendar)?.isVisible = true
                 menu.findItem(R.id.nav_documents)?.isVisible = true
                 menu.findItem(R.id.nav_download_history)?.isVisible = false
+                menu.findItem(R.id.nav_auditoria)?.isVisible = false
+                menu.findItem(R.id.nav_bim_plans)?.isVisible = true
             }
             "cliente" -> {
-                // Cliente solo ve lo básico
                 menu.findItem(R.id.nav_employees)?.isVisible = false
                 menu.findItem(R.id.nav_calendar)?.isVisible = false
                 menu.findItem(R.id.nav_documents)?.isVisible = false
                 menu.findItem(R.id.nav_download_history)?.isVisible = false
-            }
-            else -> {
-                // Por defecto, ocultar todo excepto lo básico
-                menu.findItem(R.id.nav_employees)?.isVisible = false
-                menu.findItem(R.id.nav_calendar)?.isVisible = false
-                menu.findItem(R.id.nav_documents)?.isVisible = false
-                menu.findItem(R.id.nav_download_history)?.isVisible = false
+                menu.findItem(R.id.nav_auditoria)?.isVisible = false
+                menu.findItem(R.id.nav_bim_plans)?.isVisible = false
             }
         }
     }
@@ -145,6 +143,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_download_history -> {
                 if (hasAccess("admin")) {
                     navController.navigate(R.id.downloadHistoryFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_bim_plans -> {
+                if (hasAccess("admin", "ingeniero", "arquitecto")) {
+                    navController.navigate(R.id.bimPlanosFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_auditoria -> {
+                if (hasAccess("admin")) {
+                    navController.navigate(R.id.auditoriaFragment)
                 } else {
                     showAccessDeniedDialog()
                 }

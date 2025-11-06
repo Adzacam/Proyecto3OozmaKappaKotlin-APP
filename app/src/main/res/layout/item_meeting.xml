@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardBackgroundColor="#0F172A"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#334155"
+        app:strokeWidth="1dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+        <!-- Barra lateral de color -->
+        <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="#B8FF3C"
+                android:layout_marginEnd="12dp"/>
+
+        <!-- Contenido de la reunión -->
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/tvMeetingTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Título de la reunión"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"/>
+
+            <TextView
+                    android:id="@+id/tvMeetingProject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Proyecto"
+                    android:textColor="#B8FF3C"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="4dp"/>
+
+            <TextView
+                    android:id="@+id/tvMeetingDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="05/11/2025 10:00"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="4dp"/>
+
+            <TextView
+                    android:id="@+id/tvMeetingParticipants"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="3 participantes"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="4dp"/>
+
+            <TextView
+                    android:id="@+id/tvMeetingDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Descripción de la reunión"
+                    android:textColor="#CBD5E1"
+                    android:textSize="13sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+
+        </LinearLayout>
+
+        <!-- Botón eliminar -->
+        <ImageButton
+                android:id="@+id/btnDeleteMeeting"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#EF4444"
+                android:contentDescription="Eliminar reunión"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

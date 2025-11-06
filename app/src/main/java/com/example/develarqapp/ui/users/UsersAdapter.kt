@@ -40,10 +40,10 @@ class UsersAdapter(
                 tvUserEmail.text = user.email
 
                 // Rol
-                tvUserRole.text = user.rol.replaceFirstChar { it.uppercase() }
+                tvUserRole.text = user.rol?.replaceFirstChar { it.uppercaseChar() } ?: "Sin Rol"
 
                 // Estado
-                tvUserStatus.text = user.estado.replaceFirstChar { it.uppercase() }
+                tvUserStatus.text = user.estado?.replaceFirstChar { it.uppercaseChar() } ?: "Sin Estado"
 
                 // Cambiar color según estado
                 val statusColor = if (user.estado == "activo") {

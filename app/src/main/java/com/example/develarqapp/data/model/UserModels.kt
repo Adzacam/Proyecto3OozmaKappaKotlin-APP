@@ -1,5 +1,6 @@
 package com.example.develarqapp.data.model
 
+import com.example.develarqapp.data.model.User
 import com.google.gson.annotations.SerializedName
 
 // Modelo completo de Usuario

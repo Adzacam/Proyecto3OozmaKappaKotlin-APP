@@ -2,7 +2,8 @@
 <resources>
     <!-- Primary Colors -->
     <color name="primary_blue">#2563EB</color>
-    <color name="lime_green">#B8FF3C</color>
+    <color name="primary_green">#B8FF3C</color>
+    <color name="primary_dark">#0F172A</color>
 
     <!-- Background Colors -->
     <color name="background_dark">#1A1A1A</color>
@@ -31,4 +32,18 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Secondary Colors -->
+    <color name="secondary_gray">#334155</color>
+    <color name="secondary_light_gray">#64748B</color>
+    <color name="secondary_card">#1E293B</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_blue">#60A5FA</color>
+    <color name="accent_yellow">#B8FF3C</color>
+    <color name="accent_red">#EF4444</color>
+
+    <!-- Text Colors -->
+    <color name="text_light">#CBD5E1</color>
+
+    <color name="slate_700">#334155</color>
 </resources>

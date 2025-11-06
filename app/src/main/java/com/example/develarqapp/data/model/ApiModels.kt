@@ -62,31 +62,54 @@ data class GenericResponse(
     @SerializedName("message")
     val message: String
 )
-//--- Modelo de Usuario ---
+//--- Modelo de Usuario (Fusionado) ---
 data class User(
     @SerializedName("id")
     val id: Long,
 
+    // Campo del archivo 1
     @SerializedName("name")
-    val name: String,
+    val name: String? = null,
 
+    // Campo del archivo 2
+    @SerializedName("nombre")
+    val nombre: String? = null,
+
+    // Hecho nulo para compatibilidad
     @SerializedName("apellido")
-    val apellido: String,
+    val apellido: String? = null,
 
+    // Hecho nulo para compatibilidad
     @SerializedName("email")
-    val email: String,
+    val email: String? = null,
 
+    // Campo del archivo 1
     @SerializedName("telefono")
-    val telefono: String?,
+    val telefono: String? = null,
 
+    // Hecho nulo para compatibilidad
     @SerializedName("rol")
-    val rol: String,
+    val rol: String? = null,
 
+    // Campo del archivo 1 (hecho nulo)
     @SerializedName("estado")
-    val estado: String
+    val estado: String? = null,
+
+    // Campo del archivo 2
+    @SerializedName("eliminado")
+    val eliminado: Int? = 0
 ) {
+    // 'fullName' actualizado para usar 'name' o 'nombre'
     val fullName: String
-        get() = "$name $apellido"
+        get() {
+            val fName = name ?: nombre // Usa 'name' o 'nombre'
+            val lName = apellido
+            return if (!fName.isNullOrEmpty() && !lName.isNullOrEmpty()) {
+                "$fName $lName"
+            } else {
+                email ?: "Usuario #$id"
+            }
+        }
 }
 //--- Modelo de Proyecto ---
 data class Project(
@@ -97,22 +120,27 @@ data class Project(
     val nombre: String,
 
     @SerializedName("descripcion")
-    val descripcion: String?,
+    val descripcion: String? = null,
 
+    // Hecho nulo para compatibilidad
     @SerializedName("estado")
-    val estado: String,
+    val estado: String? = null,
 
     @SerializedName("fecha_inicio")
-    val fechaInicio: String?,
+    val fechaInicio: String? = null,
 
     @SerializedName("fecha_fin")
-    val fechaFin: String?,
+    val fechaFin: String? = null,
 
     @SerializedName("cliente_id")
-    val clienteId: Long?,
+    val clienteId: Long? = null,
 
     @SerializedName("responsable_id")
-    val responsableId: Long?
+    val responsableId: Long? = null,
+
+    // Campo del archivo 2
+    @SerializedName("eliminado")
+    val eliminado: Int? = 0
 )
 
 //--- Modelo de Tarea ---
