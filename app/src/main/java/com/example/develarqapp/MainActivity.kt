@@ -14,6 +14,8 @@ import com.example.develarqapp.databinding.ActivityMainBinding
 import com.example.develarqapp.utils.SessionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import android.widget.TextView
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupNavigation()
         updateMenuVisibility(sessionManager.getUserRol())
+
     }
 
     private fun setupNavigation() {
@@ -105,7 +108,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 menu.findItem(R.id.nav_auditoria)?.isVisible = false
                 menu.findItem(R.id.nav_bim_plans)?.isVisible = false
             }
+
         }
+        // --- 2. [NUEVO] Código para actualizar la Cabecera ---
+        val headerView = navigationView.getHeaderView(0) // Obtiene nav_header.xml
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvNavUserName)
+        val tvUserRole = headerView.findViewById<TextView>(R.id.tvNavUserRole)
+
+        // Asumiendo que SessionManager tiene estos métodos
+        val userName = sessionManager.getUserName()
+        val userApellido = sessionManager.getUserApellido()
+        val capitalizedRole = role.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }
+        tvUserName.text = "$userName $userApellido"
+        tvUserRole.text = capitalizedRole
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

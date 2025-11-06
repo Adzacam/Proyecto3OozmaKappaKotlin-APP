@@ -146,11 +146,6 @@
             android:id="@+id/calendarFragment"
             android:name="com.example.develarqapp.ui.calendar.CalendarFragment"
             android:label="Calendario"
-            tools:layout="@layout/fragment_calendar" />
-    <fragment
-            android:id="@+id/calendarFragment"
-            android:name="com.example.develarqapp.ui.calendar.CalendarFragment"
-            android:label="Calendario"
             tools:layout="@layout/fragment_calendar">
 
         <action
@@ -177,7 +172,7 @@
             tools:layout="@layout/fragment_download_history" />
     <fragment
             android:id="@+id/auditoriaFragment"
-            android:name="com.example.develarqapp.ui.audit.AuditoriaFragment"
+            android:name="com.example.develarqapp.ui.auditorias.AuditoriaFragment"
             android:label="Auditoría"
             tools:layout="@layout/fragment_auditoria" />
 
