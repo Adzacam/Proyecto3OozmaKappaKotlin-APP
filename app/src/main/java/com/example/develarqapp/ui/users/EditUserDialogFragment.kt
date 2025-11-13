@@ -170,6 +170,7 @@ class EditUserDialogFragment : DialogFragment() {
 
     private fun updateUser() {
         user?.let {
+
             val name = binding.etName.text.toString()
             val apellido = binding.etLastName.text.toString()
             val email = binding.etEmail.text.toString()

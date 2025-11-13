@@ -87,7 +87,7 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<MeetingsResponse>
 
-    @POST("Calendar/create_reunion.php") // Asumo que este es el nombre de tu archivo PHP
+    @POST("Calendar/create_reunion.php")
     suspend fun createMeeting(
         @Body meeting: MeetingRequest,
         @Header("Authorization") token: String

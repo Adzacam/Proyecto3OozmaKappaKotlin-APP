@@ -9,7 +9,6 @@ import com.example.develarqapp.data.model.MeetingRequest
 import com.example.develarqapp.data.model.Project
 import com.example.develarqapp.data.model.User
 import com.example.develarqapp.data.repository.CalendarRepository
-import com.example.develarqapp.utils.SessionManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,7 +40,7 @@ class CalendarViewModel : ViewModel() {
 
     private val _operationSuccess = MutableLiveData<Boolean>(false)
     val operationSuccess: LiveData<Boolean> = _operationSuccess
-    // Filtros
+
     private var currentFilter = MeetingFilter.ALL
     private var selectedProjectId: Long? = null
     private var selectedUserId: Long? = null
@@ -50,9 +49,6 @@ class CalendarViewModel : ViewModel() {
         ALL, UPCOMING, PAST
     }
 
-    /**
-     * Cargar todas las reuniones
-     */
     fun loadMeetings(token: String) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -73,9 +69,6 @@ class CalendarViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cargar proyectos para filtro
-     */
     fun loadProjects(token: String) {
         viewModelScope.launch {
             try {
@@ -87,9 +80,6 @@ class CalendarViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cargar usuarios para filtro
-     */
     fun loadUsers(token: String) {
         viewModelScope.launch {
             try {
@@ -100,19 +90,16 @@ class CalendarViewModel : ViewModel() {
             } catch (e: Exception) { /* Error silencioso */ }
         }
     }
-    /**
-     * Crear nueva reunión
-     */
+
     fun createMeeting(
         token: String,
         projectId: Long?,
         title: String,
         description: String?,
-        startTime: String, // Formato "yyyy-MM-dd HH:mm:ss"
-        endTime: String?, // Formato "yyyy-MM-dd HH:mm:ss"
+        startTime: String,
+        endTime: String?,
         participantIds: List<Long>
     ) {
-        // --- VALIDACIONES ---
         if (title.trim().isEmpty()) {
             _errorMessage.value = "El título es requerido"
             return
@@ -125,7 +112,7 @@ class CalendarViewModel : ViewModel() {
             _errorMessage.value = "Debes seleccionar al menos un participante"
             return
         }
-        // Validación de fechas (simple)
+
         if (endTime != null && endTime.isNotEmpty()) {
             if (startTime >= endTime) {
                 _errorMessage.value = "La fecha de fin debe ser posterior a la fecha de inicio"
@@ -150,8 +137,8 @@ class CalendarViewModel : ViewModel() {
                 val result = repository.createMeeting(request, token)
                 if (result.isSuccess) {
                     _successMessage.value = "Reunión creada exitosamente"
-                    _operationSuccess.value = true // Para cerrar el diálogo
-                    loadMeetings(token) // Recargar reuniones
+                    _operationSuccess.value = true
+                    loadMeetings(token)
                 } else {
                     _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al crear la reunión"
                 }
@@ -162,9 +149,63 @@ class CalendarViewModel : ViewModel() {
             }
         }
     }
-    /**
-     * Aplicar filtros a las reuniones
-     */
+
+    fun updateMeeting(
+        meetingId: Long,
+        token: String,
+        projectId: Long,
+        title: String,
+        description: String?,
+        startTime: String,
+        endTime: String?,
+        participantIds: List<Long>
+    ) {
+        if (title.trim().isEmpty()) {
+            _errorMessage.value = "El título es requerido"
+            return
+        }
+        if (participantIds.isEmpty()) {
+            _errorMessage.value = "Debes seleccionar al menos un participante"
+            return
+        }
+
+        if (endTime != null && endTime.isNotEmpty()) {
+            if (startTime >= endTime) {
+                _errorMessage.value = "La fecha de fin debe ser posterior a la fecha de inicio"
+                return
+            }
+        }
+
+        _isLoading.value = true
+        _operationSuccess.value = false
+
+        val request = MeetingRequest(
+            proyectoId = projectId,
+            titulo = title.trim(),
+            descripcion = description?.trim(),
+            fechaHora = startTime,
+            fechaHoraFin = endTime,
+            participantes = participantIds
+        )
+
+        viewModelScope.launch {
+            try {
+                val result = repository.updateMeeting(meetingId, request, token)
+                if (result.isSuccess) {
+                    _successMessage.value = "Reunión actualizada exitosamente"
+                    _operationSuccess.value = true
+                    loadMeetings(token)
+                } else {
+                    _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al actualizar"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     fun applyFilters() {
         val allMeetings = _meetings.value ?: return
         val now = Calendar.getInstance().time
@@ -172,7 +213,6 @@ class CalendarViewModel : ViewModel() {
 
         var filtered = allMeetings
 
-        // Filtro por tiempo (Todas, Próximas, Pasadas)
         filtered = when (currentFilter) {
             MeetingFilter.UPCOMING -> {
                 filtered.filter { meeting ->
@@ -197,12 +237,10 @@ class CalendarViewModel : ViewModel() {
             else -> filtered
         }
 
-        // Filtro por proyecto
         selectedProjectId?.let { projectId ->
             filtered = filtered.filter { it.proyectoId == projectId }
         }
 
-        // Filtro por participante
         selectedUserId?.let { userId ->
             filtered = filtered.filter { meeting ->
                 meeting.participantes?.any { it.userId == userId } == true
@@ -211,51 +249,41 @@ class CalendarViewModel : ViewModel() {
 
         _filteredMeetings.value = filtered
     }
-    /**
-     * Eliminar reunión
-     */
+
     fun deleteMeeting(meetingId: Long, token: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val result = repository.deleteMeeting(meetingId, token)
                 if (result.isSuccess) {
                     _successMessage.value = "Reunión eliminada"
-                    // loadMeetings(token) // Recargar lista
+                    loadMeetings(token)
                 } else {
                     _errorMessage.value = result.exceptionOrNull()?.message
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "Error: ${e.message}"
+            } finally {
+                _isLoading.value = false
             }
         }
     }
-    /**
-     * Cambiar filtro de tiempo
-     */
+
     fun setTimeFilter(filter: MeetingFilter) {
         currentFilter = filter
         applyFilters()
     }
 
-    /**
-     * Filtrar por proyecto
-     */
     fun filterByProject(projectId: Long?) {
         selectedProjectId = projectId
         applyFilters()
     }
 
-    /**
-     * Filtrar por participante
-     */
     fun filterByUser(userId: Long?) {
         selectedUserId = userId
         applyFilters()
     }
 
-    /**
-     * Limpiar todos los filtros
-     */
     fun clearFilters() {
         currentFilter = MeetingFilter.ALL
         selectedProjectId = null

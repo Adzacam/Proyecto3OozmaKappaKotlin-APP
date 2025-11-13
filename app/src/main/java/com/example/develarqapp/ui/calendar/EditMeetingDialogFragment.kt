@@ -14,21 +14,24 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.example.develarqapp.data.model.Meeting
 import com.example.develarqapp.data.model.Project
 import com.example.develarqapp.data.model.User
-import com.example.develarqapp.databinding.DialogCreateMeetingBinding
+import com.example.develarqapp.databinding.DialogEditMeetingBinding
 import com.example.develarqapp.utils.SessionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateMeetingDialogFragment : DialogFragment() {
+class EditMeetingDialogFragment : DialogFragment() {
 
-    private var _binding: DialogCreateMeetingBinding? = null
+    private var _binding: DialogEditMeetingBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: CalendarViewModel by activityViewModels()
     private lateinit var sessionManager: SessionManager
 
+    private lateinit var meeting: Meeting
     private var projectsList: List<Project> = emptyList()
     private var usersList: List<User> = emptyList()
 
@@ -41,6 +44,23 @@ class CreateMeetingDialogFragment : DialogFragment() {
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
+    companion object {
+        private const val ARG_MEETING = "meeting"
+
+        fun newInstance(meeting: Meeting): EditMeetingDialogFragment {
+            return EditMeetingDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(ARG_MEETING, meeting)
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        meeting = arguments?.getSerializable(ARG_MEETING) as Meeting
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -48,7 +68,7 @@ class CreateMeetingDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DialogCreateMeetingBinding.inflate(inflater, container, false)
+        _binding = DialogEditMeetingBinding.inflate(inflater, container, false)
         sessionManager = SessionManager(requireContext())
         return binding.root
     }
@@ -62,21 +82,52 @@ class CreateMeetingDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inicializar con fecha actual
-        selectedStartCalendar = Calendar.getInstance()
-        selectedEndCalendar = Calendar.getInstance().apply {
-            add(Calendar.HOUR, 1)
-        }
-
+        loadMeetingData()
         setupClickListeners()
         setupObservers()
+    }
+
+    private fun loadMeetingData() {
+        // Cargar datos de la reunión
+        binding.etTitle.setText(meeting.titulo)
+        binding.etDescription.setText(meeting.descripcion ?: "")
+
+        selectedProjectId = meeting.proyectoId
+
+        // Parsear fechas
+        try {
+            apiDateFormat.parse(meeting.fechaHora)?.let {
+                selectedStartCalendar.time = it
+                binding.etStartTime.setText(displayDateFormat.format(it))
+            }
+
+            meeting.fechaHoraFin?.let { fechaFin ->
+                apiDateFormat.parse(fechaFin)?.let {
+                    selectedEndCalendar.time = it
+                    binding.etEndTime.setText(displayDateFormat.format(it))
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        // Cargar participantes
+        meeting.participantes?.let { participantes ->
+            selectedParticipantIds = participantes.map { it.userId }.toMutableList()
+            selectedParticipantNames = participantes.map { it.nombre }.toMutableList()
+            binding.etParticipants.setText("${selectedParticipantIds.size} seleccionado(s)")
+        }
     }
 
     private fun setupClickListeners() {
         binding.btnCancel.setOnClickListener { dismiss() }
 
-        binding.btnCreate.setOnClickListener {
-            validateAndCreateMeeting()
+        binding.btnSave.setOnClickListener {
+            validateAndUpdateMeeting()
+        }
+
+        binding.btnDelete.setOnClickListener {
+            showDeleteConfirmation()
         }
 
         binding.etStartTime.setOnClickListener {
@@ -96,14 +147,15 @@ class CreateMeetingDialogFragment : DialogFragment() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
             projectsList = projects
 
-            if (projects.isEmpty()) {
-                Toast.makeText(context, "No hay proyectos disponibles", Toast.LENGTH_SHORT).show()
-                return@observe
-            }
-
             val projectNames = projects.map { it.nombre }
             val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, projectNames)
             binding.actvProject.setAdapter(adapter)
+
+            // Preseleccionar proyecto actual
+            val currentProject = projects.find { it.id == meeting.proyectoId }
+            currentProject?.let {
+                binding.actvProject.setText(it.nombre, false)
+            }
 
             binding.actvProject.setOnItemClickListener { parent, _, position, _ ->
                 selectedProjectId = projectsList[position].id
@@ -144,7 +196,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
                 set(year, month, dayOfMonth)
             }
 
-            // VALIDACIÓN: No permitir fechas pasadas
             if (selectedDate.before(Calendar.getInstance().apply {
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 0)
@@ -158,21 +209,18 @@ class CreateMeetingDialogFragment : DialogFragment() {
             TimePickerDialog(requireContext(), { _, hourOfDay, minute ->
                 calendar.set(year, month, dayOfMonth, hourOfDay, minute)
 
-                // VALIDACIÓN: Si es hoy, no permitir horas pasadas
                 val now = Calendar.getInstance()
                 if (isSameDay(calendar, now) && calendar.before(now)) {
                     Toast.makeText(context, "No puedes seleccionar horas pasadas", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
                 }
 
-                // VALIDACIÓN: Fecha de inicio y fin deben ser el mismo día
                 if (!isStart) {
                     if (!isSameDay(selectedStartCalendar, calendar)) {
                         Toast.makeText(context, "La reunión debe ser en el mismo día", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
                     }
 
-                    // VALIDACIÓN: Fecha fin debe ser después de inicio
                     if (calendar.before(selectedStartCalendar)) {
                         Toast.makeText(context, "La hora de fin debe ser posterior a la de inicio", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
@@ -182,7 +230,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
                 val selectedDateTime = displayDateFormat.format(calendar.time)
                 if (isStart) {
                     binding.etStartTime.setText(selectedDateTime)
-                    // Auto-ajustar fecha fin si es inválida
                     if (selectedEndCalendar.before(selectedStartCalendar) || !isSameDay(selectedStartCalendar, selectedEndCalendar)) {
                         selectedEndCalendar = selectedStartCalendar.clone() as Calendar
                         selectedEndCalendar.add(Calendar.HOUR, 1)
@@ -236,17 +283,12 @@ class CreateMeetingDialogFragment : DialogFragment() {
             .show()
     }
 
-    private fun validateAndCreateMeeting() {
-        val token = sessionManager.getToken()
-        if (token == null) {
-            Toast.makeText(context, "Error de sesión", Toast.LENGTH_SHORT).show()
-            return
-        }
+    private fun validateAndUpdateMeeting() {
+        val token = sessionManager.getToken() ?: return
 
         val title = binding.etTitle.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
 
-        // Validaciones
         if (title.isEmpty()) {
             binding.tilTitle.error = "El título es requerido"
             return
@@ -254,11 +296,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
 
         if (selectedProjectId == null) {
             Toast.makeText(context, "Debes seleccionar un proyecto", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (binding.etStartTime.text.toString().isEmpty()) {
-            Toast.makeText(context, "Debes seleccionar fecha y hora de inicio", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -274,15 +311,31 @@ class CreateMeetingDialogFragment : DialogFragment() {
             null
         }
 
-        viewModel.createMeeting(
+        viewModel.updateMeeting(
+            meetingId = meeting.id,
             token = token,
-            projectId = selectedProjectId,
+            projectId = selectedProjectId!!,
             title = title,
             description = description.ifEmpty { null },
             startTime = startTime,
             endTime = endTime,
             participantIds = selectedParticipantIds
         )
+    }
+
+    private fun showDeleteConfirmation() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Eliminar Reunión")
+            .setMessage("¿Estás seguro de eliminar la reunión '${meeting.titulo}'?")
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Eliminar") { _, _ ->
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.deleteMeeting(meeting.id, token)
+                    dismiss()
+                }
+            }
+            .show()
     }
 
     override fun onDestroyView() {

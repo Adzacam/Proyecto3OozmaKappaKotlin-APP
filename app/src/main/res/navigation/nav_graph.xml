@@ -151,13 +151,28 @@
         <action
                 android:id="@+id/action_calendarFragment_to_createMeetingDialogFragment"
                 app:destination="@id/createMeetingDialogFragment"/>
+        <action android:id="@+id/action_calendarFragment_to_EditMeetingDialogFragment"
+                app:destination="@id/EditMeetingDialogFragment"/>
     </fragment>
 
     <dialog
             android:id="@+id/createMeetingDialogFragment"
             android:name="com.example.develarqapp.ui.calendar.CreateMeetingDialogFragment"
             android:label="Programar Reunión"
-            tools:layout="@layout/dialog_create_meeting" />
+            tools:layout="@layout/dialog_create_meeting" >
+        <action android:id="@+id/action_createMeetingDialogFragment_to_calendarFragment"
+                app:destination="@id/calendarFragment"/>
+    </dialog>
+
+    <dialog
+            android:id="@+id/EditMeetingDialogFragment"
+            android:name="com.example.develarqapp.ui.calendar.EditMeetingDialogFragment"
+            android:label="Editar Reunión"
+            tools:layout="@layout/dialog_edit_meeting" >
+        <action android:id="@+id/action_EditMeetingDialogFragment_to_calendarFragment"
+                app:destination="@id/calendarFragment"/>
+    </dialog>
+
 
     <fragment
             android:id="@+id/documentsFragment"

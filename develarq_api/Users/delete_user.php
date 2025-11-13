@@ -23,7 +23,22 @@ if (empty($data->id)) {
 try {
     $database = new Database();
     $db = $database->getConnection();
-
+        $checkQuery = "SELECT COUNT(*) FROM projects 
+                   WHERE responsable_id = :id AND eliminado = 0";
+    
+    $checkStmt = $db->prepare($checkQuery);
+    $checkStmt->bindParam(':id', $data->id);
+    $checkStmt->execute();
+    $projectCount = $checkStmt->fetchColumn();
+    
+    if ($projectCount > 0) {
+        // ¡Bloqueamos la eliminación!
+        echo json_encode([
+            'success' => false,
+            'message' => 'No se puede eliminar: El usuario es responsable de ' . $projectCount . ' proyecto(s) activo(s).'
+        ]);
+        exit;
+    }
     // Soft delete: marcar como eliminado
     $query = "UPDATE users 
               SET eliminado = 1, 

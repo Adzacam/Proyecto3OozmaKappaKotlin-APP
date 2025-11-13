@@ -26,7 +26,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class CalendarFragment : Fragment() {
 
     private var _binding: FragmentCalendarBinding? = null
@@ -40,11 +39,11 @@ class CalendarFragment : Fragment() {
     private val headerDateFormat = SimpleDateFormat("d 'de' MMM", Locale("es"))
     private val fullDateFormat = SimpleDateFormat("EEEE d 'de' MMMM", Locale("es"))
 
-    private var currentViewMode = ViewMode.DAY
+    private var currentViewMode = ViewMode.MONTH
     private var currentDate = Calendar.getInstance()
 
     enum class ViewMode {
-        DAY, THREE_DAY, WEEK
+        DAY, WEEK, MONTH, AGENDA
     }
 
     // Adapter para WeekView
@@ -68,8 +67,7 @@ class CalendarFragment : Fragment() {
                     endCalendar.add(Calendar.HOUR, 1)
                 }
 
-                // Color basado en proyecto o estado
-                val backgroundColor = getColorForMeeting(item)
+                val backgroundColor = ContextCompat.getColor(requireContext(), R.color.primary_green)
 
                 WeekViewEntity.Event.Builder(item)
                     .setId(item.id)
@@ -100,17 +98,12 @@ class CalendarFragment : Fragment() {
         }
 
         override fun onEventClick(data: Meeting) {
-            showMeetingOptionsDialog(data)
+            showEditMeetingDialog(data)
         }
 
         override fun onEventLongClick(data: Meeting) {
-            showMeetingOptionsDialog(data)
+            showEditMeetingDialog(data)
         }
-    }
-
-    private fun getColorForMeeting(meeting: Meeting): Int {
-        // Puedes personalizar colores por proyecto
-        return ContextCompat.getColor(requireContext(), R.color.primary_green)
     }
 
     override fun onCreateView(
@@ -139,6 +132,7 @@ class CalendarFragment : Fragment() {
         setupObservers()
         loadInitialData()
         updateDateHeader()
+        setViewMode(ViewMode.MONTH) // Iniciar en vista de mes
     }
 
     private fun hasAccess(): Boolean {
@@ -158,7 +152,6 @@ class CalendarFragment : Fragment() {
             return
         }
 
-        android.util.Log.d("CalendarFragment", "Cargando datos con token: ${token.take(20)}...")
         viewModel.loadMeetings(token)
         viewModel.loadProjects(token)
         viewModel.loadUsers(token)
@@ -167,21 +160,18 @@ class CalendarFragment : Fragment() {
     private fun setupWeekView() {
         binding.weekView.apply {
             adapter = this@CalendarFragment.adapter
-            numberOfVisibleDays = 1 // Iniciar con vista de 1 día
+            numberOfVisibleDays = 7
             minHour = 8
             maxHour = 20
             headerTextColor = Color.WHITE
             headerBackgroundColor = "#1E293B".toColorInt()
             dayBackgroundColor = "#0F172A".toColorInt()
             todayBackgroundColor = "#1E293B".toColorInt()
-
-            // Scroll al día actual
             goToToday()
         }
     }
 
     private fun setupClickListeners() {
-        // FAB para crear nueva reunión
         binding.fabAddMeeting.setOnClickListener {
             val dialog = CreateMeetingDialogFragment()
             dialog.show(childFragmentManager, "CreateMeetingDialog")
@@ -212,17 +202,14 @@ class CalendarFragment : Fragment() {
         }
 
         binding.btnViewMonth.setOnClickListener {
-            // Vista de mes (puedes usar 7 días o implementar una vista personalizada)
-            setViewMode(ViewMode.WEEK)
-            Toast.makeText(context, "Vista de mes próximamente", Toast.LENGTH_SHORT).show()
+            setViewMode(ViewMode.MONTH)
         }
 
         binding.btnViewAgenda.setOnClickListener {
-            // Mostrar lista de reuniones
-            showAgendaView()
+            setViewMode(ViewMode.AGENDA)
         }
 
-        // Botones de filtro de tiempo
+        // Filtros de tiempo
         binding.btnFilterAll.setOnClickListener {
             viewModel.setTimeFilter(CalendarViewModel.MeetingFilter.ALL)
             updateFilterButtonUI(it)
@@ -242,8 +229,9 @@ class CalendarFragment : Fragment() {
     private fun navigateDate(days: Int) {
         when (currentViewMode) {
             ViewMode.DAY -> currentDate.add(Calendar.DAY_OF_MONTH, days)
-            ViewMode.THREE_DAY -> currentDate.add(Calendar.DAY_OF_MONTH, days * 3)
             ViewMode.WEEK -> currentDate.add(Calendar.WEEK_OF_YEAR, days)
+            ViewMode.MONTH -> currentDate.add(Calendar.MONTH, days)
+            ViewMode.AGENDA -> currentDate.add(Calendar.DAY_OF_MONTH, days)
         }
         binding.weekView.goToDate(currentDate)
         updateDateHeader()
@@ -257,13 +245,18 @@ class CalendarFragment : Fragment() {
                 binding.weekView.numberOfVisibleDays = 1
                 updateViewButtonUI(binding.btnViewDay)
             }
-            ViewMode.THREE_DAY -> {
-                binding.weekView.numberOfVisibleDays = 3
-                updateViewButtonUI(binding.btnViewWeek)
-            }
             ViewMode.WEEK -> {
                 binding.weekView.numberOfVisibleDays = 7
                 updateViewButtonUI(binding.btnViewWeek)
+            }
+            ViewMode.MONTH -> {
+                binding.weekView.numberOfVisibleDays = 7
+                updateViewButtonUI(binding.btnViewMonth)
+            }
+            ViewMode.AGENDA -> {
+                showAgendaView()
+                updateViewButtonUI(binding.btnViewAgenda)
+                return
             }
         }
 
@@ -277,19 +270,19 @@ class CalendarFragment : Fragment() {
             ViewMode.DAY -> {
                 binding.tvCurrentDate.text = fullDateFormat.format(calendar.time).capitalize()
             }
-            ViewMode.THREE_DAY -> {
-                val startDate = calendar.time
-                calendar.add(Calendar.DAY_OF_MONTH, 2)
-                val endDate = calendar.time
-                binding.tvCurrentDate.text = "${headerDateFormat.format(startDate)} - ${headerDateFormat.format(endDate)}"
-            }
             ViewMode.WEEK -> {
-                // Obtener inicio y fin de semana
                 calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
                 val startDate = calendar.time
                 calendar.add(Calendar.DAY_OF_MONTH, 6)
                 val endDate = calendar.time
                 binding.tvCurrentDate.text = "${headerDateFormat.format(startDate)} - ${headerDateFormat.format(endDate)}"
+            }
+            ViewMode.MONTH -> {
+                val monthFormat = SimpleDateFormat("MMMM yyyy", Locale("es"))
+                binding.tvCurrentDate.text = monthFormat.format(calendar.time).capitalize()
+            }
+            ViewMode.AGENDA -> {
+                binding.tvCurrentDate.text = "Agenda"
             }
         }
     }
@@ -320,21 +313,17 @@ class CalendarFragment : Fragment() {
 
         // Proyectos para spinner
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
-            android.util.Log.d("CalendarFragment", "Proyectos recibidos: ${projects.size}")
-            if (projects.isEmpty()) {
-                android.util.Log.w("CalendarFragment", "No hay proyectos disponibles")
-                return@observe
-            }
+            if (projects.isEmpty()) return@observe
 
             val projectNames = mutableListOf("Todos los proyectos")
             projectNames.addAll(projects.map { it.nombre })
 
             val adapter = ArrayAdapter(
                 requireContext(),
-                R.drawable.spinner_item_white,
+                android.R.layout.simple_spinner_item,
                 projectNames
             )
-            adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerProjects.adapter = adapter
 
             binding.spinnerProjects.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -347,19 +336,17 @@ class CalendarFragment : Fragment() {
 
         // Usuarios para spinner
         viewModel.users.observe(viewLifecycleOwner) { users ->
-            if (users.isEmpty()) {
-                return@observe
-            }
+            if (users.isEmpty()) return@observe
 
             val userNames = mutableListOf("Todos los participantes")
             userNames.addAll(users.map { it.fullName })
 
             val adapter = ArrayAdapter(
                 requireContext(),
-                R.drawable.spinner_item_white,
+                android.R.layout.simple_spinner_item,
                 userNames
             )
-            adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerParticipants.adapter = adapter
 
             binding.spinnerParticipants.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -380,60 +367,9 @@ class CalendarFragment : Fragment() {
         adapter.submitList(meetings)
     }
 
-    private fun showMeetingOptionsDialog(meeting: Meeting) {
-        val options = arrayOf("Ver Detalles", "Eliminar")
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(meeting.titulo)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showMeetingDetails(meeting)
-                    1 -> showDeleteConfirmation(meeting)
-                }
-            }
-            .show()
-    }
-
-    private fun showMeetingDetails(meeting: Meeting) {
-        val details = buildString {
-            append("Proyecto: ${meeting.proyectoNombre ?: "N/A"}\n\n")
-            append("Fecha: ${formatDateTime(meeting.fechaHora)}\n\n")
-            if (!meeting.fechaHoraFin.isNullOrEmpty()) {
-                append("Fecha fin: ${formatDateTime(meeting.fechaHoraFin)}\n\n")
-            }
-            if (!meeting.descripcion.isNullOrEmpty()) {
-                append("Descripción: ${meeting.descripcion}\n\n")
-            }
-            if (!meeting.participantes.isNullOrEmpty()) {
-                append("Participantes:\n")
-                meeting.participantes.forEach {
-                    append("• ${it.nombre}\n")
-                }
-            }
-        }
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(meeting.titulo)
-            .setMessage(details)
-            .setPositiveButton("Cerrar", null)
-            .show()
-    }
-
-    private fun showDeleteConfirmation(meeting: Meeting) {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Eliminar Reunión")
-            .setMessage("¿Estás seguro de eliminar la reunión '${meeting.titulo}'?")
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Eliminar") { _, _ ->
-                val token = sessionManager.getToken()
-                if (token != null) {
-                    viewModel.deleteMeeting(meeting.id, token)
-                    viewModel.loadMeetings(token)
-                } else {
-                    Toast.makeText(context, "Error de sesión", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .show()
+    private fun showEditMeetingDialog(meeting: Meeting) {
+        val dialog = EditMeetingDialogFragment.newInstance(meeting)
+        dialog.show(childFragmentManager, "EditMeetingDialog")
     }
 
     private fun updateFilterButtonUI(clickedButton: View) {
@@ -457,16 +393,6 @@ class CalendarFragment : Fragment() {
         binding.btnViewAgenda.backgroundTintList = inactiveColor
 
         clickedButton.backgroundTintList = activeColor
-    }
-
-    private fun formatDateTime(dateTimeStr: String): String {
-        return try {
-            val date = apiFormat.parse(dateTimeStr)
-            val displayFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-            date?.let { displayFormat.format(it) } ?: dateTimeStr
-        } catch (e: Exception) {
-            dateTimeStr
-        }
     }
 
     override fun onDestroyView() {

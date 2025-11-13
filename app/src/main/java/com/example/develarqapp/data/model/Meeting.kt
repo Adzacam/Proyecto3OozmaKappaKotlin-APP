@@ -2,6 +2,7 @@ package com.example.develarqapp.data.model
 
 import com.example.develarqapp.data.model.Project
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Meeting(
     @SerializedName("id")
@@ -33,7 +34,7 @@ data class Meeting(
 
     @SerializedName("eliminado")
     val eliminado: Int = 0
-)
+): Serializable
 
 data class MeetingParticipant(
     @SerializedName("id")
