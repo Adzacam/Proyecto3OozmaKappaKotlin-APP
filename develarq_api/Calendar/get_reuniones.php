@@ -14,6 +14,8 @@ if (!isset($headers['Authorization'])) {
 }
 
 try {
+    // ✅ CORRECCIÓN: Instanciar la clase Database
+    $database = new Database();
     $pdo = $database->getConnection();
     
     // Obtener todas las reuniones no eliminadas con información del proyecto

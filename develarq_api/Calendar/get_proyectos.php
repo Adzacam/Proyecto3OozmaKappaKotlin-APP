@@ -14,6 +14,7 @@ if (!isset($headers['Authorization'])) {
 }
 
 try {
+    $database = new Database();
     $pdo = $database->getConnection();
     
     // Obtener todos los proyectos activos

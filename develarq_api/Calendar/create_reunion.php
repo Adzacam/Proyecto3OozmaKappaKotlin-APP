@@ -4,6 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
+// SOLO importamos database.php. La línea de config_urls.php HA SIDO ELIMINADA.
 require_once '../db_config/database.php';
 
 // Verificar autenticación
@@ -53,59 +54,60 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $fecha_hora)) {
 }
 
 try {
+    $database = new Database();
     $pdo = $database->getConnection();
     $pdo->beginTransaction();
-    
+
     // Verificar que el proyecto existe
     $proyectoQuery = "SELECT id, nombre FROM proyectos WHERE id = :id AND eliminado = 0";
     $stmt = $pdo->prepare($proyectoQuery);
     $stmt->execute(['id' => $data['proyecto_id']]);
     $proyecto = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$proyecto) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Proyecto no encontrado']);
         exit;
     }
-    
+
     // Verificar que todos los participantes existen
     $placeholders = str_repeat('?,', count($data['participantes']) - 1) . '?';
     $userQuery = "SELECT id FROM users WHERE id IN ($placeholders) AND eliminado = 0";
     $stmt = $pdo->prepare($userQuery);
     $stmt->execute($data['participantes']);
     $validUsers = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
+
     if (count($validUsers) !== count($data['participantes'])) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Algunos participantes no son válidos']);
         exit;
     }
-    
+
     // Insertar reunión
     $insertQuery = "
         INSERT INTO reuniones (
-            proyecto_id, 
-            titulo, 
-            descripcion, 
-            fecha_hora, 
-            fecha_hora_fin, 
+            proyecto_id,
+            titulo,
+            descripcion,
+            fecha_hora,
+            fecha_hora_fin,
             creador_id,
             eliminado,
             created_at,
             updated_at
         ) VALUES (
-            :proyecto_id, 
-            :titulo, 
-            :descripcion, 
-            :fecha_hora, 
-            :fecha_hora_fin, 
+            :proyecto_id,
+            :titulo,
+            :descripcion,
+            :fecha_hora,
+            :fecha_hora_fin,
             NULL,
             0,
             NOW(),
             NOW()
         )
     ";
-    
+
     $stmt = $pdo->prepare($insertQuery);
     $stmt->execute([
         'proyecto_id' => $data['proyecto_id'],
@@ -114,26 +116,26 @@ try {
         'fecha_hora' => $fecha_hora,
         'fecha_hora_fin' => $fecha_hora_fin
     ]);
-    
+
     $reunion_id = $pdo->lastInsertId();
-    
+
     // Insertar participantes
     $participantesQuery = "
-        INSERT INTO reuniones_usuarios (reunion_id, user_id, asistio, eliminado, created_at, updated_at) 
+        INSERT INTO reuniones_usuarios (reunion_id, user_id, asistio, eliminado, created_at, updated_at)
         VALUES (:reunion_id, :user_id, 0, 0, NOW(), NOW())
     ";
     $stmtParticipantes = $pdo->prepare($participantesQuery);
-    
+
     foreach ($data['participantes'] as $user_id) {
         $stmtParticipantes->execute([
             'reunion_id' => $reunion_id,
             'user_id' => $user_id
         ]);
     }
-    
-    // Obtener la reunión creada con toda su información
+
+    // Obtener la reunión creada
     $selectQuery = "
-        SELECT 
+        SELECT
             r.id,
             r.proyecto_id,
             p.nombre as proyecto_nombre,
@@ -147,14 +149,14 @@ try {
         LEFT JOIN proyectos p ON r.proyecto_id = p.id
         WHERE r.id = :reunion_id
     ";
-    
+
     $stmt = $pdo->prepare($selectQuery);
     $stmt->execute(['reunion_id' => $reunion_id]);
     $reunion = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // Obtener participantes
     $participantesQuery = "
-        SELECT 
+        SELECT
             ru.id,
             ru.user_id,
             CONCAT(u.name, ' ', u.apellido) as nombre,
@@ -164,32 +166,33 @@ try {
         WHERE ru.reunion_id = :reunion_id
         AND ru.eliminado = 0
     ";
-    
+
     $stmt = $pdo->prepare($participantesQuery);
     $stmt->execute(['reunion_id' => $reunion_id]);
     $reunion['participantes'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // ===== NOTIFICACIONES =====
-    // Obtener todos los usuarios del proyecto para notificar
     $usuariosProyectoQuery = "
-        SELECT DISTINCT user_id 
-        FROM proyectos_usuarios 
-        WHERE proyecto_id = :proyecto_id 
+        SELECT DISTINCT user_id
+        FROM proyectos_usuarios
+        WHERE proyecto_id = :proyecto_id
         AND eliminado = 0
     ";
     $stmt = $pdo->prepare($usuariosProyectoQuery);
     $stmt->execute(['proyecto_id' => $data['proyecto_id']]);
     $usuariosProyecto = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
-    // Combinar participantes y usuarios del proyecto (sin duplicados)
+
     $usuariosNotificar = array_unique(array_merge($data['participantes'], $usuariosProyecto));
-    
+
+    // URL es null para evitar errores
+    $url = null;
+
     $notificacionQuery = "
         INSERT INTO notificaciones (
-            user_id, 
-            mensaje, 
-            tipo, 
-            asunto, 
+            user_id,
+            mensaje,
+            tipo,
+            asunto,
             url,
             leida,
             eliminado,
@@ -197,10 +200,10 @@ try {
             created_at,
             updated_at
         ) VALUES (
-            :user_id, 
-            :mensaje, 
-            'reunion', 
-            'Nueva reunión programada', 
+            :user_id,
+            :mensaje,
+            'reunion',
+            'Nueva reunión programada',
             :url,
             0,
             0,
@@ -209,12 +212,11 @@ try {
             NOW()
         )
     ";
-    
+
     $stmtNotificacion = $pdo->prepare($notificacionQuery);
-    
+
     foreach ($usuariosNotificar as $user_id) {
         $mensaje = "Se ha programado una nueva reunión: '{$data['titulo']}' del proyecto '{$proyecto['nombre']}'.";
-        $url = "http://127.0.0.1:8000/proyectos/{$data['proyecto_id']}";
         
         $stmtNotificacion->execute([
             'user_id' => $user_id,

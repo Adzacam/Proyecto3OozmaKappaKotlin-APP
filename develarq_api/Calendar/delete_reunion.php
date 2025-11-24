@@ -22,12 +22,13 @@ if ($reunion_id <= 0) {
 }
 
 try {
+    $database = new Database();
     $pdo = $database->getConnection();
     $pdo->beginTransaction();
-    
+
     // Verificar que la reunión existe y obtener información
     $checkQuery = "
-        SELECT r.id, r.titulo, r.proyecto_id, p.nombre as proyecto_nombre 
+        SELECT r.id, r.titulo, r.proyecto_id, p.nombre as proyecto_nombre
         FROM reuniones r
         LEFT JOIN proyectos p ON r.proyecto_id = p.id
         WHERE r.id = :id AND r.eliminado = 0
@@ -35,47 +36,50 @@ try {
     $stmt = $pdo->prepare($checkQuery);
     $stmt->execute(['id' => $reunion_id]);
     $reunion = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$reunion) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Reunión no encontrada o ya eliminada']);
         exit;
     }
-    
+
     // Obtener participantes antes de eliminar para notificar
     $participantesQuery = "
-        SELECT user_id 
-        FROM reuniones_usuarios 
-        WHERE reunion_id = :reunion_id 
+        SELECT user_id
+        FROM reuniones_usuarios
+        WHERE reunion_id = :reunion_id
         AND eliminado = 0
     ";
     $stmt = $pdo->prepare($participantesQuery);
     $stmt->execute(['reunion_id' => $reunion_id]);
     $participantes = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
+
     // Marcar reunión como eliminada (soft delete)
     $deleteQuery = "UPDATE reuniones SET eliminado = 1, updated_at = NOW() WHERE id = :id";
     $stmt = $pdo->prepare($deleteQuery);
     $stmt->execute(['id' => $reunion_id]);
-    
+
     // También marcar participantes como eliminados
     $deleteParticipantesQuery = "
-        UPDATE reuniones_usuarios 
-        SET eliminado = 1, updated_at = NOW() 
+        UPDATE reuniones_usuarios
+        SET eliminado = 1, updated_at = NOW()
         WHERE reunion_id = :reunion_id
     ";
     $stmt = $pdo->prepare($deleteParticipantesQuery);
     $stmt->execute(['reunion_id' => $reunion_id]);
-    
+
     // ===== NOTIFICACIONES =====
     // Notificar a los participantes sobre la cancelación
     if (!empty($participantes)) {
+
+        $url = null; // URL eliminada
+
         $notificacionQuery = "
             INSERT INTO notificaciones (
-                user_id, 
-                mensaje, 
-                tipo, 
-                asunto, 
+                user_id,
+                mensaje,
+                tipo,
+                asunto,
                 url,
                 leida,
                 eliminado,
@@ -83,10 +87,10 @@ try {
                 created_at,
                 updated_at
             ) VALUES (
-                :user_id, 
-                :mensaje, 
-                'reunion', 
-                'Reunión cancelada', 
+                :user_id,
+                :mensaje,
+                'reunion',
+                'Reunión cancelada',
                 :url,
                 0,
                 0,
@@ -95,12 +99,11 @@ try {
                 NOW()
             )
         ";
-        
+
         $stmtNotificacion = $pdo->prepare($notificacionQuery);
-        
+
         foreach ($participantes as $user_id) {
             $mensaje = "La reunión '{$reunion['titulo']}' del proyecto '{$reunion['proyecto_nombre']}' ha sido cancelada.";
-            $url = "http://127.0.0.1:8000/proyectos/{$reunion['proyecto_id']}";
             
             $stmtNotificacion->execute([
                 'user_id' => $user_id,
