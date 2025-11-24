@@ -1,78 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardBackgroundColor="#1E293B"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#0F172A"
+        android:padding="16dp">
 
+    <!-- Header -->
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
-        <!-- Header -->
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:background="#0F172A">
-
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Vista de Agenda"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-
-            <Button
-                    android:id="@+id/btnClose"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:text="✕"
-                    android:textSize="18sp"
-                    android:backgroundTint="#334155"
-                    android:textColor="#FFFFFF"
-                    app:cornerRadius="18dp"/>
-        </LinearLayout>
-
-        <!-- Lista de reuniones -->
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewAgenda"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxHeight="500dp"
-                android:padding="8dp"
-                android:clipToPadding="false"/>
-
-        <!-- Mensaje cuando no hay reuniones -->
         <TextView
-                android:id="@+id/tvNoMeetings"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:text="No hay reuniones programadas"
-                android:textColor="#94A3B8"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:visibility="gone"/>
-
-        <!-- Progress Bar -->
-        <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="32dp"
-                android:indeterminateTint="#B8FF3C"
-                android:visibility="gone"/>
+                android:layout_weight="1"
+                android:text="Agenda de Reuniones"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
+        <ImageButton
+                android:id="@+id/btnClose"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:tint="#FFFFFF"
+                android:contentDescription="Cerrar" />
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewAgenda"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    <!-- No meetings message -->
+    <TextView
+            android:id="@+id/tvNoMeetings"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="No hay reuniones programadas"
+            android:textColor="#94A3B8"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+    <!-- Progress Bar -->
+    <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:indeterminateTint="#B8FF3C" />
+</LinearLayout>

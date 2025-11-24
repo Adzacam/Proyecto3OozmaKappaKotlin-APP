@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import com.example.develarqapp.utils.SessionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.develarqapp.R
 
 class EditMeetingDialogFragment : DialogFragment() {
 
@@ -44,6 +46,8 @@ class EditMeetingDialogFragment : DialogFragment() {
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
+    private val TAG = "EditMeetingDialog"
+
     companion object {
         private const val ARG_MEETING = "meeting"
 
@@ -59,6 +63,7 @@ class EditMeetingDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         meeting = arguments?.getSerializable(ARG_MEETING) as Meeting
+        Log.d(TAG, "📝 Editando reunión: ${meeting.titulo}")
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -82,40 +87,72 @@ class EditMeetingDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // ✅ Cargar datos de la reunión primero
         loadMeetingData()
+
         setupClickListeners()
         setupObservers()
+
+        val token = sessionManager.getToken()
+        if (token != null) {
+            // ✅ Forzar recarga si las listas están vacías
+            if (viewModel.projects.value.isNullOrEmpty()) {
+                Log.d(TAG, "🔄 Recargando proyectos...")
+                viewModel.loadProjects(token)
+            } else {
+                // Si ya hay proyectos, configurar el dropdown inmediatamente
+                setupProjectDropdown(viewModel.projects.value ?: emptyList())
+            }
+
+            if (viewModel.users.value.isNullOrEmpty()) {
+                Log.d(TAG, "🔄 Recargando usuarios...")
+                viewModel.loadUsers(token)
+            } else {
+                usersList = viewModel.users.value ?: emptyList()
+            }
+        }
     }
 
     private fun loadMeetingData() {
-        // Cargar datos de la reunión
+        Log.d(TAG, "📋 Cargando datos de la reunión...")
+
+        // ✅ Cargar título
         binding.etTitle.setText(meeting.titulo)
+        Log.d(TAG, "  Título: ${meeting.titulo}")
+
+        // ✅ Cargar descripción
         binding.etDescription.setText(meeting.descripcion ?: "")
+        Log.d(TAG, "  Descripción: ${meeting.descripcion}")
 
+        // ✅ Guardar proyecto seleccionado
         selectedProjectId = meeting.proyectoId
+        Log.d(TAG, "  Proyecto ID: $selectedProjectId")
 
-        // Parsear fechas
+        // ✅ Parsear y mostrar fechas
         try {
-            apiDateFormat.parse(meeting.fechaHora)?.let {
-                selectedStartCalendar.time = it
-                binding.etStartTime.setText(displayDateFormat.format(it))
+            apiDateFormat.parse(meeting.fechaHora)?.let { startDate ->
+                selectedStartCalendar.time = startDate
+                binding.etStartTime.setText(displayDateFormat.format(startDate))
+                Log.d(TAG, "  Fecha inicio: ${displayDateFormat.format(startDate)}")
             }
 
             meeting.fechaHoraFin?.let { fechaFin ->
-                apiDateFormat.parse(fechaFin)?.let {
-                    selectedEndCalendar.time = it
-                    binding.etEndTime.setText(displayDateFormat.format(it))
+                apiDateFormat.parse(fechaFin)?.let { endDate ->
+                    selectedEndCalendar.time = endDate
+                    binding.etEndTime.setText(displayDateFormat.format(endDate))
+                    Log.d(TAG, "  Fecha fin: ${displayDateFormat.format(endDate)}")
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "❌ Error parseando fechas", e)
         }
 
-        // Cargar participantes
+        // ✅ Cargar participantes
         meeting.participantes?.let { participantes ->
             selectedParticipantIds = participantes.map { it.userId }.toMutableList()
             selectedParticipantNames = participantes.map { it.nombre }.toMutableList()
             binding.etParticipants.setText("${selectedParticipantIds.size} seleccionado(s)")
+            Log.d(TAG, "  Participantes: ${selectedParticipantIds.size}")
         }
     }
 
@@ -145,25 +182,12 @@ class EditMeetingDialogFragment : DialogFragment() {
 
     private fun setupObservers() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
-            projectsList = projects
-
-            val projectNames = projects.map { it.nombre }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, projectNames)
-            binding.actvProject.setAdapter(adapter)
-
-            // Preseleccionar proyecto actual
-            val currentProject = projects.find { it.id == meeting.proyectoId }
-            currentProject?.let {
-                binding.actvProject.setText(it.nombre, false)
-            }
-
-            binding.actvProject.setOnItemClickListener { parent, _, position, _ ->
-                selectedProjectId = projectsList[position].id
-                binding.actvProject.setText(projectsList[position].nombre, false)
-            }
+            Log.d(TAG, "📋 Proyectos recibidos: ${projects.size}")
+            setupProjectDropdown(projects)
         }
 
         viewModel.users.observe(viewLifecycleOwner) { users ->
+            Log.d(TAG, "👥 Usuarios recibidos: ${users.size}")
             usersList = users
         }
 
@@ -187,6 +211,47 @@ class EditMeetingDialogFragment : DialogFragment() {
         }
     }
 
+    private fun setupProjectDropdown(projects: List<Project>) {
+        if (projects.isEmpty()) {
+            Log.w(TAG, "⚠️ Lista de proyectos vacía")
+            return
+        }
+
+        projectsList = projects
+
+        val projectNames = projects.map { it.nombre }
+        Log.d(TAG, "🎨 Configurando dropdown con proyectos: $projectNames")
+
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_white, projectNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.actvProject.setAdapter(adapter)
+        binding.actvProject.threshold = 1000
+
+        // ✅ Preseleccionar el proyecto actual
+        val currentProject = projects.find { it.id == meeting.proyectoId }
+        currentProject?.let {
+            Log.d(TAG, "✅ Preseleccionando proyecto: ${it.nombre}")
+            binding.actvProject.setText(it.nombre, false)
+            selectedProjectId = it.id
+        }
+
+        // ✅ Configurar listeners
+        binding.actvProject.setOnClickListener {
+            binding.actvProject.showDropDown()
+        }
+
+        binding.actvProject.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && projectsList.isNotEmpty()) {
+                binding.actvProject.showDropDown()
+            }
+        }
+
+        binding.actvProject.setOnItemClickListener { _, _, position, _ ->
+            selectedProjectId = projectsList[position].id
+            Log.d(TAG, "✅ Proyecto seleccionado: ${projectsList[position].nombre}")
+        }
+    }
+
     private fun showDateTimePicker(isStart: Boolean) {
         val calendar = if (isStart) selectedStartCalendar else selectedEndCalendar
         val today = Calendar.getInstance()
@@ -196,20 +261,23 @@ class EditMeetingDialogFragment : DialogFragment() {
                 set(year, month, dayOfMonth)
             }
 
-            if (selectedDate.before(Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                })) {
+            val todayStart = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            if (selectedDate.before(todayStart)) {
                 Toast.makeText(context, "No puedes seleccionar fechas pasadas", Toast.LENGTH_SHORT).show()
                 return@DatePickerDialog
             }
 
             TimePickerDialog(requireContext(), { _, hourOfDay, minute ->
-                calendar.set(year, month, dayOfMonth, hourOfDay, minute)
+                calendar.set(year, month, dayOfMonth, hourOfDay, minute, 0)
 
                 val now = Calendar.getInstance()
+
                 if (isSameDay(calendar, now) && calendar.before(now)) {
                     Toast.makeText(context, "No puedes seleccionar horas pasadas", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
@@ -221,7 +289,7 @@ class EditMeetingDialogFragment : DialogFragment() {
                         return@TimePickerDialog
                     }
 
-                    if (calendar.before(selectedStartCalendar)) {
+                    if (calendar.timeInMillis <= selectedStartCalendar.timeInMillis) {
                         Toast.makeText(context, "La hora de fin debe ser posterior a la de inicio", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
                     }
@@ -230,13 +298,17 @@ class EditMeetingDialogFragment : DialogFragment() {
                 val selectedDateTime = displayDateFormat.format(calendar.time)
                 if (isStart) {
                     binding.etStartTime.setText(selectedDateTime)
-                    if (selectedEndCalendar.before(selectedStartCalendar) || !isSameDay(selectedStartCalendar, selectedEndCalendar)) {
+                    binding.tilStartTime.error = null
+
+                    if (selectedEndCalendar.timeInMillis <= selectedStartCalendar.timeInMillis ||
+                        !isSameDay(selectedStartCalendar, selectedEndCalendar)) {
                         selectedEndCalendar = selectedStartCalendar.clone() as Calendar
                         selectedEndCalendar.add(Calendar.HOUR, 1)
                         binding.etEndTime.setText(displayDateFormat.format(selectedEndCalendar.time))
                     }
                 } else {
                     binding.etEndTime.setText(selectedDateTime)
+                    binding.tilEndTime.error = null
                 }
 
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
@@ -277,6 +349,7 @@ class EditMeetingDialogFragment : DialogFragment() {
             }
             .setPositiveButton("Aceptar") { dialog, _ ->
                 binding.etParticipants.setText("${selectedParticipantIds.size} seleccionado(s)")
+                binding.tilParticipants.error = null
                 dialog.dismiss()
             }
             .setNegativeButton("Cancelar", null)
@@ -286,23 +359,44 @@ class EditMeetingDialogFragment : DialogFragment() {
     private fun validateAndUpdateMeeting() {
         val token = sessionManager.getToken() ?: return
 
+        binding.tilTitle.error = null
+        binding.tilProject.error = null
+        binding.tilStartTime.error = null
+        binding.tilParticipants.error = null
+
         val title = binding.etTitle.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
 
+        var hasError = false
+
         if (title.isEmpty()) {
             binding.tilTitle.error = "El título es requerido"
-            return
+            hasError = true
         }
 
         if (selectedProjectId == null) {
-            Toast.makeText(context, "Debes seleccionar un proyecto", Toast.LENGTH_SHORT).show()
-            return
+            binding.tilProject.error = "Debes seleccionar un proyecto"
+            hasError = true
         }
 
         if (selectedParticipantIds.isEmpty()) {
-            Toast.makeText(context, "Debes seleccionar al menos un participante", Toast.LENGTH_SHORT).show()
-            return
+            binding.tilParticipants.error = "Debes seleccionar al menos un participante"
+            hasError = true
         }
+
+        if (binding.etEndTime.text.toString().isNotEmpty()) {
+            if (!isSameDay(selectedStartCalendar, selectedEndCalendar)) {
+                Toast.makeText(context, "La reunión debe ser en el mismo día", Toast.LENGTH_SHORT).show()
+                hasError = true
+            }
+
+            if (selectedEndCalendar.timeInMillis <= selectedStartCalendar.timeInMillis) {
+                Toast.makeText(context, "La hora de fin debe ser posterior a la de inicio", Toast.LENGTH_SHORT).show()
+                hasError = true
+            }
+        }
+
+        if (hasError) return
 
         val startTime = apiDateFormat.format(selectedStartCalendar.time)
         val endTime = if (binding.etEndTime.text.toString().isNotEmpty()) {

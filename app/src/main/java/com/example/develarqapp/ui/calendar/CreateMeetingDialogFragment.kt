@@ -20,6 +20,7 @@ import com.example.develarqapp.databinding.DialogCreateMeetingBinding
 import com.example.develarqapp.utils.SessionManager
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.develarqapp.R
 
 class CreateMeetingDialogFragment : DialogFragment() {
 
@@ -62,10 +63,11 @@ class CreateMeetingDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inicializar con fecha actual
-        selectedStartCalendar = Calendar.getInstance()
-        selectedEndCalendar = Calendar.getInstance().apply {
-            add(Calendar.HOUR, 1)
+        // Forzar carga si las listas están vacías en el ViewModel compartido
+        val token = sessionManager.getToken()
+        if (token != null) {
+            if (viewModel.projects.value.isNullOrEmpty()) viewModel.loadProjects(token)
+            if (viewModel.users.value.isNullOrEmpty()) viewModel.loadUsers(token)
         }
 
         setupClickListeners()
@@ -94,25 +96,69 @@ class CreateMeetingDialogFragment : DialogFragment() {
 
     private fun setupObservers() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
+            android.util.Log.d("CreateMeetingDialog", "📋 Proyectos recibidos en diálogo: ${projects.size}")
             projectsList = projects
 
             if (projects.isEmpty()) {
+                android.util.Log.w("CreateMeetingDialog", "⚠️ Lista de proyectos VACÍA")
                 Toast.makeText(context, "No hay proyectos disponibles", Toast.LENGTH_SHORT).show()
                 return@observe
             }
 
-            val projectNames = projects.map { it.nombre }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, projectNames)
-            binding.actvProject.setAdapter(adapter)
+            projects.forEachIndexed { index, project ->
+                android.util.Log.d("CreateMeetingDialog", "  [$index] ID: ${project.id}, Nombre: ${project.nombre}")
+            }
 
+            val projectNames = projects.map { it.nombre }
+
+            android.util.Log.d("CreateMeetingDialog", "🎨 Configurando AutoCompleteTextView con: $projectNames")
+            val adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.spinner_item_white, // <--- CAMBIO IMPORTANTE AQUÍ
+                projectNames
+            )
+            // Asegurar que el dropdown también use el layout correcto o uno legible
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+            binding.actvProject.setAdapter(adapter)
+            // ✅ IMPORTANTE: Habilitar que se muestre el dropdown
+            binding.actvProject.threshold = 0
+
+            // ✅ Mostrar dropdown al ganar foco
+            binding.actvProject.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus && projectsList.isNotEmpty()) {
+                    binding.actvProject.showDropDown()
+                }
+            }
+
+            // ✅ Mostrar dropdown al hacer click
+            binding.actvProject.setOnClickListener {
+                if (projectsList.isNotEmpty()) {
+                    binding.actvProject.showDropDown()
+                }
+            }
+
+            // ✅ Manejar selección de proyecto
             binding.actvProject.setOnItemClickListener { parent, _, position, _ ->
                 selectedProjectId = projectsList[position].id
                 binding.actvProject.setText(projectsList[position].nombre, false)
+                // Limpiar error si existía
+                binding.tilProject.error = null
             }
         }
 
         viewModel.users.observe(viewLifecycleOwner) { users ->
+            android.util.Log.d("CreateMeetingDialog", "👥 Usuarios recibidos en diálogo: ${users.size}")
             usersList = users
+
+            if (users.isEmpty()) {
+                android.util.Log.w("CreateMeetingDialog", "⚠️ Lista de usuarios VACÍA")
+                Toast.makeText(context, "No hay usuarios disponibles", Toast.LENGTH_SHORT).show()
+            } else {
+                users.forEachIndexed { index, user ->
+                    android.util.Log.d("CreateMeetingDialog", "  [$index] ID: ${user.id}, Nombre: ${user.fullName}")
+                }
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -145,35 +191,38 @@ class CreateMeetingDialogFragment : DialogFragment() {
             }
 
             // VALIDACIÓN: No permitir fechas pasadas
-            if (selectedDate.before(Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                })) {
+            val todayStart = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            if (selectedDate.before(todayStart)) {
                 Toast.makeText(context, "No puedes seleccionar fechas pasadas", Toast.LENGTH_SHORT).show()
                 return@DatePickerDialog
             }
 
             TimePickerDialog(requireContext(), { _, hourOfDay, minute ->
-                calendar.set(year, month, dayOfMonth, hourOfDay, minute)
+                calendar.set(year, month, dayOfMonth, hourOfDay, minute, 0)
+
+                val now = Calendar.getInstance()
 
                 // VALIDACIÓN: Si es hoy, no permitir horas pasadas
-                val now = Calendar.getInstance()
                 if (isSameDay(calendar, now) && calendar.before(now)) {
                     Toast.makeText(context, "No puedes seleccionar horas pasadas", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
                 }
 
-                // VALIDACIÓN: Fecha de inicio y fin deben ser el mismo día
+                // ✅ VALIDACIÓN: Fecha de inicio y fin deben ser el mismo día
                 if (!isStart) {
                     if (!isSameDay(selectedStartCalendar, calendar)) {
                         Toast.makeText(context, "La reunión debe ser en el mismo día", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
                     }
 
-                    // VALIDACIÓN: Fecha fin debe ser después de inicio
-                    if (calendar.before(selectedStartCalendar)) {
+                    // ✅ VALIDACIÓN: Fecha fin debe ser después de inicio
+                    if (calendar.timeInMillis <= selectedStartCalendar.timeInMillis) {
                         Toast.makeText(context, "La hora de fin debe ser posterior a la de inicio", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
                     }
@@ -182,14 +231,18 @@ class CreateMeetingDialogFragment : DialogFragment() {
                 val selectedDateTime = displayDateFormat.format(calendar.time)
                 if (isStart) {
                     binding.etStartTime.setText(selectedDateTime)
-                    // Auto-ajustar fecha fin si es inválida
-                    if (selectedEndCalendar.before(selectedStartCalendar) || !isSameDay(selectedStartCalendar, selectedEndCalendar)) {
+                    binding.tilStartTime.error = null
+
+                    // ✅ Auto-ajustar fecha fin si es inválida
+                    if (selectedEndCalendar.timeInMillis <= selectedStartCalendar.timeInMillis ||
+                        !isSameDay(selectedStartCalendar, selectedEndCalendar)) {
                         selectedEndCalendar = selectedStartCalendar.clone() as Calendar
                         selectedEndCalendar.add(Calendar.HOUR, 1)
                         binding.etEndTime.setText(displayDateFormat.format(selectedEndCalendar.time))
                     }
                 } else {
                     binding.etEndTime.setText(selectedDateTime)
+                    binding.tilEndTime.error = null
                 }
 
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
@@ -230,6 +283,7 @@ class CreateMeetingDialogFragment : DialogFragment() {
             }
             .setPositiveButton("Aceptar") { dialog, _ ->
                 binding.etParticipants.setText("${selectedParticipantIds.size} seleccionado(s)")
+                binding.tilParticipants.error = null
                 dialog.dismiss()
             }
             .setNegativeButton("Cancelar", null)
@@ -243,29 +297,52 @@ class CreateMeetingDialogFragment : DialogFragment() {
             return
         }
 
+        // Limpiar errores anteriores
+        binding.tilTitle.error = null
+        binding.tilProject.error = null
+        binding.tilStartTime.error = null
+        binding.tilParticipants.error = null
+
         val title = binding.etTitle.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
 
         // Validaciones
+        var hasError = false
+
         if (title.isEmpty()) {
             binding.tilTitle.error = "El título es requerido"
-            return
+            hasError = true
         }
 
         if (selectedProjectId == null) {
-            Toast.makeText(context, "Debes seleccionar un proyecto", Toast.LENGTH_SHORT).show()
-            return
+            binding.tilProject.error = "Debes seleccionar un proyecto"
+            hasError = true
         }
 
         if (binding.etStartTime.text.toString().isEmpty()) {
-            Toast.makeText(context, "Debes seleccionar fecha y hora de inicio", Toast.LENGTH_SHORT).show()
-            return
+            binding.tilStartTime.error = "Debes seleccionar fecha y hora de inicio"
+            hasError = true
         }
 
         if (selectedParticipantIds.isEmpty()) {
-            Toast.makeText(context, "Debes seleccionar al menos un participante", Toast.LENGTH_SHORT).show()
-            return
+            binding.tilParticipants.error = "Debes seleccionar al menos un participante"
+            hasError = true
         }
+
+        // ✅ VALIDACIÓN ADICIONAL: Verificar que la reunión sea en el mismo día
+        if (binding.etEndTime.text.toString().isNotEmpty()) {
+            if (!isSameDay(selectedStartCalendar, selectedEndCalendar)) {
+                Toast.makeText(context, "La reunión debe ser en el mismo día", Toast.LENGTH_SHORT).show()
+                hasError = true
+            }
+
+            if (selectedEndCalendar.timeInMillis <= selectedStartCalendar.timeInMillis) {
+                Toast.makeText(context, "La hora de fin debe ser posterior a la de inicio", Toast.LENGTH_SHORT).show()
+                hasError = true
+            }
+        }
+
+        if (hasError) return
 
         val startTime = apiDateFormat.format(selectedStartCalendar.time)
         val endTime = if (binding.etEndTime.text.toString().isNotEmpty()) {

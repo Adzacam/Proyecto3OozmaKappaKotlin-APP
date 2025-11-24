@@ -5,92 +5,147 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:cardBackgroundColor="#0F172A"
+        app:cardBackgroundColor="#1E293B"
         app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
-        app:strokeColor="#334155"
-        app:strokeWidth="1dp">
+        app:cardElevation="4dp">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="16dp">
 
-        <!-- Barra lateral de color -->
-        <View
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:background="#B8FF3C"
-                android:layout_marginEnd="12dp"/>
-
-        <!-- Contenido de la reunión -->
+        <!-- Header con título y botón eliminar -->
         <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
             <TextView
                     android:id="@+id/tvMeetingTitle"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Título de la reunión"
+                    android:layout_weight="1"
+                    android:text="Título de la Reunión"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="4dp"/>
+                    android:layout_marginEnd="8dp"/>
+
+            <ImageButton
+                    android:id="@+id/btnDeleteMeeting"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_delete"
+                    android:tint="#EF4444"
+                    android:contentDescription="Eliminar reunión"/>
+        </LinearLayout>
+
+        <!-- Proyecto -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📁"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"/>
 
             <TextView
                     android:id="@+id/tvMeetingProject"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Proyecto"
-                    android:textColor="#B8FF3C"
-                    android:textSize="13sp"
-                    android:layout_marginBottom="4dp"/>
+                    android:layout_weight="1"
+                    android:text="Nombre del Proyecto"
+                    android:textColor="#94A3B8"
+                    android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Fecha y hora -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📅"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"/>
 
             <TextView
                     android:id="@+id/tvMeetingDate"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="05/11/2025 10:00"
+                    android:layout_weight="1"
+                    android:text="DD/MM/YYYY HH:MM"
                     android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:layout_marginBottom="4dp"/>
+                    android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Participantes -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="👥"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"/>
 
             <TextView
                     android:id="@+id/tvMeetingParticipants"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="3 participantes"
+                    android:layout_weight="1"
+                    android:text="N participante(s)"
                     android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:layout_marginBottom="4dp"/>
-
-            <TextView
-                    android:id="@+id/tvMeetingDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Descripción de la reunión"
-                    android:textColor="#CBD5E1"
-                    android:textSize="13sp"
-                    android:maxLines="2"
-                    android:ellipsize="end"/>
-
+                    android:textSize="14sp"/>
         </LinearLayout>
 
-        <!-- Botón eliminar -->
-        <ImageButton
-                android:id="@+id/btnDeleteMeeting"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_delete"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="#EF4444"
-                android:contentDescription="Eliminar reunión"/>
+        <!-- Descripción -->
+        <TextView
+                android:id="@+id/tvMeetingDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Descripción de la reunión"
+                android:textColor="#CBD5E1"
+                android:textSize="14sp"
+                android:maxLines="3"
+                android:ellipsize="end"/>
 
+        <!-- Divider -->
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#334155"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"/>
+
+        <!-- Indicador visual -->
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Toca para editar"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:layout_gravity="end"/>
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>
