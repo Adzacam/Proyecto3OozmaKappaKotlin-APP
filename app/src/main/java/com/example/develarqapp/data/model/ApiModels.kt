@@ -112,36 +112,6 @@ data class User(
         }
 }
 //--- Modelo de Proyecto ---
-data class Project(
-    @SerializedName("id")
-    val id: Long,
-
-    @SerializedName("nombre")
-    val nombre: String,
-
-    @SerializedName("descripcion")
-    val descripcion: String? = null,
-
-    // Hecho nulo para compatibilidad
-    @SerializedName("estado")
-    val estado: String? = null,
-
-    @SerializedName("fecha_inicio")
-    val fechaInicio: String? = null,
-
-    @SerializedName("fecha_fin")
-    val fechaFin: String? = null,
-
-    @SerializedName("cliente_id")
-    val clienteId: Long? = null,
-
-    @SerializedName("responsable_id")
-    val responsableId: Long? = null,
-
-    // Campo del archivo 2
-    @SerializedName("eliminado")
-    val eliminado: Int? = 0
-)
 
 //--- Modelo de Tarea ---
 data class Task(

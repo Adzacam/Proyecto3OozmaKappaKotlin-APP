@@ -197,6 +197,29 @@
             android:label="Planos BIM"
             tools:layout="@layout/fragment_bim_planos" />
 
+    <fragment
+            android:id="@+id/documentsFragment"
+            android:name="com.example.develarqapp.ui.documents.DocumentsFragment"
+            android:label="Documentos"
+            tools:layout="@layout/fragment_documents">
+
+        <action
+                android:id="@+id/action_documentsFragment_to_deletedDocumentsFragment"
+                app:destination="@id/deletedDocumentsFragment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/deletedDocumentsFragment"
+            android:name="com.example.develarqapp.ui.documents.DeletedDocumentsFragment"
+            android:label="Papelera de Documentos"
+            tools:layout="@layout/fragment_deleted_documents">
+
+        <action
+                android:id="@+id/action_deletedDocumentsFragment_to_documentsFragment"
+                app:destination="@id/documentsFragment"
+                app:popUpTo="@id/documentsFragment"
+                app:popUpToInclusive="true" />
+    </fragment>
 
     <!-- ========================================== -->
     <!-- PROFILE & NOTIFICATIONS -->

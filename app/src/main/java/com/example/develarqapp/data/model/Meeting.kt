@@ -92,11 +92,4 @@ data class MeetingResponse(
     val data: Meeting?
 )
 
-data class ProjectsResponse(
-    @SerializedName("success")
-    val success: Boolean,
-
-    @SerializedName("data")
-    val data: List<Project>?
-)
 

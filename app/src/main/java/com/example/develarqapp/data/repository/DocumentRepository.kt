@@ -1,0 +1,283 @@
+package com.example.develarqapp.data.repository
+
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
+import com.example.develarqapp.data.api.ApiConfig
+import com.example.develarqapp.data.model.*
+import com.example.develarqapp.utils.SessionManager
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import java.io.File
+import java.io.FileOutputStream
+
+class DocumentRepository(private val context: Context) {
+
+    private val apiService = ApiConfig.getApiService()
+    private val sessionManager = SessionManager(context)
+
+    // Obtener token con Bearer
+    private fun getAuthToken(): String {
+        return "Bearer ${sessionManager.getToken()}"
+    }
+
+    // ========== OBTENER DOCUMENTOS ==========
+    suspend fun getDocuments(projectId: Long? = null): Result<List<Document>> {
+        return try {
+            val response = apiService.getDocuments(getAuthToken(), projectId)
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true && body.data != null) {
+                    Result.success(body.data)
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error desconocido"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== OBTENER DOCUMENTOS ELIMINADOS ==========
+    suspend fun getDeletedDocuments(): Result<List<Document>> {
+        return try {
+            val response = apiService.getDeletedDocuments(getAuthToken())
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true && body.data != null) {
+                    Result.success(body.data)
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error desconocido"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== SUBIR DOCUMENTO ==========
+    suspend fun uploadDocument(
+        projectId: Long,
+        nombre: String,
+        descripcion: String?,
+        tipo: DocumentType,
+        fileUri: Uri?,
+        enlaceExterno: String?
+    ): Result<Document> {
+        return try {
+            // Validar según tipo
+            if (tipo == DocumentType.URL) {
+                if (enlaceExterno.isNullOrBlank()) {
+                    return Result.failure(Exception("El enlace externo es requerido"))
+                }
+            } else {
+                if (fileUri == null) {
+                    return Result.failure(Exception("El archivo es requerido"))
+                }
+            }
+
+            // Crear RequestBody para parámetros
+            val projectIdBody = projectId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+            val nombreBody = nombre.toRequestBody("text/plain".toMediaTypeOrNull())
+            val descripcionBody = descripcion?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val tipoBody = tipo.name.toRequestBody("text/plain".toMediaTypeOrNull())
+            val enlaceBody = enlaceExterno?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            // Preparar archivo si existe
+            val filePart = if (fileUri != null) {
+                prepareFilePart("archivo", fileUri)
+            } else null
+
+            // Hacer la petición
+            val response = apiService.uploadDocument(
+                projectIdBody,
+                nombreBody,
+                descripcionBody,
+                tipoBody,
+                filePart,
+                enlaceBody,
+                getAuthToken()
+            )
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true && body.data != null) {
+                    Result.success(body.data)
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al subir documento"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== ACTUALIZAR DOCUMENTO ==========
+    suspend fun updateDocument(
+        id: Long,
+        nombre: String,
+        descripcion: String?,
+        projectId: Long?,
+        tipo: DocumentType?,
+        enlaceExterno: String?
+    ): Result<String> {
+        return try {
+            val request = UpdateDocumentRequest(
+                id = id,
+                nombre = nombre,
+                descripcion = descripcion,
+                proyectoId = projectId,
+                tipo = tipo?.name,
+                enlaceExterno = enlaceExterno
+            )
+
+            val response = apiService.updateDocument(request, getAuthToken())
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true) {
+                    Result.success(body.message ?: "Documento actualizado")
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al actualizar"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== ELIMINAR DOCUMENTO ==========
+    suspend fun deleteDocument(documentId: Long): Result<String> {
+        return try {
+            val request = DeleteDocumentRequest(documentId)
+            val response = apiService.deleteDocument(request, getAuthToken())
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true) {
+                    Result.success(body.message ?: "Documento eliminado")
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al eliminar"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== RESTAURAR DOCUMENTO ==========
+    suspend fun restoreDocument(documentId: Long): Result<String> {
+        return try {
+            val request = DocumentIdRequest(documentId)
+            val response = apiService.restoreDocument(request, getAuthToken())
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true) {
+                    Result.success(body.message ?: "Documento restaurado")
+                } else {
+                    Result.failure(Exception(body?.message ?: "Error al restaurar"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== DESCARGAR DOCUMENTO ==========
+    suspend fun downloadDocument(documentId: Long, fileName: String): Result<File> {
+        return try {
+            val response = apiService.downloadDocument(documentId, getAuthToken())
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    val file = saveResponseBodyToFile(body, fileName)
+                    Result.success(file)
+                } else {
+                    Result.failure(Exception("No se pudo descargar el archivo"))
+                }
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ========== UTILIDADES ==========
+
+    private fun prepareFilePart(partName: String, fileUri: Uri): MultipartBody.Part? {
+        return try {
+            val contentResolver = context.contentResolver
+            val mimeType = contentResolver.getType(fileUri) ?: "application/octet-stream"
+
+            // Obtener nombre del archivo
+            val fileName = getFileName(fileUri)
+
+            // Crear archivo temporal
+            val inputStream = contentResolver.openInputStream(fileUri)
+            val tempFile = File(context.cacheDir, fileName)
+
+            inputStream?.use { input ->
+                FileOutputStream(tempFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            val requestFile = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
+            MultipartBody.Part.createFormData(partName, fileName, requestFile)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun getFileName(uri: Uri): String {
+        var fileName = "documento_${System.currentTimeMillis()}"
+
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && cursor.moveToFirst()) {
+                fileName = cursor.getString(nameIndex)
+            }
+        }
+
+        return fileName
+    }
+
+    private fun saveResponseBodyToFile(body: ResponseBody, fileName: String): File {
+        val downloadsDir = File(context.getExternalFilesDir(null), "Downloads")
+        if (!downloadsDir.exists()) {
+            downloadsDir.mkdirs()
+        }
+
+        val file = File(downloadsDir, fileName)
+
+        body.byteStream().use { input ->
+            FileOutputStream(file).use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return file
+    }
+}
