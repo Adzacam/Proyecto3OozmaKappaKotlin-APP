@@ -74,7 +74,7 @@
 
         <Spinner
                 android:id="@+id/spinnerProjects"
-                android:layout_width="390dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/spinner_background"
                 android:paddingStart="10dp"
@@ -84,7 +84,7 @@
 
         <Spinner
                 android:id="@+id/spinnerParticipants"
-                android:layout_width="390dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/spinner_background"
                 android:paddingStart="10dp"
