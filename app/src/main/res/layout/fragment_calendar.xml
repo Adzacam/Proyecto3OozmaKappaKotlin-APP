@@ -17,7 +17,7 @@
     <!-- Filtros superiores - Más compactos -->
     <LinearLayout
             android:id="@+id/llFilters"
-            android:layout_width="399dp"
+            android:layout_width="380dp"
             android:layout_height="148dp"
             android:orientation="vertical"
             android:padding="8dp"
