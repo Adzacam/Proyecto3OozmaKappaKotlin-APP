@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,7 +37,7 @@ class DocumentsFragment : Fragment() {
 
     private lateinit var sessionManager: SessionManager
     private lateinit var topBarManager: TopBarManager
-    private val viewModel: DocumentsViewModel by viewModels()
+    private val viewModel: DocumentsViewModel by activityViewModels()
     private lateinit var adapter: DocumentsAdapter
 
     private var selectedFileUri: Uri? = null
@@ -120,10 +121,12 @@ class DocumentsFragment : Fragment() {
     private fun setupObservers() {
         // Documentos filtrados
         viewModel.filteredDocuments.observe(viewLifecycleOwner) { documents ->
+            // Agrega este log para depurar
+            android.util.Log.d("DEBUG_DOCS", "Recibidos ${documents.size} documentos")
+
             if (documents.isEmpty()) {
                 binding.tvPlaceholder.visibility = View.VISIBLE
                 binding.rvDocuments.visibility = View.GONE
-                binding.tvPlaceholder.text = "No hay documentos"
             } else {
                 binding.tvPlaceholder.visibility = View.GONE
                 binding.rvDocuments.visibility = View.VISIBLE
@@ -136,10 +139,10 @@ class DocumentsFragment : Fragment() {
             val projectNames = listOf("Todos los Proyectos") + projects.map { it.nombre }
             val projectAdapter = ArrayAdapter(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item_dark,
                 projectNames
             )
-            projectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            projectAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
             binding.spinnerProyecto.adapter = projectAdapter
         }
 
@@ -249,10 +252,10 @@ class DocumentsFragment : Fragment() {
         val types = listOf("Todos los Tipos") + DocumentType.values().map { it.displayName }
         val typeAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item_dark,
             types
         )
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        typeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerTipo.adapter = typeAdapter
     }
 

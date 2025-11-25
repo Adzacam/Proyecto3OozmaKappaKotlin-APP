@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.develarqapp.R
 import com.example.develarqapp.data.model.DocumentType
@@ -23,7 +24,7 @@ class UploadDocumentDialogFragment : DialogFragment() {
     private var _binding: DialogUploadDocumentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: DocumentsViewModel by viewModels({ requireParentFragment() })
+    private val viewModel: DocumentsViewModel by activityViewModels()
 
     private var selectedFileUri: Uri? = null
     private var projects: List<Project> = emptyList()
@@ -89,8 +90,8 @@ class UploadDocumentDialogFragment : DialogFragment() {
     private fun setupUI() {
         // Setup tipo de documento spinner
         val types = DocumentType.values().map { it.displayName }
-        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val typeAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, types)
+        typeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerTipo.adapter = typeAdapter
     }
 
@@ -110,6 +111,7 @@ class UploadDocumentDialogFragment : DialogFragment() {
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty() && isVisible) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                viewModel.loadDocuments()
                 dismiss()
             }
         }
@@ -127,10 +129,10 @@ class UploadDocumentDialogFragment : DialogFragment() {
         val projectNames = projects.map { it.nombre }
         val projectAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item_dark,
             projectNames
         )
-        projectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        projectAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerProyecto.adapter = projectAdapter
 
         // Pre-seleccionar proyecto si se especificó

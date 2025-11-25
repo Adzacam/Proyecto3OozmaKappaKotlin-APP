@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.develarqapp.R
 import com.example.develarqapp.data.model.Document
@@ -24,9 +25,7 @@ class EditDocumentDialogFragment : DialogFragment() {
 
     private var _binding: DialogEditDocumentBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: DocumentsViewModel by viewModels({ requireParentFragment() })
-
+    private val viewModel: DocumentsViewModel by activityViewModels()
     private var document: Document? = null
     private var projects: List<Project> = emptyList()
     private var selectedFileUri: Uri? = null
@@ -91,8 +90,8 @@ class EditDocumentDialogFragment : DialogFragment() {
     private fun setupUI() {
         // Setup tipo de documento spinner
         val types = DocumentType.values().map { it.displayName }
-        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val typeAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, types)
+        typeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerTipo.adapter = typeAdapter
     }
 
@@ -110,9 +109,14 @@ class EditDocumentDialogFragment : DialogFragment() {
         }
 
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
-            if (message.isNotEmpty() && isVisible) {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                dismiss()
+            if (message.isNotEmpty()) {
+                if (isVisible) {
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    viewModel.loadDocuments()
+                    viewModel.clearMessages()
+
+                    dismiss()
+                }
             }
         }
 
@@ -122,17 +126,16 @@ class EditDocumentDialogFragment : DialogFragment() {
             }
         }
     }
-
     private fun setupProjectSpinner() {
         if (projects.isEmpty()) return
 
         val projectNames = projects.map { it.nombre }
         val projectAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item_dark,
             projectNames
         )
-        projectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        projectAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerProyecto.adapter = projectAdapter
 
         // Pre-seleccionar el proyecto actual

@@ -13,6 +13,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.FileOutputStream
+import android.app.DownloadManager
+import android.os.Environment
+import android.widget.Toast
 
 class DocumentRepository(private val context: Context) {
 
@@ -202,21 +205,32 @@ class DocumentRepository(private val context: Context) {
     }
 
     // ========== DESCARGAR DOCUMENTO ==========
-    suspend fun downloadDocument(documentId: Long, fileName: String): Result<File> {
+    fun downloadDocument(documentId: Long, fileName: String): Result<String> {
         return try {
-            val response = apiService.downloadDocument(documentId, getAuthToken())
+            val downloadUrl = "${ApiConfig.BASE_URL}Documents/download_document.php?id=$documentId"
+            // 2. Configurar la solicitud de descarga
+            val request = DownloadManager.Request(Uri.parse(downloadUrl)).apply {
+                // Título y descripción de la notificación
+                setTitle(fileName)
+                setDescription("Descargando documento del proyecto...")
 
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    val file = saveResponseBodyToFile(body, fileName)
-                    Result.success(file)
-                } else {
-                    Result.failure(Exception("No se pudo descargar el archivo"))
-                }
-            } else {
-                Result.failure(Exception("Error del servidor: ${response.code()}"))
+                // IMPORTANTE: Pasar el Token de Autorización en el Header
+                addRequestHeader("Authorization", getAuthToken())
+
+                // Configurar notificaciones (Visible durante y después)
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
+                // Guardar en la carpeta pública de Descargas (Downloads)
+                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+
+                // Permitir que el sistema escanee el archivo (para que aparezca en la galería/apps)
+                allowScanningByMediaScanner()
             }
+            // 3. Enviar la solicitud al sistema
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            downloadManager.enqueue(request)
+
+            Result.success("Descarga iniciada. Revisa tus notificaciones.")
         } catch (e: Exception) {
             Result.failure(e)
         }

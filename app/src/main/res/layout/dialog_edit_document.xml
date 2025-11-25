@@ -107,8 +107,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="8dp"
-                    android:background="@android:drawable/edit_text"
-                    android:backgroundTint="#334155"
+                    android:background="@drawable/spinner_background"
+                    android:popupBackground="#334155"
                     android:padding="12dp" />
 
             <!-- Tipo de Documento -->
@@ -126,8 +126,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="8dp"
-                    android:background="@android:drawable/edit_text"
-                    android:backgroundTint="#334155"
+                    android:background="@drawable/spinner_background"
+                    android:popupBackground="#334155"
                     android:padding="12dp" />
 
             <!-- Modo de Actualización -->

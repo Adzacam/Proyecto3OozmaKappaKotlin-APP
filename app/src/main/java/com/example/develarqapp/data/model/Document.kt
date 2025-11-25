@@ -1,6 +1,7 @@
 package com.example.develarqapp.data.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 // Modelo principal de Documento
 data class Document(
@@ -13,11 +14,14 @@ data class Document(
     @SerializedName("tipo") val tipo: DocumentType,
     @SerializedName("fecha_subida") val fechaSubida: String,
     @SerializedName("subido_por") val subidoPor: Long?,
-    @SerializedName("eliminado") val eliminado: Boolean = false,
+    @SerializedName("eliminado") val eliminado: Int = 0,
     @SerializedName("fecha_eliminacion") val fechaEliminacion: String?,
     @SerializedName("proyecto_nombre") val proyectoNombre: String? = null,
     @SerializedName("subido_por_nombre") val subidoPorNombre: String? = null
-)
+): Serializable {
+    val isEliminado: Boolean
+        get() = eliminado == 1
+}
 
 // Enum para tipos de documento
 enum class DocumentType(val displayName: String, val extensions: List<String>) {

@@ -130,14 +130,15 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
                 enlaceExterno?.trim()
             )
 
+            _isLoading.value = false
+
             result.onSuccess { document ->
                 _successMessage.value = "Documento subido exitosamente"
-                loadDocuments() // Recargar lista
+                // Recargar inmediatamente después del éxito
+                loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al subir documento"
             }
-
-            _isLoading.value = false
         }
     }
 
@@ -169,14 +170,15 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
                 enlaceExterno?.trim()
             )
 
+            _isLoading.value = false
+
             result.onSuccess { message ->
                 _successMessage.value = message
-                loadDocuments() // Recargar lista
+                // Recargar inmediatamente después del éxito
+                loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al actualizar documento"
             }
-
-            _isLoading.value = false
         }
     }
 
@@ -221,20 +223,20 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
     // ========== DESCARGAR DOCUMENTO ==========
 
     fun downloadDocument(document: Document) {
-        viewModelScope.launch {
-            _isLoading.value = true
-
+        try {
             val fileName = document.nombre + getExtensionForType(document.tipo)
+
+            // Llamamos al repositorio (que tampoco debería ser suspend si usa DownloadManager)
             val result = repository.downloadDocument(document.id, fileName)
 
-            result.onSuccess { file ->
-                _downloadedFile.value = file
-                _successMessage.value = "Documento descargado: ${file.absolutePath}"
+            result.onSuccess { mensaje ->
+                _successMessage.value = mensaje
             }.onFailure { error ->
-                _errorMessage.value = error.message ?: "Error al descargar documento"
+                _errorMessage.value = "Error al iniciar descarga: ${error.message}"
             }
 
-            _isLoading.value = false
+        } catch (e: Exception) {
+            _errorMessage.value = "Error inesperado: ${e.message}"
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.develarqapp.data.api
 
+import com.example.develarqapp.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object ApiConfig {
     // emulador Android: http://10.0.2.2:8000/api/
     // dispositivo físico: http://172.16.8.21/develarq_api/
-    private const val BASE_URL = "http://192.168.1.8/develarq_api/"
+    internal const val BASE_URL = BuildConfig.BASE_URL
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

@@ -31,8 +31,7 @@
                 android:layout_height="36dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:tint="#FFFFFF"
-                android:contentDescription="Cerrar" />
+                android:contentDescription="Cerrar" app:tint="#FFFFFF"/>
     </LinearLayout>
 
     <!-- RecyclerView -->
