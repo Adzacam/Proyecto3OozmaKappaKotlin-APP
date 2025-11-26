@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Filtros superiores - Más compactos -->
+    <!-- Filtros superiores -->
     <LinearLayout
             android:id="@+id/llFilters"
             android:layout_width="0dp"
@@ -91,6 +91,7 @@
                 android:paddingEnd="10dp"
                 android:popupBackground="#1E293B"/>
     </LinearLayout>
+
     <LinearLayout
             android:id="@+id/dateNavigation"
             android:layout_width="match_parent"
@@ -99,52 +100,6 @@
             android:padding="6dp"
             android:background="#0F172A"
             app:layout_constraintTop_toBottomOf="@id/llFilters">
-
-        <!--        <LinearLayout-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                android:gravity="center_vertical"-->
-        <!--                android:layout_marginBottom="4dp">-->
-
-        <!--            <Button-->
-        <!--                    android:id="@+id/btnToday"-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_height="34dp"-->
-        <!--                    android:layout_weight="1"-->
-        <!--                    android:text="Hoy"-->
-        <!--                    android:textSize="10sp"-->
-        <!--                    android:textAllCaps="false"-->
-        <!--                    android:backgroundTint="#B8FF3C"-->
-        <!--                    android:textColor="#000000"-->
-        <!--                    android:layout_marginEnd="3dp"-->
-        <!--                    style="@style/Widget.Material3.Button"/>-->
-
-        <!--            <Button-->
-        <!--                    android:id="@+id/btnPreviousDay"-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_height="34dp"-->
-        <!--                    android:layout_weight="1"-->
-        <!--                    android:text="Ant."-->
-        <!--                    android:textSize="10sp"-->
-        <!--                    android:textAllCaps="false"-->
-        <!--                    android:backgroundTint="#334155"-->
-        <!--                    android:textColor="#FFFFFF"-->
-        <!--                    android:layout_marginEnd="3dp"-->
-        <!--                    style="@style/Widget.Material3.Button"/>-->
-
-        <!--            <Button-->
-        <!--                    android:id="@+id/btnNextDay"-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_height="34dp"-->
-        <!--                    android:layout_weight="1"-->
-        <!--                    android:text="Sig."-->
-        <!--                    android:textSize="10sp"-->
-        <!--                    android:textAllCaps="false"-->
-        <!--                    android:backgroundTint="#334155"-->
-        <!--                    android:textColor="#FFFFFF"-->
-        <!--                    style="@style/Widget.Material3.Button"/>-->
-        <!--        </LinearLayout>-->
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -205,7 +160,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Fecha actual centrada - Más compacta -->
+    <!-- Fecha actual centrada -->
     <TextView
             android:id="@+id/tvCurrentDate"
             android:layout_width="match_parent"
@@ -220,51 +175,60 @@
             android:background="#1E293B"
             app:layout_constraintTop_toBottomOf="@id/dateNavigation"/>
 
-    <!-- Vista de Mes con Grid -->
-    <LinearLayout
-            android:id="@+id/layoutMonthView"
+    <!-- ✅ SwipeRefreshLayout para actualizar calendario -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
-            android:background="#0F172A"
-            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/tvCurrentDate"
             app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Encabezados de días -->
-        <LinearLayout
+        <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:background="#1E293B">
-            <TextView android:text="DOM" style="@style/CalendarDayHeader"/>
-            <TextView android:text="LUN" style="@style/CalendarDayHeader"/>
-            <TextView android:text="MAR" style="@style/CalendarDayHeader"/>
-            <TextView android:text="MIE" style="@style/CalendarDayHeader"/>
-            <TextView android:text="JUE" style="@style/CalendarDayHeader"/>
-            <TextView android:text="VIE" style="@style/CalendarDayHeader"/>
-            <TextView android:text="SAB" style="@style/CalendarDayHeader"/>
-        </LinearLayout>
+                android:layout_height="match_parent">
 
-        <!-- RecyclerView para los días del mes -->
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMonthCalendar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="4dp"/>
-    </LinearLayout>
+            <!-- Vista de Mes con Grid -->
+            <LinearLayout
+                    android:id="@+id/layoutMonthView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="#0F172A"
+                    android:visibility="gone">
 
-    <!-- WeekView Calendar - Para Día y Semana -->
-    <com.alamkanak.weekview.WeekView
-            android:id="@+id/weekView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="#0F172A"
-            app:layout_constraintTop_toBottomOf="@id/tvCurrentDate"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+                <!-- Encabezados de días -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="8dp"
+                        android:background="#1E293B">
+                    <TextView android:text="DOM" style="@style/CalendarDayHeader"/>
+                    <TextView android:text="LUN" style="@style/CalendarDayHeader"/>
+                    <TextView android:text="MAR" style="@style/CalendarDayHeader"/>
+                    <TextView android:text="MIE" style="@style/CalendarDayHeader"/>
+                    <TextView android:text="JUE" style="@style/CalendarDayHeader"/>
+                    <TextView android:text="VIE" style="@style/CalendarDayHeader"/>
+                    <TextView android:text="SAB" style="@style/CalendarDayHeader"/>
+                </LinearLayout>
+
+                <!-- RecyclerView para los días del mes -->
+                <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMonthCalendar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"/>
+            </LinearLayout>
+
+            <!-- WeekView Calendar - Para Día y Semana -->
+            <com.alamkanak.weekview.WeekView
+                    android:id="@+id/weekView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#0F172A"/>
+        </FrameLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- FAB para agregar reunión -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -278,17 +242,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="Programar nueva reunión"/>
-
-    <!-- Progress Bar -->
-    <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:indeterminateTint="#B8FF3C"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
