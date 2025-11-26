@@ -15,13 +15,22 @@ import java.io.File
 import java.io.FileOutputStream
 import android.app.DownloadManager
 import android.os.Environment
+import android.util.Log
+import com.example.develarqapp.data.model.Document
+import com.example.develarqapp.data.model.DocumentType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
 import android.widget.Toast
 
 class DocumentRepository(private val context: Context) {
 
     private val apiService = ApiConfig.getApiService()
     private val sessionManager = SessionManager(context)
-
+    private val applicationContext = context.applicationContext
     // Obtener token con Bearer
     private fun getAuthToken(): String {
         return "Bearer ${sessionManager.getToken()}"
@@ -182,7 +191,69 @@ class DocumentRepository(private val context: Context) {
             Result.failure(e)
         }
     }
+    // ========== ELIMINACIÓN PERMANENTE ==========
 
+    suspend fun permanentDeleteDocument(documentId: Long): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val token = sessionManager.getAuthToken()
+                if (token.isNullOrEmpty()) {
+                    return@withContext Result.failure(Exception("Token no disponible"))
+                }
+
+                val request = DocumentIdRequest(id = documentId)
+                val response = apiService.permanentDeleteDocument(request, "Bearer $token")
+
+                if (response.isSuccessful && response.body() != null) {
+                    val genericResponse = response.body()!!
+                    if (genericResponse.success) {
+                        Result.success(genericResponse.message ?: "Documento eliminado permanentemente")
+                    } else {
+                        Result.failure(Exception(genericResponse.message ?: "Error desconocido"))
+                    }
+                } else {
+                    Result.failure(Exception("Error HTTP: ${response.code()}"))
+                }
+            } catch (e: Exception) {
+                Log.e("DocumentRepository", "Error al eliminar permanentemente: ${e.message}")
+                Result.failure(e)
+            }
+        }
+    }
+
+    // PURGAR DOCUMENTOS ANTIGUOS (30+ días)
+    suspend fun purgeOldDocuments(): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val token = sessionManager.getAuthToken()
+                if (token.isNullOrEmpty()) {
+                    return@withContext Result.failure(Exception("Token no disponible"))
+                }
+
+                val response = apiService.purgeOldDocuments("Bearer $token")
+
+                if (response.isSuccessful && response.body() != null) {
+                    val purgeResponse = response.body()!!
+                    if (purgeResponse.success) {
+                        val deletedCount = purgeResponse.deletedCount ?: 0
+                        val message = if (deletedCount > 0) {
+                            "Se eliminaron $deletedCount documentos antiguos"
+                        } else {
+                            purgeResponse.message ?: "No hay documentos para purgar"
+                        }
+                        Result.success(message)
+                    } else {
+                        Result.failure(Exception(purgeResponse.message ?: "Error desconocido"))
+                    }
+                } else {
+                    Result.failure(Exception("Error HTTP: ${response.code()}"))
+                }
+            } catch (e: Exception) {
+                Log.e("DocumentRepository", "Error al purgar documentos: ${e.message}")
+                Result.failure(e)
+            }
+        }
+    }
     // ========== RESTAURAR DOCUMENTO ==========
     suspend fun restoreDocument(documentId: Long): Result<String> {
         return try {
@@ -294,4 +365,5 @@ class DocumentRepository(private val context: Context) {
 
         return file
     }
+
 }

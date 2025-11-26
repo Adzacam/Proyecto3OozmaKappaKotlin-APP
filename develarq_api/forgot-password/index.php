@@ -66,7 +66,7 @@ if ($insertStmt->execute()) {
         // Contenido del correo
         $mail->isHTML(true);
         $mail->Subject = 'Restablecer tu contraseña de DevelArq';
-        $resetLink = "http://192.168.1.4/develarq_api/reset-password/index.php?token=" . $token;
+        $resetLink = "http://10.0.9.245/develarq_api/reset-password/index.php?token=" . $token;
         $mail->Body = "
             <h2>Hola,</h2>
             <p>Has solicitado restablecer tu contraseña. Haz clic en el enlace siguiente:</p>

@@ -84,6 +84,9 @@ dependencies {
     implementation("com.github.thellmund.Android-Week-View:core:5.2.4")
     implementation("com.github.thellmund.Android-Week-View:jsr310:5.2.4")
 
+    //  SwipeRefreshLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.example.develarqapp.R
 import com.example.develarqapp.data.model.DocumentType
 import com.example.develarqapp.data.model.Project
@@ -88,7 +87,6 @@ class UploadDocumentDialogFragment : DialogFragment() {
     }
 
     private fun setupUI() {
-        // Setup tipo de documento spinner
         val types = DocumentType.values().map { it.displayName }
         val typeAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, types)
         typeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
@@ -108,10 +106,16 @@ class UploadDocumentDialogFragment : DialogFragment() {
             binding.btnSubir.isEnabled = !isLoading
         }
 
+        // ✅ FIX: Cerrar diálogo y recargar cuando haya éxito
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty() && isVisible) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                viewModel.clearMessages()
+
+                // Recargar documentos ANTES de cerrar el diálogo
                 viewModel.loadDocuments()
+
+                // Cerrar el diálogo
                 dismiss()
             }
         }
@@ -119,6 +123,7 @@ class UploadDocumentDialogFragment : DialogFragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty() && isVisible) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                viewModel.clearMessages()
             }
         }
     }
@@ -135,7 +140,6 @@ class UploadDocumentDialogFragment : DialogFragment() {
         projectAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerProyecto.adapter = projectAdapter
 
-        // Pre-seleccionar proyecto si se especificó
         preSelectedProjectId?.let { projectId ->
             val index = projects.indexOfFirst { it.id == projectId }
             if (index != -1) {
@@ -145,22 +149,18 @@ class UploadDocumentDialogFragment : DialogFragment() {
     }
 
     private fun setupListeners() {
-        // Cancelar
         binding.btnCancelar.setOnClickListener {
             dismiss()
         }
 
-        // Subir documento
         binding.btnSubir.setOnClickListener {
             uploadDocument()
         }
 
-        // Seleccionar archivo
         binding.btnSeleccionarArchivo.setOnClickListener {
             openFilePicker()
         }
 
-        // Cambio de tipo de documento
         binding.spinnerTipo.setOnItemSelectedListener(object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedType = DocumentType.values()[position]
@@ -170,7 +170,6 @@ class UploadDocumentDialogFragment : DialogFragment() {
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         })
 
-        // Validación en tiempo real
         binding.etTitulo.doAfterTextChanged { validateForm() }
         binding.etEnlaceExterno.doAfterTextChanged { validateForm() }
     }
@@ -178,14 +177,12 @@ class UploadDocumentDialogFragment : DialogFragment() {
     private fun updateUIForDocumentType(type: DocumentType) {
         when (type) {
             DocumentType.URL -> {
-                // Mostrar campo de enlace externo
                 binding.layoutEnlaceExterno.visibility = View.VISIBLE
                 binding.layoutArchivo.visibility = View.GONE
                 selectedFileUri = null
                 binding.tvArchivoSeleccionado.text = "Ningún archivo seleccionado"
             }
             else -> {
-                // Mostrar selección de archivo
                 binding.layoutEnlaceExterno.visibility = View.GONE
                 binding.layoutArchivo.visibility = View.VISIBLE
                 binding.etEnlaceExterno.text?.clear()
@@ -212,11 +209,9 @@ class UploadDocumentDialogFragment : DialogFragment() {
     private fun handleSelectedFile(uri: Uri) {
         selectedFileUri = uri
 
-        // Obtener nombre del archivo
         val fileName = getFileName(uri)
         binding.tvArchivoSeleccionado.text = fileName
 
-        // Validar tamaño (50MB máximo)
         val fileSize = getFileSize(uri)
         if (fileSize > 50 * 1024 * 1024) {
             binding.tvArchivoSeleccionado.text = "❌ Archivo muy grande (máx. 50MB)"
@@ -227,7 +222,6 @@ class UploadDocumentDialogFragment : DialogFragment() {
             binding.tvArchivoSeleccionado.text = "$fileName (${String.format("%.2f", sizeMB)} MB)"
             binding.tvArchivoSeleccionado.setTextColor(resources.getColor(android.R.color.holo_green_dark, null))
 
-            // Auto-llenar título si está vacío
             if (binding.etTitulo.text.isNullOrBlank()) {
                 binding.etTitulo.setText(fileName.substringBeforeLast("."))
             }

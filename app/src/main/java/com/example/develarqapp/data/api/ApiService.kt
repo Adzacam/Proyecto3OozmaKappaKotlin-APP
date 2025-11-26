@@ -75,7 +75,6 @@ interface ApiService {
     ): Response<List<AuditoriaLog>>
 
     // ========== PROJECTS ==========
-    // (Basado en tu captura de pantalla de VSCode)
     @GET("Projects/get_Projects.php")
     suspend fun getProjects(@Header("Authorization") token: String): Response<ProjectsResponse>
 
@@ -157,4 +156,15 @@ interface ApiService {
         @Query("id") documentId: Long,
         @Header("Authorization") token: String
     ): Response<ResponseBody>
+
+    @POST("Documents/permanent_delete_document.php")
+    suspend fun permanentDeleteDocument(
+        @Body request: DocumentIdRequest,
+        @Header("Authorization") token: String
+    ): Response<GenericResponse>
+
+    @POST("Documents/purge_old_documents.php")
+    suspend fun purgeOldDocuments(
+        @Header("Authorization") token: String
+    ): Response<PurgeResponse>
 }

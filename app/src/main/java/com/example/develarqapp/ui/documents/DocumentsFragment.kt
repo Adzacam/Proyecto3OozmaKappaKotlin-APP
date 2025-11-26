@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.develarqapp.R
@@ -90,6 +89,7 @@ class DocumentsFragment : Fragment() {
         setupObservers()
         setupListeners()
         setupFilters()
+        setupSwipeRefresh() // ✅ NUEVO
 
         // Cargar datos iniciales
         viewModel.loadDocuments()
@@ -118,11 +118,28 @@ class DocumentsFragment : Fragment() {
         }
     }
 
+    // ✅ NUEVO: Configurar Pull to Refresh
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
+
+            setOnRefreshListener {
+                // Recargar documentos y proyectos
+                viewModel.loadDocuments()
+                viewModel.loadProjects()
+            }
+        }
+    }
+
     private fun setupObservers() {
         // Documentos filtrados
         viewModel.filteredDocuments.observe(viewLifecycleOwner) { documents ->
-            // Agrega este log para depurar
-            android.util.Log.d("DEBUG_DOCS", "Recibidos ${documents.size} documentos")
+            // ✅ Detener animación de refresh
+            binding.swipeRefresh.isRefreshing = false
 
             if (documents.isEmpty()) {
                 binding.tvPlaceholder.visibility = View.VISIBLE
@@ -148,12 +165,16 @@ class DocumentsFragment : Fragment() {
 
         // Loading
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            // ✅ No mostrar progress bar si está el swipe refresh activo
+            if (!binding.swipeRefresh.isRefreshing) {
+                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            }
         }
 
         // Mensajes de error
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
+                binding.swipeRefresh.isRefreshing = false // ✅ Detener refresh
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
             }
@@ -162,6 +183,7 @@ class DocumentsFragment : Fragment() {
         // Mensajes de éxito
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
+                binding.swipeRefresh.isRefreshing = false // ✅ Detener refresh
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
             }
@@ -262,7 +284,6 @@ class DocumentsFragment : Fragment() {
     private fun checkPermissionsAndOpenPicker() {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                // Android 13+ no requiere permisos para ACTION_GET_CONTENT
                 openFilePicker()
             }
             ContextCompat.checkSelfPermission(
@@ -321,10 +342,8 @@ class DocumentsFragment : Fragment() {
 
     private fun navigateToTrash() {
         try {
-            // Usar Navigation Component
             findNavController().navigate(R.id.action_documentsFragment_to_deletedDocumentsFragment)
         } catch (e: Exception) {
-            // Fallback: usar FragmentTransaction
             val fragment = DeletedDocumentsFragment()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.navHostFragment, fragment)

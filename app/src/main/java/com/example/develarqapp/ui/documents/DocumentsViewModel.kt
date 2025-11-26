@@ -30,7 +30,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
     private val _deletedDocuments = MutableLiveData<List<Document>>()
     val deletedDocuments: LiveData<List<Document>> = _deletedDocuments
 
-    // LiveData para proyectos (para filtros)
+    // LiveData para proyectos
     private val _projects = MutableLiveData<List<Project>>()
     val projects: LiveData<List<Project>> = _projects
 
@@ -113,7 +113,6 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             _isLoading.value = true
 
-            // Validaciones
             val validationError = validateDocumentUpload(nombre, tipo, fileUri, enlaceExterno)
             if (validationError != null) {
                 _errorMessage.value = validationError
@@ -134,7 +133,6 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
             result.onSuccess { document ->
                 _successMessage.value = "Documento subido exitosamente"
-                // Recargar inmediatamente después del éxito
                 loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al subir documento"
@@ -174,7 +172,6 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
             result.onSuccess { message ->
                 _successMessage.value = message
-                // Recargar inmediatamente después del éxito
                 loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al actualizar documento"
@@ -182,7 +179,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    // ========== ELIMINAR DOCUMENTO ==========
+    // ========== ELIMINAR DOCUMENTO (SOFT DELETE) ==========
 
     fun deleteDocument(documentId: Long) {
         viewModelScope.launch {
@@ -192,7 +189,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
             result.onSuccess { message ->
                 _successMessage.value = message
-                loadDocuments() // Recargar lista
+                loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al eliminar documento"
             }
@@ -211,9 +208,45 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
             result.onSuccess { message ->
                 _successMessage.value = message
-                loadDeletedDocuments() // Recargar papelera
+                loadDeletedDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al restaurar documento"
+            }
+
+            _isLoading.value = false
+        }
+    }
+
+    // ✅ NUEVO: ELIMINAR PERMANENTEMENTE
+    fun permanentDeleteDocument(documentId: Long) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            val result = repository.permanentDeleteDocument(documentId)
+
+            result.onSuccess { message ->
+                _successMessage.value = message
+                loadDeletedDocuments()
+            }.onFailure { error ->
+                _errorMessage.value = error.message ?: "Error al eliminar permanentemente"
+            }
+
+            _isLoading.value = false
+        }
+    }
+
+    // ✅ NUEVO: PURGAR DOCUMENTOS ANTIGUOS (30+ días)
+    fun purgeOldDocuments() {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            val result = repository.purgeOldDocuments()
+
+            result.onSuccess { message ->
+                _successMessage.value = message
+                loadDeletedDocuments()
+            }.onFailure { error ->
+                _errorMessage.value = error.message ?: "Error al purgar documentos"
             }
 
             _isLoading.value = false
@@ -226,7 +259,6 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
         try {
             val fileName = document.nombre + getExtensionForType(document.tipo)
 
-            // Llamamos al repositorio (que tampoco debería ser suspend si usa DownloadManager)
             val result = repository.downloadDocument(document.id, fileName)
 
             result.onSuccess { mensaje ->
@@ -262,18 +294,15 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         val filtered = currentDocuments.filter { document ->
-            // Filtro por búsqueda
             val matchesSearch = if (currentFilters.searchQuery.isNotBlank()) {
                 document.nombre.contains(currentFilters.searchQuery, ignoreCase = true) ||
                         document.descripcion?.contains(currentFilters.searchQuery, ignoreCase = true) == true
             } else true
 
-            // Filtro por tipo
             val matchesType = if (currentFilters.selectedType != null) {
                 document.tipo == currentFilters.selectedType
             } else true
 
-            // Filtro por proyecto
             val matchesProject = if (currentFilters.selectedProjectId != null) {
                 document.proyectoId == currentFilters.selectedProjectId
             } else true

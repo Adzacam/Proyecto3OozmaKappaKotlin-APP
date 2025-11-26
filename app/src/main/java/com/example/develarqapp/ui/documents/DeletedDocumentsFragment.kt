@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.develarqapp.data.model.Document
 import com.example.develarqapp.databinding.FragmentDeletedDocumentsBinding
@@ -22,7 +22,7 @@ class DeletedDocumentsFragment : Fragment() {
 
     private lateinit var sessionManager: SessionManager
     private lateinit var topBarManager: TopBarManager
-    private val viewModel: DocumentsViewModel by viewModels()
+    private val viewModel: DocumentsViewModel by activityViewModels()
     private lateinit var adapter: DeletedDocumentsAdapter
 
     private var filteredDocuments: List<Document> = emptyList()
@@ -51,8 +51,8 @@ class DeletedDocumentsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         setupListeners()
+        setupSwipeRefresh() // ✅ NUEVO
 
-        // Cargar documentos eliminados
         viewModel.loadDeletedDocuments()
     }
 
@@ -68,7 +68,7 @@ class DeletedDocumentsFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = DeletedDocumentsAdapter(
             onRestoreClick = { document -> confirmRestore(document) },
-            onPermanentDeleteClick = { document -> confirmPermanentDelete(document) }
+            onPermanentDeleteClick = { document -> confirmPermanentDelete(document) } // ✅ NUEVO
         )
 
         binding.rvDeletedDocuments.apply {
@@ -77,21 +77,41 @@ class DeletedDocumentsFragment : Fragment() {
         }
     }
 
+    // ✅ NUEVO: SwipeRefresh
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(com.example.develarqapp.R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
+
+            setOnRefreshListener {
+                viewModel.loadDeletedDocuments()
+            }
+        }
+    }
+
     private fun setupObservers() {
         // Documentos eliminados
         viewModel.deletedDocuments.observe(viewLifecycleOwner) { documents ->
+            binding.swipeRefresh.isRefreshing = false // ✅ Detener refresh
+
             filteredDocuments = documents
             applySearchFilter()
         }
 
         // Loading
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (!binding.swipeRefresh.isRefreshing) {
+                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            }
         }
 
         // Mensajes
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
+                binding.swipeRefresh.isRefreshing = false
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
             }
@@ -99,9 +119,10 @@ class DeletedDocumentsFragment : Fragment() {
 
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
+                binding.swipeRefresh.isRefreshing = false
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
-                viewModel.loadDeletedDocuments() // Recargar lista
+                viewModel.loadDeletedDocuments()
             }
         }
     }
@@ -162,25 +183,33 @@ class DeletedDocumentsFragment : Fragment() {
             .show()
     }
 
+    // ✅ NUEVO: Confirmación de eliminación permanente
     private fun confirmPermanentDelete(document: Document) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("⚠️ Eliminar Permanentemente")
-            .setMessage("Esta acción NO se puede deshacer. ¿Estás seguro de eliminar permanentemente '${document.nombre}'?")
-            .setPositiveButton("Eliminar") { _, _ ->
-                // Aquí necesitarías un endpoint para eliminación permanente
-                Toast.makeText(requireContext(), "Función de eliminación permanente próximamente", Toast.LENGTH_SHORT).show()
+            .setMessage(
+                "Esta acción NO se puede deshacer. El documento '${document.nombre}' " +
+                        "será eliminado PERMANENTEMENTE del sistema.\n\n¿Estás completamente seguro?"
+            )
+            .setPositiveButton("Sí, Eliminar") { _, _ ->
+                viewModel.permanentDeleteDocument(document.id)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
+    // ✅ NUEVO: Confirmación de purga masiva
     private fun confirmPurgeOldDocuments() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("⚠️ Purgar Documentos Antiguos")
-            .setMessage("Esto eliminará PERMANENTEMENTE todos los documentos que llevan más de 30 días en la papelera. ¿Continuar?")
-            .setPositiveButton("Purgar") { _, _ ->
-                // Aquí necesitarías un endpoint para purgar
-                Toast.makeText(requireContext(), "Función de purga próximamente", Toast.LENGTH_SHORT).show()
+            .setMessage(
+                "Esto eliminará PERMANENTEMENTE todos los documentos que llevan más de 30 días " +
+                        "en la papelera.\n\n" +
+                        "Esta acción NO se puede deshacer.\n\n" +
+                        "¿Deseas continuar?"
+            )
+            .setPositiveButton("Sí, Purgar") { _, _ ->
+                viewModel.purgeOldDocuments()
             }
             .setNegativeButton("Cancelar", null)
             .show()

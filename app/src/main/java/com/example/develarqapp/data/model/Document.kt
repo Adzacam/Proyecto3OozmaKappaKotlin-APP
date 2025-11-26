@@ -92,6 +92,14 @@ data class UpdateDocumentRequest(
 data class DeleteDocumentRequest(
     @SerializedName("id") val id: Long
 )
+// Eliminar 30 dias
+data class PurgeResponse(
+    val success: Boolean,
+    val message: String?,
+    @SerializedName("deleted_count") val deletedCount: Int?,
+    @SerializedName("total_found") val totalFound: Int?,
+    val errors: List<String>?
+)
 
 // Request genérica con ID
 data class DocumentIdRequest(
