@@ -71,51 +71,54 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                <!-- Progress Bar -->
-                <ProgressBar
-                        android:id="@+id/progressBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="32dp"
-                        android:visibility="gone" />
-
-                <!-- Empty State -->
-                <LinearLayout
-                        android:id="@+id/llEmptyState"
+                <!-- ✅ SwipeRefreshLayout -->
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                        android:id="@+id/swipeRefresh"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="48dp"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:visibility="gone">
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="12dp">
 
-                    <ImageView
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:alpha="0.3"
-                            android:contentDescription="No deleted users"
-                            android:src="@drawable/ic_employees"
-                            app:tint="#9CA3AF" />
+                    <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
 
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="No hay usuarios eliminados"
-                            android:textColor="#6B7280"
-                            android:textSize="14sp" />
-                </LinearLayout>
+                        <!-- RecyclerView -->
+                        <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvDeletedUsers"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                tools:listitem="@layout/item_deleted_user" />
 
-                <!-- RecyclerView -->
-                <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvDeletedUsers"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_weight="1"
-                        tools:listitem="@layout/item_deleted_user" />
+                        <!-- Empty State -->
+                        <LinearLayout
+                                android:id="@+id/llEmptyState"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                            <ImageView
+                                    android:layout_width="80dp"
+                                    android:layout_height="80dp"
+                                    android:alpha="0.3"
+                                    android:contentDescription="No deleted users"
+                                    android:src="@drawable/ic_employees"
+                                    app:tint="#9CA3AF" />
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="16dp"
+                                    android:text="No hay usuarios eliminados"
+                                    android:textColor="#6B7280"
+                                    android:textSize="14sp" />
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

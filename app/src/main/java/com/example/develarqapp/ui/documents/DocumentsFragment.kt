@@ -118,7 +118,7 @@ class DocumentsFragment : Fragment() {
         }
     }
 
-    // ✅ NUEVO: Configurar Pull to Refresh
+    //  Configurar Pull to Refresh
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.apply {
             setColorSchemeColors(
@@ -167,14 +167,14 @@ class DocumentsFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             // ✅ No mostrar progress bar si está el swipe refresh activo
             if (!binding.swipeRefresh.isRefreshing) {
-                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+               // binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
         }
 
         // Mensajes de error
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
-                binding.swipeRefresh.isRefreshing = false // ✅ Detener refresh
+                binding.swipeRefresh.isRefreshing = false // ✅ Detener
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
             }

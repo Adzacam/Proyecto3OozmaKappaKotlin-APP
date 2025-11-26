@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.develarqapp.R
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.develarqapp.databinding.FragmentDeletedUsersBinding
@@ -27,6 +28,7 @@ class DeletedUsersFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
+
     ): View {
         _binding = FragmentDeletedUsersBinding.inflate(inflater, container, false)
         sessionManager = SessionManager(requireContext()) // <-- 2. INICIALIZAR
@@ -41,6 +43,7 @@ class DeletedUsersFragment : Fragment() {
         }
         setupRecyclerView()
         setupObservers()
+        setupSwipeRefresh()
 
         // Cargar usuarios eliminados
         val token = sessionManager.getToken()
@@ -63,9 +66,27 @@ class DeletedUsersFragment : Fragment() {
         }
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
+
+            setOnRefreshListener {
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.loadDeletedUsers(token)
+                }
+            }
+        }
+    }
+
     private fun setupObservers() {
-        // ... (Tu código de observers no cambia) ...
         viewModel.deletedUsers.observe(viewLifecycleOwner) { users ->
+            binding.swipeRefresh.isRefreshing = false
+
             if (users.isEmpty()) {
                 binding.llEmptyState.isVisible = true
                 binding.rvDeletedUsers.isVisible = false
@@ -77,7 +98,7 @@ class DeletedUsersFragment : Fragment() {
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
+            //binding.progressBar.isVisible = isLoading
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
@@ -100,9 +121,9 @@ class DeletedUsersFragment : Fragment() {
             .setTitle("Restaurar Usuario")
             .setMessage("¿Está seguro de restaurar a $userName?")
             .setPositiveButton("Restaurar") { _, _ ->
-                val token = sessionManager.getToken() // <-- 5. OBTENER TOKEN
+                val token = sessionManager.getToken()
                 if (token != null) {
-                    viewModel.restoreUser(userId, token) // <-- 6. PASAR TOKEN
+                    viewModel.restoreUser(userId, token)
                 } else {
                     Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
                 }

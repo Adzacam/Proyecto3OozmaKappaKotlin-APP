@@ -424,10 +424,29 @@ class CalendarFragment : Fragment() {
         dialog.show(childFragmentManager, "AgendaDialog")
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
+
+            setOnRefreshListener {
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.loadMeetings(token)
+                    viewModel.loadProjects(token)
+                    viewModel.loadUsers(token)
+                }
+            }
+        }
+    }
+
     private fun setupObservers() {
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
-            Log.d(TAG, "⏳ Loading: $isLoading")
+//            binding.progressBar.isVisible = isLoading
+//            Log.d(TAG, "⏳ Loading: $isLoading")
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
@@ -501,6 +520,7 @@ class CalendarFragment : Fragment() {
         }
 
         viewModel.filteredMeetings.observe(viewLifecycleOwner) { meetings ->
+            binding.swipeRefresh.isRefreshing = false
             Log.d(TAG, "📅 Reuniones filtradas: ${meetings.size}")
             updateWeekView(meetings)
         }

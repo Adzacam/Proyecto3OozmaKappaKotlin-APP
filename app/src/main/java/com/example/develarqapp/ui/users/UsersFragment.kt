@@ -47,6 +47,7 @@ class UsersFragment : Fragment() {
         setupUI()
         setupRecyclerView()
         setupObservers()
+        setupSwipeRefresh()
 
         sessionManager = SessionManager(requireContext())
         val token = sessionManager.getToken()
@@ -56,15 +57,13 @@ class UsersFragment : Fragment() {
             viewModel.loadDeletedUsers(token)
 
         } else {
-            // No hay token, enviar al login
-            // (Aquí deberías navegar al login, p.ej. findNavController().navigate(R.id.action_global_to_loginFragment))
+            //findNavController().navigate(R.id.action_global_to_loginFragment)
         }
     }
 
     private fun setupTopBar() {
         topBarManager.setupTopBar(binding.topAppBar.root)
     }
-
 
     private fun setupUI() {
         // Botón crear usuario
@@ -98,9 +97,28 @@ class UsersFragment : Fragment() {
             adapter = usersAdapter
         }
     }
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
+
+            setOnRefreshListener {
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.loadUsers(token)
+                    viewModel.loadDeletedUsers(token)
+                }
+            }
+        }
+    }
 
     private fun setupObservers() {
         viewModel.users.observe(viewLifecycleOwner) { users ->
+            binding.swipeRefresh.isRefreshing = false // ✅ Detener refresh
+
             if (users.isEmpty()) {
                 binding.llEmptyState.isVisible = true
                 binding.rvUsers.isVisible = false
@@ -112,7 +130,7 @@ class UsersFragment : Fragment() {
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
+           // binding.progressBar.isVisible = isLoading
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
