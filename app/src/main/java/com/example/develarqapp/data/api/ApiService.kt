@@ -49,5 +49,21 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GenericResponse>
 
+    // ========== PROYECTOS ==========
+    
+    /**
+     * Obtener lista de proyectos (filtrado por permisos en backend)
+     */
+    @GET("Proyectos/get_projects.php")
+    suspend fun getProjects(): Response<ApiResponse<List<Project>>>
 
+    /**
+     * Cambiar estado de un proyecto
+     */
+    @POST("Proyectos/cambiar_estado.php")
+    suspend fun changeProjectState(
+        @Body request: ChangeProjectStateRequest,
+        @Query("id") projectId: Long
+    ): Response<ApiResponse<Any>>
+    
 }

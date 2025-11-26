@@ -456,7 +456,7 @@ final class ValidateAddressTest extends TestCase
             'a@bar',
             'first.last@com',
             'test@123.123.123.123',
-            'foobar@192.168.0.1',
+            'foobar@192.168.26.3',
             'first.last@example.123',
         ];
 

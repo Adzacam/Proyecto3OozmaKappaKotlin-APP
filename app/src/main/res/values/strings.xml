@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="app_name">DevelArqApp</string>
-<string name="app_logo">Logo de la aplicación</string>
+<resources>
+    <string name="app_name">DevelArqApp</string>
+    <string name="app_logo">Logo de la aplicación</string>
 
-<!-- Login -->
-<string name="bim_management_office">BIM Management Office</string>
-<string name="iniciar_sesion">Iniciar Sesión</string>
-<string name="accede_panel_bim">Accede a tu panel de proyectos BIM</string>
-<string name="email">Email</string>
-<string name="email_hint">tu@email.com</string>
-<string name="contrasena">Contraseña</string>
-<string name="password_hint">******</string>
-<string name="recordarme">Recordarme</string>
-<string name="olvidaste_contrasena">¿Olvidaste tu contraseña?</string>
-<string name="volver_inicio">← Volver al inicio</string>
+    <!-- Login -->
+    <string name="bim_management_office">BIM Management Office</string>
+    <string name="iniciar_sesion">Iniciar Sesión</string>
+    <string name="accede_panel_bim">Accede a tu panel de proyectos BIM</string>
+    <string name="email">Email</string>
+    <string name="email_hint">tu@email.com</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="password_hint">******</string>
+    <string name="recordarme">Recordarme</string>
+    <string name="olvidaste_contrasena">¿Olvidaste tu contraseña?</string>
+    <string name="volver_inicio">← Volver al inicio</string>
 
-<!-- Forgot Password -->
-<string name="forgot_password_message">¿Olvidaste tu contraseña? No hay problema. Simplemente ingresa tu dirección de correo electrónico a continuación y te enviaremos un enlace para restablecer tu contraseña que te permitirá elegir una nueva.</string>
-<string name="cancelar">Cancelar</string>
-<string name="enviar_enlace">ENVIAR ENLACE DE RESTABLECIMIENTO</string>
+    <!-- Forgot Password -->
+    <string name="forgot_password_message">¿Olvidaste tu contraseña? No hay problema. Simplemente
+        ingresa tu dirección de correo electrónico a continuación y te enviaremos un enlace para
+        restablecer tu contraseña que te permitirá elegir una nueva.</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="enviar_enlace">ENVIAR ENLACE DE RESTABLECIMIENTO</string>
 
-<!-- Dashboard -->
-<string name="dashboard">Dashboard</string>
-<string name="usuarios">Usuarios</string>
-<string name="user_name">Adriano Leandro</string>
-<string name="perfil">Perfil</string>
-<string name="cerrar_sesion">Cerrar sesión</string>
+    <!-- Dashboard -->
+    <string name="dashboard">Dashboard</string>
+    <string name="usuarios">Usuarios</string>
+    <string name="user_name">Adriano Leandro</string>
+    <string name="perfil">Perfil</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
 
-<!-- Validaciones -->
-<string name="error_email_vacio">El email es requerido</string>
-<string name="error_email_invalido">Email inválido</string>
-<string name="error_password_vacio">La contraseña es requerida</string>
-<string name="error_login">Credenciales incorrectas</string>
-<string name="error_network">Error de conexión</string>
+    <!-- Validaciones -->
+    <string name="error_email_vacio">El email es requerido</string>
+    <string name="error_email_invalido">Email inválido</string>
+    <string name="error_password_vacio">La contraseña es requerida</string>
+    <string name="error_login">Credenciales incorrectas</string>
+    <string name="error_network">Error de conexión</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -51,7 +54,9 @@
     <string name="dropdown">Menú desplegable</string>
 
     <!-- Forgot Password Screen -->
-    <string name="forgot_password_instructions">¿Olvidaste tu contraseña? No hay problema. Simplemente ingresa tu dirección de correo electrónico a continuación y te enviaremos un enlace para restablecer tu contraseña que te permitirá elegir una nueva.</string>
+    <string name="forgot_password_instructions">¿Olvidaste tu contraseña? No hay problema.
+        Simplemente ingresa tu dirección de correo electrónico a continuación y te enviaremos un
+        enlace para restablecer tu contraseña que te permitirá elegir una nueva.</string>
     <string name="cancel">Cancelar</string>
     <string name="send_reset_link">ENVIAR ENLACE DE RESTABLECIMIENTO</string>
 
@@ -90,12 +95,6 @@
     <string name="deactivate">Desactivar</string>
     <string name="delete">Eliminar</string>
 
-    <string name="projects_management">Gestión de Proyectos</string>
-    <string name="filter_by_status">Filtrar por estado:</string>
-    <string name="all">Todos</string>
-    <string name="new_project">NUEVO PROYECTO</string>
-    <string name="no_projects">No hay proyectos</string>
-
     <string name="kanban_board">Tablero Kanban</string>
     <string name="select_project">Seleccionar Proyecto:</string>
     <string name="responsible">Responsable:</string>
@@ -112,7 +111,8 @@
     <string name="assigned_to">Asignado: %1$s</string>
 
     <string name="verify_email_title">Hola 👋</string>
-    <string name="verify_email_message">Haz clic en el botón de abajo para verificar tu correo electrónico:</string>
+    <string name="verify_email_message">Haz clic en el botón de abajo para verificar tu correo
+        electrónico:</string>
     <string name="verify_email_button">Verificar Correo</string>
     <string name="verify_email_skip">Si no creaste esta cuenta, puedes ignorar este correo.</string>
     <string name="copyright">© 2025 DEVELARQ | Todos los derechos reservados.</string>
@@ -185,4 +185,17 @@
     <string name="acceso_denegado">No tienes permisos para acceder a esta sección</string>
     <string name="sesion_cerrada">Sesión cerrada exitosamente</string>
     <string name="error_generico">Ha ocurrido un error</string>
+
+    <!-- Proyectos -->
+    <string name="projects_management">Gestión de Proyectos</string>
+    <string name="filter_by_status">Filtrar por estado:</string>
+    <string name="no_projects">No hay proyectos</string>
+    <string name="all">Todos</string>
+
+    <!-- Array de estados para el Spinner -->
+    <string-array name="project_states">
+        <item>activo</item>
+        <item>en progreso</item>
+        <item>finalizado</item>
+    </string-array>
 </resources>

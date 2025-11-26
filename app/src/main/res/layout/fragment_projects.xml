@@ -1,116 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent"
-                                                   android:background="#1A1A1A">
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B1120">
 
-    <!-- Top App Bar -->
-    <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#0F172A"
-            android:elevation="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:titleTextColor="#FFFFFF">
+    <!-- Top Bar -->
+    <include
+        android:id="@+id/topAppBar"
+        layout="@layout/layout_top_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <include
-                android:id="@+id/topAppBar"
-                layout="@layout/layout_top_app_bar"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminateTint="#B3E10F"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contenido de Proyectos"
-                app:layout_constraintTop_toBottomOf="@id/topAppBar"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-    </com.google.android.material.appbar.MaterialToolbar>
-
-    <!-- Content -->
+    <!-- Content Container -->
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            android:padding="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/topAppBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <!-- Title -->
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gestión de Proyectos"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/projects_management"
+            android:textColor="#B3E10F"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
         <!-- Card Container -->
         <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="24dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="#1E293B"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:cardBackgroundColor="#1E293B"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <!-- Header -->
+                <!-- Header: Filter -->
                 <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="16dp">
 
-                    <Spinner
-                            android:id="@+id/spinnerFilter"
-                            android:layout_width="0dp"
-                            android:layout_height="48dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/bg_spinner"
-                            android:paddingHorizontal="12dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnNewProject"
-                            android:layout_width="wrap_content"
-                            android:layout_height="48dp"
-                            android:layout_marginStart="12dp"
-                            android:backgroundTint="#374151"
-                            android:text="NUEVO PROYECTO"
-                            android:textSize="11sp"
-                            app:cornerRadius="6dp" />
-                </LinearLayout>
-
-                <!-- Empty state -->
-                <TextView
-                        android:id="@+id/tvEmptyState"
+                    <!-- Label Filtro -->
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="48dp"
-                        android:text="No hay proyectos"
-                        android:textColor="#6B7280"
-                        android:textSize="16sp" />
+                        android:text="@string/filter_by_status"
+                        android:textColor="#B3E10F"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp" />
 
-                <!-- RecyclerView de proyectos -->
-                <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvProjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="16dp"
+                    <!-- Spinner -->
+                    <Spinner
+                        android:id="@+id/spinnerFilter"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
-                        android:visibility="gone" />
+                        android:background="@drawable/bg_spinner"
+                        android:paddingHorizontal="12dp" />
+                </LinearLayout>
+
+                <!-- Empty State -->
+                <LinearLayout
+                    android:id="@+id/llEmptyState"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_projects"
+                        android:textColor="#6B7280"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="No hay proyectos para mostrar"
+                        android:textColor="#6B7280"
+                        android:textSize="14sp"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <!-- RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvProjects"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:paddingVertical="4dp"
+                    android:visibility="visible" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
