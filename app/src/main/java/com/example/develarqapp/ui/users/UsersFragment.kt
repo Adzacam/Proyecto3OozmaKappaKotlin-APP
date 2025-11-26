@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.develarqapp.MainActivity
 import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentUsersBinding
 import com.example.develarqapp.utils.SessionManager
@@ -42,12 +43,22 @@ class UsersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupTopBar()
+        (activity as? MainActivity)?.updateMenuVisibility(sessionManager.getUserRol())
         setupUI()
         setupRecyclerView()
         setupObservers()
 
-        // Cargar usuarios
-        viewModel.loadUsers()
+        sessionManager = SessionManager(requireContext())
+        val token = sessionManager.getToken()
+
+        if (token != null) {
+            viewModel.loadUsers(token)
+            viewModel.loadDeletedUsers(token)
+
+        } else {
+            // No hay token, enviar al login
+            // (Aquí deberías navegar al login, p.ej. findNavController().navigate(R.id.action_global_to_loginFragment))
+        }
     }
 
     private fun setupTopBar() {
@@ -124,20 +135,33 @@ class UsersFragment : Fragment() {
             .setTitle("Eliminar Usuario")
             .setMessage("¿Está seguro de eliminar a $userName?")
             .setPositiveButton("Eliminar") { _, _ ->
-                viewModel.deleteUser(userId)
+                // CAMBIO AQUÍ: Obtener token y pasarlo
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.deleteUser(userId, token) // <-- Pasa el token
+                } else {
+                    // Manejar sesión expirada, quizás
+                    Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun showToggleStatusDialog(userId: Long, userName: String, currentStatus: String) {
+    private fun showToggleStatusDialog(userId: Long, userName: String, currentStatus: String?) {
         val newStatus = if (currentStatus == "activo") "desactivar" else "activar"
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Cambiar Estado")
             .setMessage("¿Desea $newStatus a $userName?")
             .setPositiveButton("Confirmar") { _, _ ->
-                viewModel.toggleUserStatus(userId)
+                // CAMBIO AQUÍ: Obtener token y pasarlo
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.toggleUserStatus(userId, token) // <-- Pasa el token
+                } else {
+                    Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton("Cancelar", null)
             .show()

@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.develarqapp.databinding.FragmentDeletedUsersBinding
+import com.example.develarqapp.utils.SessionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class DeletedUsersFragment : Fragment() {
@@ -20,6 +21,7 @@ class DeletedUsersFragment : Fragment() {
 
     private val viewModel: UsersViewModel by viewModels()
     private lateinit var deletedUsersAdapter: DeletedUsersAdapter
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,6 +29,7 @@ class DeletedUsersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDeletedUsersBinding.inflate(inflater, container, false)
+        sessionManager = SessionManager(requireContext()) // <-- 2. INICIALIZAR
         return binding.root
     }
 
@@ -40,7 +43,13 @@ class DeletedUsersFragment : Fragment() {
         setupObservers()
 
         // Cargar usuarios eliminados
-        viewModel.loadDeletedUsers()
+        val token = sessionManager.getToken()
+        if (token != null) {
+            viewModel.loadDeletedUsers(token)
+        } else {
+            Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
+            findNavController().navigateUp() // Salir si no hay sesión
+        }
     }
 
     private fun setupRecyclerView() {
@@ -55,6 +64,7 @@ class DeletedUsersFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // ... (Tu código de observers no cambia) ...
         viewModel.deletedUsers.observe(viewLifecycleOwner) { users ->
             if (users.isEmpty()) {
                 binding.llEmptyState.isVisible = true
@@ -90,7 +100,12 @@ class DeletedUsersFragment : Fragment() {
             .setTitle("Restaurar Usuario")
             .setMessage("¿Está seguro de restaurar a $userName?")
             .setPositiveButton("Restaurar") { _, _ ->
-                viewModel.restoreUser(userId)
+                val token = sessionManager.getToken() // <-- 5. OBTENER TOKEN
+                if (token != null) {
+                    viewModel.restoreUser(userId, token) // <-- 6. PASAR TOKEN
+                } else {
+                    Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton("Cancelar", null)
             .show()

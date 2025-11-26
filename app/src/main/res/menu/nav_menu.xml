@@ -50,6 +50,19 @@
                 android:icon="@drawable/ic_downloads"
                 android:title="Historial Descargas"
                 android:visible="false" />
+        <!-- Planos BIM - Roles específicos -->
+        <item
+                android:id="@+id/nav_bim_plans"
+                android:icon="@drawable/ic_bimplan"
+                android:title="Planos BIM"
+                android:visible="false" />
+        <item
+                android:id="@+id/nav_auditoria"
+                android:icon="@drawable/ic_audit"
+                android:title="Auditoría"
+                android:visible="false" />
+
+
     </group>
 
     <item android:title="Cuenta">

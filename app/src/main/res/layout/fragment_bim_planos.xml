@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0F172A">
+
+    <!-- Top App Bar -->
+    <include
+            android:id="@+id/topAppBar"
+            layout="@layout/layout_top_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Content Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Title -->
+        <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BIBLIOTECA DE **PLANOS BIM**"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+                android:id="@+id/llActionButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <Button
+                    android:id="@+id/btnSubirPlano"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Subir Plano BIM"
+                    android:textColor="#000000"
+                    android:backgroundTint="#B8FF3C"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="8dp"
+                    app:cornerRadius="6dp" />
+
+            <Button
+                    android:id="@+id/btnVerPapelera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Ver Papelera"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#EF4444"
+                    android:textSize="12sp"
+                    app:cornerRadius="6dp" />
+        </LinearLayout>
+
+        <!-- Filters Section -->
+        <LinearLayout
+                android:id="@+id/llFilters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/llActionButtons">
+
+            <!-- Search Bar -->
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:startIconDrawable="@android:drawable/ic_menu_search">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Buscar título o descripción..."
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Filter Row -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                <!-- Type Filter -->
+                <Spinner
+                        android:id="@+id/spinnerTipo"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:layout_marginEnd="8dp"
+                        android:prompt="@string/prompt_tipo_todos" />
+                <!-- Project Filter -->
+                <Spinner
+                        android:id="@+id/spinnerProyecto"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:layout_marginEnd="8dp"
+                        android:prompt="@string/prompt_proyecto_todos" />
+
+                <!-- Date Range -->
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="8dp">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Desde"
+                            android:textColor="#94A3B8"
+                            android:textSize="10sp" />
+
+                    <EditText
+                            android:id="@+id/etDateFrom"
+                            android:layout_width="80dp"
+                            android:layout_height="32dp"
+                            android:background="@android:color/white"
+                            android:hint="dd/mm/aaaa"
+                            android:textSize="10sp"
+                            android:padding="4dp"
+                            android:inputType="none"
+                            android:focusable="false" />
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="8dp">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hasta"
+                            android:textColor="#94A3B8"
+                            android:textSize="10sp" />
+
+                    <EditText
+                            android:id="@+id/etDateTo"
+                            android:layout_width="80dp"
+                            android:layout_height="32dp"
+                            android:background="@android:color/white"
+                            android:hint="dd/mm/aaaa"
+                            android:textSize="10sp"
+                            android:padding="4dp"
+                            android:inputType="none"
+                            android:focusable="false" />
+                </LinearLayout>
+
+                <!-- Sort Dropdown -->
+                <Spinner
+                        android:id="@+id/spinnerSort"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:background="@android:color/white"
+                        android:layout_marginEnd="8dp"
+                        android:prompt="@string/prompt_mas_recientes" />
+
+                <!-- Clear Filters Button -->
+                <Button
+                        android:id="@+id/btnLimpiarFiltros"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Limpiar filtros"
+                        android:textSize="10sp"
+                        android:backgroundTint="#EF4444"
+                        android:textColor="#FFFFFF"
+                        app:cornerRadius="6dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- BIM Plans RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvBimPlans"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                app:layout_constraintTop_toBottomOf="@id/llFilters"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Empty State -->
+        <TextView
+                android:id="@+id/tvEmptyState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No hay planos BIM disponibles"
+                android:textAlignment="center"
+                android:textColor="#64748B"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

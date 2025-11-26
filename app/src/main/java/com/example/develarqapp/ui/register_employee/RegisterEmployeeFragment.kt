@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentRegisterEmployeeBinding
+import com.example.develarqapp.utils.SessionManager
 
 class RegisterEmployeeFragment : Fragment() {
 
@@ -19,7 +20,7 @@ class RegisterEmployeeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: RegisterEmployeeViewModel by viewModels()
-
+    private lateinit var sessionManager: SessionManager
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -111,14 +112,20 @@ class RegisterEmployeeFragment : Fragment() {
         val phone = binding.etPhone.text.toString()
         val password = binding.etPassword.text.toString()
         val rol = binding.actvRole.text.toString()
-
+        val token = sessionManager.getToken()
+        if (token == null) {
+            Toast.makeText(requireContext(), "Error de sesión, vuelve a iniciar", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_global_to_loginFragment) // (O a donde corresponda)
+            return
+        }
         viewModel.registerEmployee(
             name = name,
             apellido = apellido,
             email = email,
             phone = phone.ifEmpty { null },
             password = password,
-            rol = rol
+            rol = rol,
+            token= token
         )
     }
 

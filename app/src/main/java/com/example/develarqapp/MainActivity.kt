@@ -14,6 +14,8 @@ import com.example.develarqapp.databinding.ActivityMainBinding
 import com.example.develarqapp.utils.SessionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import android.widget.TextView
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupNavigation()
         updateMenuVisibility(sessionManager.getUserRol())
+
     }
 
     private fun setupNavigation() {
@@ -52,7 +55,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 R.id.kanbanFragment,
                 R.id.calendarFragment,
                 R.id.documentsFragment,
-                R.id.downloadHistoryFragment
+                R.id.downloadHistoryFragment,
+                R.id.auditoriaFragment,
+                R.id.bimPlanosFragment,
             ),
             drawerLayout
         )
@@ -80,34 +85,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (role.lowercase()) {
             "admin" -> {
-                // Admin ve todo
                 menu.findItem(R.id.nav_employees)?.isVisible = true
                 menu.findItem(R.id.nav_calendar)?.isVisible = true
                 menu.findItem(R.id.nav_documents)?.isVisible = true
                 menu.findItem(R.id.nav_download_history)?.isVisible = true
+                menu.findItem(R.id.nav_auditoria)?.isVisible = true
+                menu.findItem(R.id.nav_bim_plans)?.isVisible = true
             }
             "ingeniero", "arquitecto" -> {
-                // Ingeniero y arquitecto ven calendario y documentos
                 menu.findItem(R.id.nav_employees)?.isVisible = false
                 menu.findItem(R.id.nav_calendar)?.isVisible = true
                 menu.findItem(R.id.nav_documents)?.isVisible = true
                 menu.findItem(R.id.nav_download_history)?.isVisible = false
+                menu.findItem(R.id.nav_auditoria)?.isVisible = false
+                menu.findItem(R.id.nav_bim_plans)?.isVisible = true
             }
             "cliente" -> {
-                // Cliente solo ve lo básico
                 menu.findItem(R.id.nav_employees)?.isVisible = false
                 menu.findItem(R.id.nav_calendar)?.isVisible = false
                 menu.findItem(R.id.nav_documents)?.isVisible = false
                 menu.findItem(R.id.nav_download_history)?.isVisible = false
+                menu.findItem(R.id.nav_auditoria)?.isVisible = false
+                menu.findItem(R.id.nav_bim_plans)?.isVisible = false
             }
-            else -> {
-                // Por defecto, ocultar todo excepto lo básico
-                menu.findItem(R.id.nav_employees)?.isVisible = false
-                menu.findItem(R.id.nav_calendar)?.isVisible = false
-                menu.findItem(R.id.nav_documents)?.isVisible = false
-                menu.findItem(R.id.nav_download_history)?.isVisible = false
-            }
+
         }
+        // --- 2. [NUEVO] Código para actualizar la Cabecera ---
+        val headerView = navigationView.getHeaderView(0) // Obtiene nav_header.xml
+        val tvUserName = headerView.findViewById<TextView>(R.id.tvNavUserName)
+        val tvUserRole = headerView.findViewById<TextView>(R.id.tvNavUserRole)
+
+        // Asumiendo que SessionManager tiene estos métodos
+        val userName = sessionManager.getUserName()
+        val userApellido = sessionManager.getUserApellido()
+        val capitalizedRole = role.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }
+        tvUserName.text = "$userName $userApellido"
+        tvUserRole.text = capitalizedRole
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -145,6 +160,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_download_history -> {
                 if (hasAccess("admin")) {
                     navController.navigate(R.id.downloadHistoryFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_bim_plans -> {
+                if (hasAccess("admin", "ingeniero", "arquitecto")) {
+                    navController.navigate(R.id.bimPlanosFragment)
+                } else {
+                    showAccessDeniedDialog()
+                }
+            }
+            R.id.nav_auditoria -> {
+                if (hasAccess("admin")) {
+                    navController.navigate(R.id.auditoriaFragment)
                 } else {
                     showAccessDeniedDialog()
                 }

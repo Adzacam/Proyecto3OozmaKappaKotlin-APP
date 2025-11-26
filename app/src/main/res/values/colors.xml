@@ -2,7 +2,9 @@
 <resources>
     <!-- Primary Colors -->
     <color name="primary_blue">#2563EB</color>
-    <color name="lime_green">#B8FF3C</color>
+    <color name="primary_green">#B8FF3C</color>
+    <color name="primary_dark">#0F172A</color>
+    <color name="primaryColor">#B8FF3C</color>
 
     <!-- Background Colors -->
     <color name="background_dark">#1A1A1A</color>
@@ -11,12 +13,15 @@
     <color name="background_slate">#1E293B</color>
     <color name="background_gray">#1F2937</color>
     <color name="background_green">#0F4C2C</color>
+    <color name="card_background">#1E293B</color>
 
     <!-- Text Colors -->
     <color name="text_white">#FFFFFF</color>
     <color name="text_gray">#9CA3AF</color>
     <color name="text_dark_gray">#6B7280</color>
     <color name="text_light_green">#D1FAE5</color>
+    <color name="text_light_gray">#E2E8F0</color>
+    <color name="text_light">#CBD5E1</color>
 
     <!-- Border Colors -->
     <color name="border_gray">#3F3F3F</color>
@@ -30,5 +35,29 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Secondary Colors -->
+    <color name="secondary_gray">#334155</color>
+    <color name="secondary_light_gray">#64748B</color>
+    <color name="secondary_card">#1E293B</color>
+    <color name="secondaryColor">#0F172A</color>
+
+
+    <!-- Accent Colors -->
+    <color name="accent_blue">#60A5FA</color>
+    <color name="accent_yellow">#B8FF3C</color>
+    <color name="accent_red">#EF4444</color>
+    <color name="accentColor">#EF4444</color>
+
+    <!-- Colores de estado -->
+    <color name="error_red">#EF4444</color>
+    <color name="success_green">#10B981</color>
+    <color name="warning_yellow">#F59E0B</color>
+    <color name="slate_700">#334155</color>
+
+    <!-- Colores alternativos para SwipeRefresh si prefieres otros -->
+    <color name="refresh_color_1">#B8FF3C</color>
+    <color name="refresh_color_2">#10B981</color>
+    <color name="refresh_color_3">#3B82F6</color>
 
 </resources>

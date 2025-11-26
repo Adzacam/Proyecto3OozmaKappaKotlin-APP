@@ -13,8 +13,7 @@ class Database {
             $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->db_name};charset=utf8";
             $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            // Puedes imprimir esto para confirmar conexión
-            // echo json_encode(["success" => true, "message" => "Conexión exitosa"]);
+
         } catch (PDOException $exception) {
             echo json_encode([
                 "success" => false,
@@ -23,6 +22,8 @@ class Database {
             exit();
         }
         return $this->conn;
+        
     }
+    
 }
 ?>

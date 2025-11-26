@@ -33,7 +33,7 @@ class DeletedUsersAdapter(
             binding.apply {
                 tvUserName.text = user.fullName
                 tvUserEmail.text = user.email
-                tvUserRole.text = user.rol.replaceFirstChar { it.uppercase() }
+                tvUserRole.text = user.rol?.replaceFirstChar { it.uppercaseChar() } ?: "Sin Rol"
 
                 btnRestore.setOnClickListener {
                     onRestoreClick(user)

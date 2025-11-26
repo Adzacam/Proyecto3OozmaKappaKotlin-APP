@@ -19,20 +19,20 @@
 
         <ImageView
                 android:id="@+id/ivNavLogo"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="80dp"
+                android:layout_height="58dp"
                 android:contentDescription="@string/app_logo"
-                android:src="@drawable/ic_logo" />
+                android:src="@drawable/logodevelarq"/>
 
         <TextView
                 android:id="@+id/tvNavAppName"
-                android:layout_width="wrap_content"
+                android:layout_width="119dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:text="DevelArq"
                 android:textColor="#2563EB"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
     </LinearLayout>
 
     <!-- User Info -->

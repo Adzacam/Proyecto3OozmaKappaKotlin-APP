@@ -6,19 +6,18 @@
             app:startDestination="@id/loginFragment">
 
     <!-- ========================================== -->
-    <!-- AUTH FRAGMENTS -->
-    <!-- ========================================== -->
 
+    <!-- Login -->
+
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/loginFragment"
             android:name="com.example.develarqapp.ui.login.LoginFragment"
             android:label="Iniciar Sesión"
             tools:layout="@layout/fragment_login">
-
         <action
                 android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
                 app:destination="@id/forgotPasswordFragment" />
-
         <action
                 android:id="@+id/action_loginFragment_to_dashboardFragment"
                 app:destination="@id/dashboardFragment"
@@ -31,7 +30,6 @@
             android:name="com.example.develarqapp.ui.login.ForgotPasswordFragment"
             android:label="Recuperar Contraseña"
             tools:layout="@layout/fragment_forgot_password">
-
         <action
                 android:id="@+id/action_forgotPasswordFragment_to_loginFragment"
                 app:destination="@id/loginFragment"
@@ -44,7 +42,6 @@
             android:name="com.example.develarqapp.ui.auth.VerifyEmailFragment"
             android:label="Verificar Email"
             tools:layout="@layout/fragment_verify_email">
-
         <action
                 android:id="@+id/action_verifyEmailFragment_to_loginFragment"
                 app:destination="@id/loginFragment"
@@ -53,84 +50,58 @@
     </fragment>
 
     <!-- ========================================== -->
-    <!-- MAIN APP FRAGMENTS -->
-    <!-- ========================================== -->
 
+    <!-- Dashboard -->
+
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/dashboardFragment"
             android:name="com.example.develarqapp.ui.dashboard.DashboardFragment"
             android:label="Dashboard"
             tools:layout="@layout/fragment_dashboard">
-
         <action
                 android:id="@+id/action_dashboardFragment_to_usersFragment"
                 app:destination="@id/usersFragment" />
-
         <action
                 android:id="@+id/action_dashboardFragment_to_projectsFragment"
                 app:destination="@id/projectsFragment" />
-
         <action
                 android:id="@+id/action_dashboardFragment_to_kanbanFragment"
                 app:destination="@id/kanbanFragment" />
-
         <action
                 android:id="@+id/action_dashboardFragment_to_calendarFragment"
                 app:destination="@id/calendarFragment" />
-
         <action
                 android:id="@+id/action_dashboardFragment_to_documentsFragment"
                 app:destination="@id/documentsFragment" />
-
         <action
                 android:id="@+id/action_dashboardFragment_to_downloadHistoryFragment"
                 app:destination="@id/downloadHistoryFragment" />
     </fragment>
 
+    <!-- ========================================== -->
+
+    <!-- Users -->
+
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/usersFragment"
             android:name="com.example.develarqapp.ui.users.UsersFragment"
             android:label="Usuarios"
             tools:layout="@layout/fragment_users">
-
         <action
                 android:id="@+id/action_usersFragment_to_registerEmployeeFragment"
                 app:destination="@id/registerEmployeeFragment" />
-
         <action
                 android:id="@+id/action_usersFragment_to_deletedUsersFragment"
                 app:destination="@id/deletedUsersFragment" />
     </fragment>
 
     <fragment
-            android:id="@+id/deletedUsersFragment"
-            android:name="com.example.develarqapp.ui.users.DeletedUsersFragment"
-            android:label="Usuarios Eliminados"
-            tools:layout="@layout/fragment_deleted_users">
-
-        <action
-                android:id="@+id/action_deletedUsersFragment_to_usersFragment"
-                app:destination="@id/usersFragment" />
-    </fragment>
-
-    <fragment
-            android:id="@+id/projectsFragment"
-            android:name="com.example.develarqapp.ui.projects.ProjectsFragment"
-            android:label="Proyectos"
-            tools:layout="@layout/fragment_projects" />
-
-    <fragment
-            android:id="@+id/kanbanFragment"
-            android:name="com.example.develarqapp.ui.kanban.KanbanFragment"
-            android:label="Tablero Kanban"
-            tools:layout="@layout/fragment_kanban" />
-
-    <fragment
             android:id="@+id/registerEmployeeFragment"
             android:name="com.example.develarqapp.ui.register_employee.RegisterEmployeeFragment"
             android:label="Registrar Empleado"
             tools:layout="@layout/fragment_register_employee">
-
         <action
                 android:id="@+id/action_registerEmployeeFragment_to_usersFragment"
                 app:destination="@id/usersFragment"
@@ -138,21 +109,128 @@
                 app:popUpToInclusive="false" />
     </fragment>
 
+    <fragment
+            android:id="@+id/deletedUsersFragment"
+            android:name="com.example.develarqapp.ui.users.DeletedUsersFragment"
+            android:label="Usuarios Eliminados"
+            tools:layout="@layout/fragment_deleted_users">
+        <action
+                android:id="@+id/action_deletedUsersFragment_to_usersFragment"
+                app:destination="@id/usersFragment" />
+    </fragment>
     <!-- ========================================== -->
-    <!-- CALENDAR, DOCUMENTS, DOWNLOADS (Restricted) -->
+
+    <!-- Projects -->
+
     <!-- ========================================== -->
+
+    <fragment
+            android:id="@+id/projectsFragment"
+            android:name="com.example.develarqapp.ui.projects.ProjectsFragment"
+            android:label="Proyectos"
+            tools:layout="@layout/fragment_projects" />
+    <!-- ========================================== -->
+
+    <!-- Kanban -->
+
+    <!-- ========================================== -->
+
+    <fragment
+            android:id="@+id/kanbanFragment"
+            android:name="com.example.develarqapp.ui.kanban.KanbanFragment"
+            android:label="Tablero Kanban"
+            tools:layout="@layout/fragment_kanban" />
+    <!-- ========================================== -->
+
+    <!-- Calendar -->
+
+    <!-- ========================================== -->
+
 
     <fragment
             android:id="@+id/calendarFragment"
             android:name="com.example.develarqapp.ui.calendar.CalendarFragment"
             android:label="Calendario"
-            tools:layout="@layout/fragment_calendar" />
+            tools:layout="@layout/fragment_calendar">
+        <action
+                android:id="@+id/action_calendarFragment_to_createMeetingDialogFragment"
+                app:destination="@id/createMeetingDialogFragment"/>
+        <action android:id="@+id/action_calendarFragment_to_EditMeetingDialogFragment"
+                app:destination="@id/EditMeetingDialogFragment"/>
+    </fragment>
+
+    <dialog
+            android:id="@+id/createMeetingDialogFragment"
+            android:name="com.example.develarqapp.ui.calendar.CreateMeetingDialogFragment"
+            android:label="Programar Reunión"
+            tools:layout="@layout/dialog_create_meeting" >
+        <action android:id="@+id/action_createMeetingDialogFragment_to_calendarFragment"
+                app:destination="@id/calendarFragment"/>
+    </dialog>
+
+    <dialog
+            android:id="@+id/EditMeetingDialogFragment"
+            android:name="com.example.develarqapp.ui.calendar.EditMeetingDialogFragment"
+            android:label="Editar Reunión"
+            tools:layout="@layout/dialog_edit_meeting" >
+        <action android:id="@+id/action_EditMeetingDialogFragment_to_calendarFragment"
+                app:destination="@id/calendarFragment"/>
+    </dialog>
+
+    <!-- ========================================== -->
+
+    <!-- Documents -->
+
+    <!-- ========================================== -->
 
     <fragment
             android:id="@+id/documentsFragment"
             android:name="com.example.develarqapp.ui.documents.DocumentsFragment"
             android:label="Documentos"
-            tools:layout="@layout/fragment_documents" />
+            tools:layout="@layout/fragment_documents">
+        <action
+                android:id="@+id/action_documentsFragment_to_deletedDocumentsFragment"
+                app:destination="@id/deletedDocumentsFragment" />
+        <action android:id="@+id/action_documentsFragment_to_UploadDocumentDialogFragment"
+                app:destination="@id/UploadDocumentDialogFragment"/>
+        <action android:id="@+id/action_documentsFragment_to_EditDocumentDialogFragment"
+                app:destination="@id/EditDocumentDialogFragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/EditDocumentDialogFragment"
+            android:name="com.example.develarqapp.ui.documents.EditDocumentDialogFragment"
+            android:label="Documentos"
+            tools:layout="@layout/dialog_edit_document">
+        <action android:id="@+id/action_EditDocumentDialogFragment_to_documentsFragment"
+                app:destination="@id/documentsFragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/UploadDocumentDialogFragment"
+            android:name="com.example.develarqapp.ui.documents.UploadDocumentDialogFragment"
+            android:label="Documentos"
+            tools:layout="@layout/dialog_upload_document">
+        <action android:id="@+id/action_UploadDocumentDialogFragment_to_documentsFragment"
+                app:destination="@id/documentsFragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/deletedDocumentsFragment"
+            android:name="com.example.develarqapp.ui.documents.DeletedDocumentsFragment"
+            android:label="Papelera de Documentos"
+            tools:layout="@layout/fragment_deleted_documents">
+        <action
+                android:id="@+id/action_deletedDocumentsFragment_to_documentsFragment"
+                app:destination="@id/documentsFragment"
+                app:popUpTo="@id/documentsFragment"
+                app:popUpToInclusive="true" />
+    </fragment>
+    <!-- ========================================== -->
+
+    <!-- Downloads -->
+
+    <!-- ========================================== -->
 
     <fragment
             android:id="@+id/downloadHistoryFragment"
@@ -161,9 +239,32 @@
             tools:layout="@layout/fragment_download_history" />
 
     <!-- ========================================== -->
-    <!-- PROFILE & NOTIFICATIONS -->
+
+    <!-- Audit -->
+
+    <!-- ========================================== -->
+    <fragment
+            android:id="@+id/auditoriaFragment"
+            android:name="com.example.develarqapp.ui.auditorias.AuditoriaFragment"
+            android:label="Auditoría"
+            tools:layout="@layout/fragment_auditoria" />
     <!-- ========================================== -->
 
+    <!-- BIM planos -->
+
+    <!-- ========================================== -->
+
+    <fragment
+            android:id="@+id/bimPlanosFragment"
+            android:name="com.example.develarqapp.ui.bimplanos.BimPlanosFragment"
+            android:label="Planos BIM"
+            tools:layout="@layout/fragment_bim_planos" />
+
+    <!-- ========================================== -->
+
+    <!-- PROFILE & NOTIFICATIONS -->
+
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/profileFragment"
             android:name="com.example.develarqapp.ui.profile.ProfileFragment"
@@ -175,10 +276,6 @@
             android:name="com.example.develarqapp.ui.notifications.NotificationsFragment"
             android:label="Notificaciones"
             tools:layout="@layout/fragment_notifications" />
-
-    <!-- ========================================== -->
-    <!-- GLOBAL ACTIONS -->
-    <!-- ========================================== -->
 
     <action
             android:id="@+id/action_global_to_loginFragment"

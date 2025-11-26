@@ -185,4 +185,10 @@
     <string name="acceso_denegado">No tienes permisos para acceder a esta sección</string>
     <string name="sesion_cerrada">Sesión cerrada exitosamente</string>
     <string name="error_generico">Ha ocurrido un error</string>
+
+    <!-- planos-->
+    <string name="prompt_todas_acciones">Todas las acciones</string>
+    <string name="prompt_mas_recientes">Más recientes primero</string>
+    <string name="prompt_tipo_todos">Tipo: Todos</string>
+    <string name="prompt_proyecto_todos">Proyecto: Todos</string>
 </resources>
