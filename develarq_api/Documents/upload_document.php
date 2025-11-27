@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // ==========================================
 // 1. MANEJO DE TOKEN (PARCHE XAMPP)
@@ -69,7 +70,20 @@ try {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Error al validar usuario: " . $e->getMessage()]);
     exit();
+
+    
 }
+$authHeader = $headers['Authorization'];
+$token = str_replace('Bearer ', '', $authHeader);
+$usuario = obtenerUsuarioDesdeToken($db, $token);
+
+if (!$usuario) {
+    http_response_code(401);
+    echo json_encode(["success" => false, "message" => "Token inválido"]);
+    exit();
+}
+
+$user_id = $usuario['id'];
 // ==========================================
 // 3. PROCESAR SUBIDA
 // ==========================================
@@ -96,6 +110,7 @@ try {
         if (!isset($_FILES['archivo']) || $_FILES['archivo']['error'] !== UPLOAD_ERR_OK) {
              throw new Exception("No se ha enviado el archivo o hubo un error en la subida");
         }
+        //ruta de tu proyecto en laravel 
         $uploadDir = 'C:/Users/HP/Documents/Univalle/6to Semestre proyecto Develarq/Proyecto3OozmaKappa/storage/app/public/documentos/';
         if (!file_exists($uploadDir)) {
             mkdir($uploadDir, 0777, true);
@@ -140,7 +155,31 @@ try {
     } else {
         throw new Exception("Error al guardar en la base de datos");
     }
+    if ($stmt->execute()) {
+    $lastId = $db->lastInsertId();
+    
+    $stmtSelect = $db->prepare("SELECT * FROM documentos WHERE id = ?");
+    $stmtSelect->execute([$lastId]);
+    $newDoc = $stmtSelect->fetch(PDO::FETCH_ASSOC);
 
+    // ✅ REGISTRAR EN AUDITORÍA
+    $proyectoQuery = "SELECT nombre FROM proyectos WHERE id = :id";
+    $proyectoStmt = $db->prepare($proyectoQuery);
+    $proyectoStmt->execute([':id' => $proyecto_id]);
+    $proyecto = $proyectoStmt->fetch(PDO::FETCH_ASSOC);
+    
+    $accion = "Subió el documento '{$nombre}' al proyecto '{$proyecto['nombre']}'";
+    registrarAuditoria($db, $user_id, $accion, 'documentos', $lastId);
+
+    http_response_code(200);
+    echo json_encode([
+        "success" => true, 
+        "message" => "Documento subido correctamente",
+        "data" => $newDoc
+    ]);
+} else {
+    throw new Exception("Error al guardar en la base de datos");
+}
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
@@ -148,4 +187,5 @@ try {
         "message" => $e->getMessage()
     ]);
 }
+
 ?>

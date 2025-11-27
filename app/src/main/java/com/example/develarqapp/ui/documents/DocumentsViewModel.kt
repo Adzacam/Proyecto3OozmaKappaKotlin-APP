@@ -256,19 +256,34 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
     // ========== DESCARGAR DOCUMENTO ==========
 
     fun downloadDocument(document: Document) {
-        try {
-            val fileName = document.nombre + getExtensionForType(document.tipo)
+        viewModelScope.launch {
+            try {
+                val fileName = document.nombre + getExtensionForType(document.tipo)
 
-            val result = repository.downloadDocument(document.id, fileName)
+                val result = repository.downloadDocument(document.id, fileName)
 
-            result.onSuccess { mensaje ->
-                _successMessage.value = mensaje
-            }.onFailure { error ->
-                _errorMessage.value = "Error al iniciar descarga: ${error.message}"
+                result.onSuccess { mensaje ->
+                    _successMessage.value = mensaje
+                    // ✅ Registrar la descarga en el historial
+                    registerDownload(document.id)
+                }.onFailure { error ->
+                    _errorMessage.value = "Error al iniciar descarga: ${error.message}"
+                }
+
+            } catch (e: Exception) {
+                _errorMessage.value = "Error inesperado: ${e.message}"
             }
+        }
+    }
 
-        } catch (e: Exception) {
-            _errorMessage.value = "Error inesperado: ${e.message}"
+    private fun registerDownload(documentId: Long) {
+        viewModelScope.launch {
+            try {
+                repository.registerDownload (documentId)
+            } catch (e: Exception) {
+                // Log silencioso, no interrumpir la descarga
+                android.util.Log.e("DownloadRegister", "Error al registrar: ${e.message}")
+            }
         }
     }
 

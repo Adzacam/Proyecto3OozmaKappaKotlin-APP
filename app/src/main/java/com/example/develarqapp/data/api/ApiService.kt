@@ -167,4 +167,27 @@ interface ApiService {
     suspend fun purgeOldDocuments(
         @Header("Authorization") token: String
     ): Response<PurgeResponse>
+
+    // ========== DOWNLOAD HISTORY ==========
+    @GET("Documents/get_download_history.php")
+    suspend fun getDownloadHistory(
+        @Header("Authorization") token: String
+    ): Response<DownloadHistoryResponse>
+
+    @GET("Documents/get_download_history.php")
+    suspend fun getDownloadHistoryFiltered(
+        @Query("user_id") userId: Long? = null,
+        @Query("proyecto_id") projectId: Long? = null,
+        @Query("fecha_inicio") startDate: String? = null,
+        @Query("fecha_fin") endDate: String? = null,
+        @Header("Authorization") token: String
+    ): Response<DownloadHistoryResponse>
+
+    // ========== REGISTRAR DESCARGA EN HISTORIAL ==========
+
+    @POST("Documents/register_download.php")
+    suspend fun registerDownload(
+        @Body request: RegisterDownloadRequest,
+        @Header("Authorization") token: String
+    ): Response<GenericResponse>
 }

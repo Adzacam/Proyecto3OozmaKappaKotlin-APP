@@ -104,7 +104,7 @@ class DeletedDocumentsFragment : Fragment() {
         // Loading
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (!binding.swipeRefresh.isRefreshing) {
-                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+                //binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
         }
 

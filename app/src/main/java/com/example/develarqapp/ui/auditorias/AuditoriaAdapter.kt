@@ -2,6 +2,7 @@ package com.example.develarqapp.ui.auditorias
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +34,14 @@ class AuditoriaAdapter : ListAdapter<AuditoriaLog, AuditoriaAdapter.AuditViewHol
                 tvAccion.text = log.accion
                 tvRegistro.text = log.registro
                 tvFecha.text = log.fecha
+
+                // Mostrar IP si está disponible
+                if (!log.ip_address.isNullOrEmpty()) {
+                    tvIpAddress.text = log.ip_address
+                    tvIpAddress.isVisible = true
+                } else {
+                    tvIpAddress.isVisible = false
+                }
             }
         }
     }

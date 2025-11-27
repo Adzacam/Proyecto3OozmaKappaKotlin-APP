@@ -5,6 +5,7 @@ header('Access-Control-Allow-Methods: POST, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // Verificar autenticación
 $headers = getallheaders();
@@ -119,6 +120,9 @@ try {
         'success' => true,
         'message' => 'Reunión eliminada exitosamente'
     ]);
+
+    $accion = "Eliminó la reunión '{$reunion['titulo']}' del proyecto '{$reunion['proyecto_nombre']}'";
+    registrarAuditoria($pdo, $user_id, $accion, 'reuniones', $reunion_id);
     
 } catch (PDOException $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

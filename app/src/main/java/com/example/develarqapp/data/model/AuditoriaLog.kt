@@ -5,5 +5,6 @@ data class AuditoriaLog(
     val usuario: String,
     val accion: String,
     val registro: String,
-    val fecha: String
+    val fecha: String,
+    val ip_address: String? = null
 )

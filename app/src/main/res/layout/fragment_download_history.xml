@@ -6,17 +6,13 @@
         android:layout_height="match_parent"
         android:background="#0F172A">
 
-    <!-- Top App Bar -->
     <include
             android:id="@+id/topAppBar"
             layout="@layout/layout_top_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Content Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -24,34 +20,77 @@
             app:layout_constraintTop_toBottomOf="@id/topAppBar"
             app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Title -->
         <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Historial de Descargas (Admin)"
+                android:text="HISTORIAL DE DESCARGAS"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Info Card -->
+        <!-- Búsqueda -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:startIconDrawable="@android:drawable/ic_menu_search"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Buscar usuario, documento o proyecto..."
+                    android:background="@drawable/spinner_background"
+                    android:textColor="#000000"
+                    android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- SwipeRefresh -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/tilSearch"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDownloads"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingBottom="8dp" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Info Card (Empty state) -->
         <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cvInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:visibility="gone"
                 app:cardBackgroundColor="#1E293B"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
-                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:gravity="center">
 
                 <TextView
                         android:layout_width="wrap_content"
@@ -67,69 +106,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="No se ha registrado ninguna descarga en el sistema."
+                        android:textAlignment="center"
                         android:textColor="#94A3B8"
                         android:textSize="14sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Filters Section (Future) -->
-        <LinearLayout
-                android:id="@+id/llFilters"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/cvInfo">
-
-            <Spinner
-                    android:id="@+id/spinnerUsuario"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:layout_marginEnd="8dp" />
-
-            <Spinner
-                    android:id="@+id/spinnerFecha"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/white" />
-        </LinearLayout>
-
-        <!-- Downloads RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvDownloads"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:paddingBottom="8dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/llFilters"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        <!-- Placeholder -->
         <TextView
                 android:id="@+id/tvPlaceholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Historial de Descargas\n\n(Por implementar)"
+                android:text="No hay descargas registradas"
                 android:textAlignment="center"
                 android:textColor="#64748B"
                 android:textSize="16sp"
-                app:layout_constraintTop_toBottomOf="@id/cvInfo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="32dp" />
-
-        <!-- Progress Bar -->
-        <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"

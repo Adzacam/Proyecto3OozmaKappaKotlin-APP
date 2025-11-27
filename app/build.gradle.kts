@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", (project.properties["API_URL"] as? String) ?: "\"http://192.168.1.8/develarq_api/\"")
+        buildConfigField("String", "BASE_URL", (project.properties["API_URL"] as? String) ?: "\"http://192.168.1.4/develarq_api/\"")
     }
 
     buildTypes {

@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php'; 
 
 // 2. PARCHE DE TOKEN PARA XAMPP
 $headers = getallheaders();
@@ -25,29 +26,22 @@ if (!isset($headers['Authorization'])) {
     echo json_encode(["success" => false, "message" => "Token no proporcionado"]);
     exit();
 }
+$authHeader = $headers['Authorization'];
+$token = str_replace('Bearer ', '', $authHeader);
+$usuario = obtenerUsuarioDesdeToken($db, $token);
 
 $database = new Database();
 $db = $database->getConnection();
 
+if (!$usuario) {
+    http_response_code(401);
+    echo json_encode(["success" => false, "message" => "Token inválido"]);
+    exit();
+}
+
+$user_id = $usuario['id'];
+
 try {
-    /* Como el token de Android no coincide con el de la BD ('remember_token'),
-       saltamos esta validación estricta temporalmente para que funcione la restauración.
-    
-    $token = str_replace('Bearer ', '', $headers['Authorization']);
-    $query = "SELECT id FROM users WHERE remember_token = :token AND eliminado = 0";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":token", $token);
-    $stmt->execute();
-    
-    if ($stmt->rowCount() == 0) {
-        http_response_code(401);
-        echo json_encode(["success" => false, "message" => "Token inválido"]);
-        exit();
-    }
-    */
-    // ------------------------------------------------
-    
-    // Obtener datos del cuerpo de la petición
     $data = json_decode(file_get_contents("php://input"));
     
     if (!isset($data->id)) {
@@ -58,12 +52,25 @@ try {
     
     $id = intval($data->id);
     
-    // Restaurar documento (Poner eliminado = 0 y fecha_eliminacion = NULL)
+    // ✅ Obtener info antes de restaurar
+    $infoQuery = "SELECT d.nombre, p.nombre as proyecto_nombre 
+                  FROM documentos d 
+                  LEFT JOIN proyectos p ON d.proyecto_id = p.id 
+                  WHERE d.id = :id";
+    $infoStmt = $db->prepare($infoQuery);
+    $infoStmt->execute([':id' => $id]);
+    $docInfo = $infoStmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Restaurar documento
     $query = "UPDATE documentos SET eliminado = 0, fecha_eliminacion = NULL WHERE id = :id";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":id", $id);
     
     if ($stmt->execute()) {
+        // ✅ REGISTRAR EN AUDITORÍA
+        $accion = "Restauró el documento '{$docInfo['nombre']}' del proyecto '{$docInfo['proyecto_nombre']}'";
+        registrarAuditoria($db, $user_id, $accion, 'documentos', $id);
+        
         http_response_code(200);
         echo json_encode([
             "success" => true,
