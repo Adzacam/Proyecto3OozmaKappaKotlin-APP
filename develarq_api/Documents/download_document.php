@@ -6,6 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { http_response_code(200); exit(); }
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // --- VALIDACIÓN DE TOKEN ---
 $headers = getallheaders();

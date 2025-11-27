@@ -5,6 +5,7 @@ header('Access-Control-Allow-Methods: POST, PUT');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // Verificar autenticación
 $headers = getallheaders();
@@ -229,6 +230,9 @@ try {
         'message' => 'Reunión actualizada exitosamente',
         'data' => $reunion
     ]);
+    
+    $accion = "Actualizó la reunión '{$data['titulo']}' del proyecto '{$proyecto['nombre']}'";
+    registrarAuditoria($pdo, $user_id, $accion, 'reuniones', $reunion_id);
     
 } catch (PDOException $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

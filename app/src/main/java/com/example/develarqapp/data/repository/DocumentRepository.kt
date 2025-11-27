@@ -220,6 +220,27 @@ class DocumentRepository(private val context: Context) {
             }
         }
     }
+    // ========== REGISTRAR DESCARGAS ==========
+    suspend fun registerDownload(documentId: Long): Result<String> {
+        return try {
+            val token = sessionManager.getToken()
+                ?: return Result.failure(Exception("Token no disponible"))
+
+            val request = RegisterDownloadRequest (documento_id = documentId)
+
+            val response = apiService.registerDownload(request, "Bearer $token")
+
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(response.body()?.message ?: "Descarga registrada")
+            } else {
+                // No fallar si el registro falla, solo log
+                Result.failure(Exception("No se pudo registrar la descarga"))
+            }
+        } catch (e: Exception) {
+            // No interrumpir la descarga si falla el registro
+            Result.failure(e)
+        }
+    }
 
     // PURGAR DOCUMENTOS ANTIGUOS (30+ días)
     suspend fun purgeOldDocuments(): Result<String> {

@@ -4,8 +4,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// SOLO importamos database.php. La línea de config_urls.php HA SIDO ELIMINADA.
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // Verificar autenticación
 $headers = getallheaders();
@@ -232,6 +232,9 @@ try {
         'message' => 'Reunión creada exitosamente',
         'data' => $reunion
     ]);
+
+    $accion = "Creó la reunión '{$data['titulo']}' del proyecto '{$proyecto['nombre']}'";
+    registrarAuditoria($pdo, $user_id, $accion, 'reuniones', $reunion_id);
     
 } catch (PDOException $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

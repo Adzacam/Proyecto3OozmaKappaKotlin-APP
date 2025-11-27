@@ -7,8 +7,9 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { http_response_code(200); exit(); }
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php'; 
 
-// --- PARCHE DE TOKEN ---
+// Validación de token
 $headers = getallheaders();
 if (!isset($headers['Authorization']) && isset($_SERVER['HTTP_AUTHORIZATION'])) {
     $headers['Authorization'] = $_SERVER['HTTP_AUTHORIZATION'];
@@ -19,10 +20,22 @@ if (!isset($headers['Authorization'])) {
     echo json_encode(["success" => false, "message" => "Token no proporcionado"]);
     exit();
 }
-// -----------------------
 
 $database = new Database();
 $db = $database->getConnection();
+
+// ✅ Obtener usuario del token
+$authHeader = $headers['Authorization'];
+$token = str_replace('Bearer ', '', $authHeader);
+$usuario = obtenerUsuarioDesdeToken($db, $token);
+
+if (!$usuario) {
+    http_response_code(401);
+    echo json_encode(["success" => false, "message" => "Token inválido"]);
+    exit();
+}
+
+$user_id = $usuario['id'];
 
 try {
     $data = json_decode(file_get_contents("php://input"));
@@ -35,12 +48,25 @@ try {
     
     $id = intval($data->id);
     
+    // ✅ Obtener info antes de eliminar
+    $infoQuery = "SELECT d.nombre, p.nombre as proyecto_nombre 
+                  FROM documentos d 
+                  LEFT JOIN proyectos p ON d.proyecto_id = p.id 
+                  WHERE d.id = :id";
+    $infoStmt = $db->prepare($infoQuery);
+    $infoStmt->execute([':id' => $id]);
+    $docInfo = $infoStmt->fetch(PDO::FETCH_ASSOC);
+    
     // Soft Delete
     $query = "UPDATE documentos SET eliminado = 1, fecha_eliminacion = NOW() WHERE id = :id";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":id", $id);
     
     if ($stmt->execute()) {
+        // ✅ REGISTRAR EN AUDITORÍA
+        $accion = "Eliminó (movió a papelera) el documento '{$docInfo['nombre']}' del proyecto '{$docInfo['proyecto_nombre']}'";
+        registrarAuditoria($db, $user_id, $accion, 'documentos', $id);
+        
         http_response_code(200);
         echo json_encode(["success" => true, "message" => "Enviado a papelera"]);
     } else {

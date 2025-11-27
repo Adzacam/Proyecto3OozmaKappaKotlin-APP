@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentDownloadHistoryBinding
 import com.example.develarqapp.utils.SessionManager
 import com.example.develarqapp.utils.TopBarManager
-import com.example.develarqapp.R
 
 class DownloadHistoryFragment : Fragment() {
 
@@ -19,6 +22,8 @@ class DownloadHistoryFragment : Fragment() {
 
     private lateinit var sessionManager: SessionManager
     private lateinit var topBarManager: TopBarManager
+    private val viewModel: DownloadHistoryViewModel by viewModels()
+    private lateinit var adapter: DownloadHistoryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +39,6 @@ class DownloadHistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Verificar acceso - solo admin
         if (!hasAccess()) {
             Toast.makeText(requireContext(), "No tienes acceso a esta sección", Toast.LENGTH_SHORT).show()
             requireActivity().onBackPressed()
@@ -42,7 +46,13 @@ class DownloadHistoryFragment : Fragment() {
         }
 
         setupTopBar()
-        setupUI()
+        setupRecyclerView()
+        setupObservers()
+        setupSwipeRefresh()
+        setupSearch()
+
+        // Cargar datos
+        viewModel.loadDownloadHistory()
     }
 
     private fun hasAccess(): Boolean {
@@ -51,19 +61,63 @@ class DownloadHistoryFragment : Fragment() {
     }
 
     private fun setupTopBar() {
-        // Usa el acceso directo de ViewBinding, es más limpio y seguro
         topBarManager.setupTopBar(binding.topAppBar.root)
     }
 
+    private fun setupRecyclerView() {
+        adapter = DownloadHistoryAdapter()
+        binding.rvDownloads.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@DownloadHistoryFragment.adapter
+        }
+    }
 
-    private fun setupUI() {
-        // TODO: Implementar historial de descargas
-        // - Mostrar todas las descargas del sistema
-        // - Filtros por usuario, fecha, tipo de archivo
-        // - Información: quién descargó qué y cuándo
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
 
-        binding.tvPlaceholder.text = "Historial Global de Descargas (Admin)\n\n(Por implementar)"
-        binding.tvEmptyMessage.text = "No se ha registrado ninguna descarga en el sistema"
+            setOnRefreshListener {
+                viewModel.loadDownloadHistory()
+            }
+        }
+    }
+
+    private fun setupSearch() {
+        binding.etSearch.doAfterTextChanged { text ->
+            val query = text.toString().trim()
+            viewModel.filterDownloads(searchQuery = query)
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.filteredDownloads.observe(viewLifecycleOwner) { downloads ->
+            binding.swipeRefresh.isRefreshing = false
+            adapter.submitList(downloads)
+        }
+
+        viewModel.isEmpty.observe(viewLifecycleOwner) { isEmpty ->
+            binding.rvDownloads.isVisible = !isEmpty
+            binding.tvPlaceholder.isVisible = isEmpty
+            binding.cvInfo.isVisible = isEmpty
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (!binding.swipeRefresh.isRefreshing) {
+                // Opcional: mostrar otro indicador
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+            if (error.isNotEmpty()) {
+                binding.swipeRefresh.isRefreshing = false
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+                viewModel.clearError()
+            }
+        }
     }
 
     override fun onDestroyView() {
