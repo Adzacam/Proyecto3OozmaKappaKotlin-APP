@@ -13,3 +13,16 @@ private $port = ""; ver que puerto usas
 Asegúrate de que la URL de restablecimiento en forgot-password/index.php apunte a tu entorno local:
 // En forgot-password/index.php
 $resetLink = "http://TU_IP/develarq_api/reset-password/index.php?token=" . $token;
+
+5.en documents php verificar la ruta a subir 
+
+$uploadDir = 'C:/Users/HP/Documents/Univalle/6to Semestre proyecto Develarq/Proyecto3OozmaKappa/storage/app/public/documentos/';
+
+6 para subir planos bim tener permisos de sobreescritura
+
+en upload_bim_plano poner la ruta de tu proyecto en laravel y igual en los php de biplanos 
+$directorio_base = "C:/Users/HP/Documents/Univalle/6to Semestre proyecto Develarq/Proyecto3OozmaKappa/storage/app/public/planos/proyecto_$proyecto_id/";
+
+por cmd
+cd C:\Users\HP\Documents\Univalle\6to Semestre proyecto Develarq\Proyecto3OozmaKappa\storage\app\public
+icacls planos /grant Todos:(OI)(CI)F /T
