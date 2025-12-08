@@ -2,13 +2,16 @@
 <com.google.android.material.card.MaterialCardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
         app:cardBackgroundColor="#1E293B"
         app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        app:strokeColor="#6B82F6"
+        app:strokeWidth="2dp">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -16,17 +19,25 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-        <!-- Header -->
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
+            <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_documents"
+                    app:tint="#F59E0B"
+                    android:background="@drawable/circle_background_dark"
+                    android:padding="10dp" />
+
             <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginStart="12dp"
                     android:orientation="vertical">
 
                 <TextView
@@ -35,8 +46,11 @@
                         android:layout_height="wrap_content"
                         android:text="Nombre del Documento"
                         android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
 
                 <TextView
                         android:id="@+id/tvDocumentDescription"
@@ -45,28 +59,35 @@
                         android:layout_marginTop="4dp"
                         android:text="Descripción del documento"
                         android:textColor="#94A3B8"
-                        android:textSize="14sp" />
+                        android:textSize="12sp"
+                        android:maxLines="2"
+                        android:ellipsize="end" />
             </LinearLayout>
 
             <TextView
                     android:id="@+id/tvDocumentType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/badge_background"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
+                    android:background="@drawable/bg_event_type_badge"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
                     android:text="PDF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
+                    android:textColor="#F59E0B"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Info Row -->
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="12dp"
+                android:background="#334155" />
+
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
             <TextView
                     android:id="@+id/tvDocumentProject"
@@ -78,7 +99,7 @@
                     android:drawableTint="#B8FF3C"
                     android:text="Proyecto"
                     android:textColor="#CBD5E1"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
 
             <TextView
                     android:id="@+id/tvDocumentDate"
@@ -99,9 +120,8 @@
                 android:layout_marginTop="4dp"
                 android:text="Subido por: Usuario"
                 android:textColor="#64748B"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
-        <!-- Action Buttons -->
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -118,7 +138,7 @@
                     android:text="Descargar"
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    app:cornerRadius="6dp" />
+                    app:cornerRadius="8dp" />
 
             <Button
                     android:id="@+id/btnEdit"
@@ -129,7 +149,7 @@
                     android:text="Editar"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
-                    app:cornerRadius="6dp" />
+                    app:cornerRadius="8dp" />
 
             <Button
                     android:id="@+id/btnDelete"
@@ -139,7 +159,7 @@
                     android:text="Eliminar"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
-                    app:cornerRadius="6dp" />
+                    app:cornerRadius="8dp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

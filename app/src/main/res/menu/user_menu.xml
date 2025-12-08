@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Perfil -->
     <item
             android:id="@+id/action_profile"
-            android:icon="@drawable/ic_profile"
-            android:title="Perfil" />
+            android:icon="@drawable/ic_person"
+            android:title="Mi Perfil" />
 
-    <!-- Cerrar Sesión -->
+    <item
+            android:id="@+id/action_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Configuración" />
+
     <item
             android:id="@+id/action_logout"
             android:icon="@drawable/ic_logout"
-            android:title="Cerrar sesión" />
+            android:title="Cerrar Sesión" />
 
 </menu>

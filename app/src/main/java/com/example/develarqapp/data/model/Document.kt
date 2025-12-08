@@ -25,17 +25,10 @@ data class Document(
 
 // Enum para tipos de documento
 enum class DocumentType(val displayName: String, val extensions: List<String>) {
-    @SerializedName("PDF")
-    PDF("Documento PDF", listOf(".pdf")),
-
-    @SerializedName("Excel")
-    EXCEL("Hoja de Cálculo", listOf(".xlsx", ".xls")),
-
-    @SerializedName("Word")
-    WORD("Documento Word", listOf(".docx", ".doc")),
-
-    @SerializedName("URL")
-    URL("Enlace Externo", listOf());
+    @SerializedName("PDF") PDF("Documento PDF", listOf(".pdf")),
+    @SerializedName("Excel") EXCEL("Hoja de Cálculo", listOf(".xlsx", ".xls")),
+    @SerializedName("Word") WORD("Documento Word", listOf(".docx", ".doc")),
+    @SerializedName("URL") URL("Enlace Externo", listOf());
 
     companion object {
         fun fromMimeType(mimeType: String): DocumentType? {
@@ -46,30 +39,33 @@ enum class DocumentType(val displayName: String, val extensions: List<String>) {
                 else -> null
             }
         }
-
-        fun fromExtension(fileName: String): DocumentType? {
-            return values().find { type ->
-                type.extensions.any { ext -> fileName.endsWith(ext, ignoreCase = true) }
-            }
-        }
     }
 }
 
-// Response para lista de documentos
+// --- RESPUESTAS API (Aquí estaban los errores rojos) ---
+
 data class DocumentsResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("message") val message: String?,
     @SerializedName("data") val data: List<Document>?
 )
 
-// Response para un documento
 data class DocumentResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("message") val message: String?,
     @SerializedName("data") val data: Document?
 )
 
-// Request para subir documento
+data class PurgeResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("message") val message: String?,
+    @SerializedName("deleted_count") val deletedCount: Int?,
+    @SerializedName("total_found") val totalFound: Int?,
+    @SerializedName("errors") val errors: List<String>?
+)
+
+// --- REQUESTS API ---
+
 data class UploadDocumentRequest(
     @SerializedName("proyecto_id") val proyectoId: Long,
     @SerializedName("nombre") val nombre: String,
@@ -78,41 +74,59 @@ data class UploadDocumentRequest(
     @SerializedName("enlace_externo") val enlaceExterno: String?
 )
 
-// Request para actualizar documento
 data class UpdateDocumentRequest(
     @SerializedName("id") val id: Long,
     @SerializedName("nombre") val nombre: String,
     @SerializedName("descripcion") val descripcion: String?,
     @SerializedName("proyecto_id") val proyectoId: Long?,
     @SerializedName("tipo") val tipo: String?,
-    @SerializedName("enlace_externo") val enlaceExterno: String?
+    @SerializedName("enlace_externo") val enlaceExterno: String?,
+    @SerializedName("device_model") val deviceModel: String? = null,
+    @SerializedName("android_version") val androidVersion: String? = null,
+    @SerializedName("sdk_version") val sdkVersion: Int? = null
 )
 
-// Request para eliminar documento
 data class DeleteDocumentRequest(
-    @SerializedName("id") val id: Long
-)
-// Eliminar 30 dias
-data class PurgeResponse(
-    val success: Boolean,
-    val message: String?,
-    @SerializedName("deleted_count") val deletedCount: Int?,
-    @SerializedName("total_found") val totalFound: Int?,
-    val errors: List<String>?
+    @SerializedName("id") val id: Long,
+    @SerializedName("device_model") val deviceModel: String? = null,
+    @SerializedName("android_version") val androidVersion: String? = null,
+    @SerializedName("sdk_version") val sdkVersion: Int? = null
 )
 
-// Request genérica con ID
+data class PurgeRequest(
+    @SerializedName("device_model") val deviceModel: String? = null,
+    @SerializedName("android_version") val androidVersion: String? = null,
+    @SerializedName("sdk_version") val sdkVersion: Int? = null
+)
+
 data class DocumentIdRequest(
-    @SerializedName("id") val id: Long
+    @SerializedName("id") val id: Long,
+    @SerializedName("device_model") val deviceModel: String? = null,
+    @SerializedName("android_version") val androidVersion: String? = null,
+    @SerializedName("sdk_version") val sdkVersion: Int? = null
 )
 
-// Filtros para búsqueda
+
+// Filtros
 data class DocumentFilters(
     var searchQuery: String = "",
     var selectedType: DocumentType? = null,
     var selectedProjectId: Long? = null
 ) {
-    fun isEmpty(): Boolean {
-        return searchQuery.isBlank() && selectedType == null && selectedProjectId == null
-    }
+    fun isEmpty() = searchQuery.isBlank() && selectedType == null && selectedProjectId == null
 }
+
+//
+data class DownloadRecord(
+    @SerializedName("id") val id: Long,
+    @SerializedName("documento") val documento: String,
+    @SerializedName("usuario") val usuario: String,
+    @SerializedName("fecha") val fecha: String,
+    @SerializedName("proyecto") val proyecto: String?
+)
+
+// GeneralResponse.kt
+data class GeneralResponse(
+    val success: Boolean,
+    val message: String
+)

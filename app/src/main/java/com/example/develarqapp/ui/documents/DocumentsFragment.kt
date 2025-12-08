@@ -126,7 +126,7 @@ class DocumentsFragment : Fragment() {
                 resources.getColor(android.R.color.holo_green_light, null),
                 resources.getColor(android.R.color.holo_orange_light, null)
             )
-
+            setProgressViewOffset(false, 0, 200)
             setOnRefreshListener {
                 // Recargar documentos y proyectos
                 viewModel.loadDocuments()
@@ -162,15 +162,6 @@ class DocumentsFragment : Fragment() {
             projectAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
             binding.spinnerProyecto.adapter = projectAdapter
         }
-
-        // Loading
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            // ✅ No mostrar progress bar si está el swipe refresh activo
-            if (!binding.swipeRefresh.isRefreshing) {
-               // binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            }
-        }
-
         // Mensajes de error
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
@@ -316,7 +307,12 @@ class DocumentsFragment : Fragment() {
     }
 
     private fun showUploadDialog(fileUri: Uri? = null) {
-        val dialog = UploadDocumentDialogFragment.newInstance(fileUri = fileUri)
+        val dialog = UploadDocumentDialogFragment.newInstance(
+            fileUri = fileUri,
+            onUploaded = {
+                viewModel.loadDocuments()
+            }
+        )
         dialog.show(childFragmentManager, "UploadDocumentDialog")
     }
 
@@ -343,7 +339,7 @@ class DocumentsFragment : Fragment() {
     private fun navigateToTrash() {
         try {
             findNavController().navigate(R.id.action_documentsFragment_to_deletedDocumentsFragment)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             val fragment = DeletedDocumentsFragment()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.navHostFragment, fragment)

@@ -51,7 +51,7 @@ class DeletedDocumentsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         setupListeners()
-        setupSwipeRefresh() // ✅ NUEVO
+        setupSwipeRefresh()
 
         viewModel.loadDeletedDocuments()
     }
@@ -85,7 +85,7 @@ class DeletedDocumentsFragment : Fragment() {
                 resources.getColor(android.R.color.holo_green_light, null),
                 resources.getColor(android.R.color.holo_orange_light, null)
             )
-
+            setProgressViewOffset(false, 0, 200)
             setOnRefreshListener {
                 viewModel.loadDeletedDocuments()
             }
@@ -99,13 +99,6 @@ class DeletedDocumentsFragment : Fragment() {
 
             filteredDocuments = documents
             applySearchFilter()
-        }
-
-        // Loading
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (!binding.swipeRefresh.isRefreshing) {
-                //binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            }
         }
 
         // Mensajes

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1A1A1A">
+
+    <!-- Top App Bar -->
+    <include
+            android:id="@+id/topAppBar"
+            layout="@layout/layout_top_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ✅ SwipeRefreshLayout agregado -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshPapelera"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                <!-- Título -->
+                <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PAPELERA DE PLANOS"
+                        android:textColor="#EF4444"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <!-- Botón Regresar -->
+                <Button
+                        android:id="@+id/btnRegresar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Regresar"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#64748B"
+                        android:textSize="12sp"
+                        app:cornerRadius="6dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                <!-- Información -->
+                <TextView
+                        android:id="@+id/tvInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Los planos eliminados se conservan por 30 días. Desliza hacia abajo para actualizar."
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:layout_marginTop="12dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                        android:background="@drawable/badge_background"/>
+
+                <!-- RecyclerView Papelera -->
+                <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPapelera"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="80dp"
+                        android:background="@drawable/badge_background"
+                        app:layout_constraintTop_toBottomOf="@id/tvInfo" />
+
+                <!-- Empty State -->
+                <TextView
+                        android:id="@+id/tvEmptyState"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="100dp"
+                        android:text="✅ La papelera está vacía"
+                        android:textAlignment="center"
+                        android:textColor="#64748B"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@id/tvInfo"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="100dp"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@id/tvInfo"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

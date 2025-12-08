@@ -124,12 +124,9 @@
     <string name="no">No</string>
 
     <!-- Top Bar -->
-
-
     <string name="notificaciones">Notificaciones</string>
 
     <!-- Navigation Drawer -->
-
     <string name="proyectos">Proyectos</string>
     <string name="tablero_kanban">Tablero Kanban</string>
     <string name="calendario">Calendario</string>
@@ -191,4 +188,6 @@
     <string name="prompt_mas_recientes">Más recientes primero</string>
     <string name="prompt_tipo_todos">Tipo: Todos</string>
     <string name="prompt_proyecto_todos">Proyecto: Todos</string>
+
+
 </resources>

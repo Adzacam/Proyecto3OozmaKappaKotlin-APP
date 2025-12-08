@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.develarqapp.data.api.ApiConfig
 import com.example.develarqapp.data.model.LoginRequest
-import com.example.develarqapp.data.model.LoginResponse
 import com.example.develarqapp.data.model.UserData
+import com.example.develarqapp.utils.DeviceInfoUtil // ✅ Importar esto
 import com.example.develarqapp.utils.Validator
 import kotlinx.coroutines.launch
 
@@ -31,11 +31,18 @@ class LoginViewModel : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                val request = LoginRequest(email, password)
+                // ✅ MODIFICADO: Incluir información del dispositivo
+                val request = LoginRequest(
+                    email = email,
+                    password = password,
+                    deviceModel = DeviceInfoUtil.getDeviceModel(),
+                    androidVersion = DeviceInfoUtil.getAndroidVersion(),
+                    sdkVersion = DeviceInfoUtil.getSdkVersion()
+                )
+
                 val response = apiService.login(request)
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
-                    // Esta línea ahora funcionará porque LoginResponse tiene el campo 'data'
                     if (loginResponse?.success == true && loginResponse.data != null) {
                         _loginState.value = LoginState.Success(
                             loginResponse.data,

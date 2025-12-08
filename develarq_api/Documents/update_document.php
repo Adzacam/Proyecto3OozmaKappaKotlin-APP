@@ -7,6 +7,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { http_response_code(200); exit(); }
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // --- PARCHE DE TOKEN ---
 $headers = getallheaders();
@@ -66,12 +67,45 @@ $query = "UPDATE documentos SET " . implode(", ", $updates) . ", updated_at = NO
     }
     
     if ($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(["success" => true, "message" => "Documento actualizado"]);
-    } else {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Error SQL"]);
+    // ✅ AUDITORÍA
+    $authHeader = $headers['Authorization'];
+    $token = str_replace('Bearer ', '', $authHeader);
+    $usuario = obtenerUsuarioDesdeToken($db, $token);
+    
+    if ($usuario) {
+        $device_info = [
+            'device_model' => $data->device_model ?? null,
+            'android_version' => $data->android_version ?? null,
+            'sdk_version' => $data->sdk_version ?? null
+        ];
+
+        $descripcionAuditoria = "Actualizó documento: '{$nombre}'\n";
+        if ($proyecto_id) {
+            $proyQuery = $db->prepare("SELECT nombre FROM proyectos WHERE id = :pid");
+            $proyQuery->execute([':pid' => $proyecto_id]);
+            $proy = $proyQuery->fetch(PDO::FETCH_ASSOC);
+            if ($proy) {
+                $descripcionAuditoria .= "Proyecto: {$proy['nombre']}\n";
+            }
+        }
+        if ($tipo) $descripcionAuditoria .= "Tipo: {$tipo}";
+
+        registrarAuditoriaCompleta(
+            $db,
+            $usuario['id'],
+            "Actualizó el documento '{$nombre}'",
+            'documentos',
+            $id,
+            $device_info,
+            $descripcionAuditoria
+        );
     }
+    http_response_code(200);
+    echo json_encode(["success" => true, "message" => "Documento actualizado"]);
+} else {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Error SQL"]);
+}
     
 } catch (Exception $e) {
     http_response_code(500);

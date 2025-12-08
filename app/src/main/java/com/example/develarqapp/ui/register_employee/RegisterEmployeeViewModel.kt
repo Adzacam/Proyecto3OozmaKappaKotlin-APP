@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.develarqapp.data.api.ApiConfig
 import com.example.develarqapp.data.model.CreateUserRequest
 import com.example.develarqapp.utils.Validator
+import com.example.develarqapp.utils.DeviceInfoUtil
 import kotlinx.coroutines.launch
 
 class RegisterEmployeeViewModel : ViewModel() {
@@ -28,7 +29,6 @@ class RegisterEmployeeViewModel : ViewModel() {
         rol: String,
         token: String
     ) {
-        // Validaciones
         val validation = validateInputs(name, apellido, email, password, rol)
         if (!validation.isValid) {
             _registerResult.value = RegisterResult.Error(validation.message)
@@ -39,16 +39,19 @@ class RegisterEmployeeViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
+                // ✅ MODIFICADO: Incluir DeviceInfoUtil
                 val request = CreateUserRequest(
                     name = name.trim(),
                     apellido = apellido.trim(),
                     email = email.trim(),
                     password = password,
                     telefono = phone?.trim(),
-                    rol = rol
+                    rol = rol,
+                    deviceModel = DeviceInfoUtil.getDeviceModel(),
+                    androidVersion = DeviceInfoUtil.getAndroidVersion(),
+                    sdkVersion = DeviceInfoUtil.getSdkVersion()
                 )
 
-                // --- 2. PASA EL TOKEN A LA API AQUÍ ---
                 val response = apiService.createUser(request, "Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {

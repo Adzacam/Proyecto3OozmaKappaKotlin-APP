@@ -6,9 +6,7 @@
             app:startDestination="@id/loginFragment">
 
     <!-- ========================================== -->
-
-    <!-- Login -->
-
+    <!-- AUTH -->
     <!-- ========================================== -->
     <fragment
             android:id="@+id/loginFragment"
@@ -50,9 +48,7 @@
     </fragment>
 
     <!-- ========================================== -->
-
-    <!-- Dashboard -->
-
+    <!-- DASHBOARD -->
     <!-- ========================================== -->
     <fragment
             android:id="@+id/dashboardFragment"
@@ -77,12 +73,19 @@
         <action
                 android:id="@+id/action_dashboardFragment_to_downloadHistoryFragment"
                 app:destination="@id/downloadHistoryFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_bimPlanosFragment"
+                app:destination="@id/bimPlanosFragment"/>
+        <action
+                android:id="@+id/action_dashboardFragment_to_profileFragment"
+                app:destination="@id/profileFragment"/>
+        <action
+                android:id="@+id/action_dashboardFragment_to_notificationsFragment"
+                app:destination="@id/notificationsFragment"/>
     </fragment>
 
     <!-- ========================================== -->
-
-    <!-- Users -->
-
+    <!-- USERS -->
     <!-- ========================================== -->
     <fragment
             android:id="@+id/usersFragment"
@@ -118,35 +121,67 @@
                 android:id="@+id/action_deletedUsersFragment_to_usersFragment"
                 app:destination="@id/usersFragment" />
     </fragment>
-    <!-- ========================================== -->
-
-    <!-- Projects -->
 
     <!-- ========================================== -->
-
+    <!-- PROJECTS -->
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/projectsFragment"
             android:name="com.example.develarqapp.ui.projects.ProjectsFragment"
             android:label="Proyectos"
-            tools:layout="@layout/fragment_projects" />
+            tools:layout="@layout/fragment_projects">
+        <action
+                android:id="@+id/action_projectsFragment_to_projectTimelineFragment"
+                app:destination="@id/projectTimelineFragment" />
+        <action
+                android:id="@+id/action_projectsFragment_to_projectHitosFragment"
+                app:destination="@id/projectHitosFragment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/projectTimelineFragment"
+            android:name="com.example.develarqapp.ui.projects.ProjectTimelineFragment"
+            android:label="Timeline"
+            tools:layout="@layout/fragment_project_timeline">
+        <argument
+                android:name="projectId"
+                app:argType="long" />
+        <argument
+                android:name="projectName"
+                app:argType="string" />
+        <action
+                android:id="@+id/action_projectTimelineFragment_to_projectsFragment"
+                app:destination="@id/projectsFragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/projectHitosFragment"
+            android:name="com.example.develarqapp.ui.projects.ProjectHitosFragment"
+            android:label="Hitos"
+            tools:layout="@layout/fragment_project_hitos">
+        <argument
+                android:name="projectId"
+                app:argType="long" />
+        <argument
+                android:name="projectName"
+                app:argType="string" />
+        <action
+                android:id="@+id/action_projectHitosFragment_to_projectsFragment"
+                app:destination="@id/projectsFragment"/>
+    </fragment>
+
     <!-- ========================================== -->
-
-    <!-- Kanban -->
-
+    <!-- KANBAN -->
     <!-- ========================================== -->
-
     <fragment
             android:id="@+id/kanbanFragment"
             android:name="com.example.develarqapp.ui.kanban.KanbanFragment"
             android:label="Tablero Kanban"
             tools:layout="@layout/fragment_kanban" />
-    <!-- ========================================== -->
-
-    <!-- Calendar -->
 
     <!-- ========================================== -->
-
-
+    <!-- CALENDAR -->
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/calendarFragment"
             android:name="com.example.develarqapp.ui.calendar.CalendarFragment"
@@ -155,7 +190,8 @@
         <action
                 android:id="@+id/action_calendarFragment_to_createMeetingDialogFragment"
                 app:destination="@id/createMeetingDialogFragment"/>
-        <action android:id="@+id/action_calendarFragment_to_EditMeetingDialogFragment"
+        <action
+                android:id="@+id/action_calendarFragment_to_EditMeetingDialogFragment"
                 app:destination="@id/EditMeetingDialogFragment"/>
     </fragment>
 
@@ -163,8 +199,9 @@
             android:id="@+id/createMeetingDialogFragment"
             android:name="com.example.develarqapp.ui.calendar.CreateMeetingDialogFragment"
             android:label="Programar Reunión"
-            tools:layout="@layout/dialog_create_meeting" >
-        <action android:id="@+id/action_createMeetingDialogFragment_to_calendarFragment"
+            tools:layout="@layout/dialog_create_meeting">
+        <action
+                android:id="@+id/action_createMeetingDialogFragment_to_calendarFragment"
                 app:destination="@id/calendarFragment"/>
     </dialog>
 
@@ -172,17 +209,15 @@
             android:id="@+id/EditMeetingDialogFragment"
             android:name="com.example.develarqapp.ui.calendar.EditMeetingDialogFragment"
             android:label="Editar Reunión"
-            tools:layout="@layout/dialog_edit_meeting" >
-        <action android:id="@+id/action_EditMeetingDialogFragment_to_calendarFragment"
+            tools:layout="@layout/dialog_edit_meeting">
+        <action
+                android:id="@+id/action_EditMeetingDialogFragment_to_calendarFragment"
                 app:destination="@id/calendarFragment"/>
     </dialog>
 
     <!-- ========================================== -->
-
-    <!-- Documents -->
-
+    <!-- DOCUMENTS -->
     <!-- ========================================== -->
-
     <fragment
             android:id="@+id/documentsFragment"
             android:name="com.example.develarqapp.ui.documents.DocumentsFragment"
@@ -191,9 +226,11 @@
         <action
                 android:id="@+id/action_documentsFragment_to_deletedDocumentsFragment"
                 app:destination="@id/deletedDocumentsFragment" />
-        <action android:id="@+id/action_documentsFragment_to_UploadDocumentDialogFragment"
+        <action
+                android:id="@+id/action_documentsFragment_to_UploadDocumentDialogFragment"
                 app:destination="@id/UploadDocumentDialogFragment"/>
-        <action android:id="@+id/action_documentsFragment_to_EditDocumentDialogFragment"
+        <action
+                android:id="@+id/action_documentsFragment_to_EditDocumentDialogFragment"
                 app:destination="@id/EditDocumentDialogFragment"/>
     </fragment>
 
@@ -202,7 +239,8 @@
             android:name="com.example.develarqapp.ui.documents.EditDocumentDialogFragment"
             android:label="Documentos"
             tools:layout="@layout/dialog_edit_document">
-        <action android:id="@+id/action_EditDocumentDialogFragment_to_documentsFragment"
+        <action
+                android:id="@+id/action_EditDocumentDialogFragment_to_documentsFragment"
                 app:destination="@id/documentsFragment"/>
     </fragment>
 
@@ -211,7 +249,8 @@
             android:name="com.example.develarqapp.ui.documents.UploadDocumentDialogFragment"
             android:label="Documentos"
             tools:layout="@layout/dialog_upload_document">
-        <action android:id="@+id/action_UploadDocumentDialogFragment_to_documentsFragment"
+        <action
+                android:id="@+id/action_UploadDocumentDialogFragment_to_documentsFragment"
                 app:destination="@id/documentsFragment"/>
     </fragment>
 
@@ -226,12 +265,10 @@
                 app:popUpTo="@id/documentsFragment"
                 app:popUpToInclusive="true" />
     </fragment>
-    <!-- ========================================== -->
-
-    <!-- Downloads -->
 
     <!-- ========================================== -->
-
+    <!-- DOWNLOADS -->
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/downloadHistoryFragment"
             android:name="com.example.develarqapp.ui.downloads.DownloadHistoryFragment"
@@ -239,31 +276,38 @@
             tools:layout="@layout/fragment_download_history" />
 
     <!-- ========================================== -->
-
-    <!-- Audit -->
-
+    <!-- AUDIT -->
     <!-- ========================================== -->
     <fragment
             android:id="@+id/auditoriaFragment"
             android:name="com.example.develarqapp.ui.auditorias.AuditoriaFragment"
             android:label="Auditoría"
             tools:layout="@layout/fragment_auditoria" />
-    <!-- ========================================== -->
-
-    <!-- BIM planos -->
 
     <!-- ========================================== -->
-
+    <!-- BIM PLANOS -->
+    <!-- ========================================== -->
     <fragment
             android:id="@+id/bimPlanosFragment"
             android:name="com.example.develarqapp.ui.bimplanos.BimPlanosFragment"
             android:label="Planos BIM"
-            tools:layout="@layout/fragment_bim_planos" />
+            tools:layout="@layout/fragment_bim_planos">
+    </fragment>
+
+    <fragment
+            android:id="@+id/bimPlanosPapeleraFragment"
+            android:name="com.example.develarqapp.ui.bimplanos.BimPlanosPapeleraFragment"
+            android:label="Papelera de Planos BIM"
+            tools:layout="@layout/fragment_bim_planos_papelera">
+        <action
+                android:id="@+id/action_bimPlanosPapeleraFragment_to_bimPlanosFragment"
+                app:destination="@id/bimPlanosFragment"
+                app:popUpTo="@id/bimPlanosFragment"
+                app:popUpToInclusive="false" />
+    </fragment>
 
     <!-- ========================================== -->
-
     <!-- PROFILE & NOTIFICATIONS -->
-
     <!-- ========================================== -->
     <fragment
             android:id="@+id/profileFragment"
@@ -277,6 +321,7 @@
             android:label="Notificaciones"
             tools:layout="@layout/fragment_notifications" />
 
+    <!-- Global Actions -->
     <action
             android:id="@+id/action_global_to_loginFragment"
             app:destination="@id/loginFragment"

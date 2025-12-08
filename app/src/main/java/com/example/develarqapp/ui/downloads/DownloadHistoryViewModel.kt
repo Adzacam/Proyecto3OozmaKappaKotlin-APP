@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.develarqapp.data.model.DownloadHistory
+import com.example.develarqapp.data.model.DownloadRecord
 import com.example.develarqapp.data.repository.DownloadHistoryRepository
 import kotlinx.coroutines.launch
 
@@ -13,11 +13,11 @@ class DownloadHistoryViewModel(application: Application) : AndroidViewModel(appl
 
     private val repository = DownloadHistoryRepository(application)
 
-    private val _downloads = MutableLiveData<List<DownloadHistory>>()
-    val downloads: LiveData<List<DownloadHistory>> = _downloads
+    private val _downloads = MutableLiveData<List<DownloadRecord>>()
+    val downloads: LiveData<List<DownloadRecord>> = _downloads
 
-    private val _filteredDownloads = MutableLiveData<List<DownloadHistory>>()
-    val filteredDownloads: LiveData<List<DownloadHistory>> = _filteredDownloads
+    private val _filteredDownloads = MutableLiveData<List<DownloadRecord>>()
+    val filteredDownloads: LiveData<List<DownloadRecord>> = _filteredDownloads
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -41,6 +41,7 @@ class DownloadHistoryViewModel(application: Application) : AndroidViewModel(appl
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al cargar historial"
                 _downloads.value = emptyList()
+                _filteredDownloads.value = emptyList()
                 _isEmpty.value = true
             }
 
@@ -53,27 +54,49 @@ class DownloadHistoryViewModel(application: Application) : AndroidViewModel(appl
         projectId: Long? = null,
         searchQuery: String = ""
     ) {
-        val currentDownloads = _downloads.value ?: emptyList()
+        viewModelScope.launch {
+            _isLoading.value = true
 
-        val filtered = currentDownloads.filter { download ->
-            val matchesUser = userId?.let { download.userId == it } ?: true
-            val matchesProject = projectId?.let { download.proyectoId == it } ?: true
-            val matchesSearch = if (searchQuery.isNotBlank()) {
-                download.documentoNombre.contains(searchQuery, ignoreCase = true) ||
-                        download.userName.contains(searchQuery, ignoreCase = true) ||
-                        download.proyectoNombre?.contains(searchQuery, ignoreCase = true) == true
-            } else true
+            // 1. Obtener datos filtrados por ID desde el servidor
+            val result = if (userId != null || projectId != null) {
+                repository.getFilteredHistory(userId = userId, projectId = projectId)
+            } else {
+                // Si no hay filtros de ID, usamos la lista completa (o recargamos)
+                repository.getDownloadHistory()
+            }
 
-            matchesUser && matchesProject && matchesSearch
+            // 2. Aplicar filtro de búsqueda de texto localmente
+            result.onSuccess { list ->
+                val filtered = if (searchQuery.isNotBlank()) {
+                    list.filter { doc ->
+                        doc.documento.contains(searchQuery, ignoreCase = true) ||
+                                doc.usuario.contains(searchQuery, ignoreCase = true) ||
+                                doc.proyecto?.contains(searchQuery, ignoreCase = true) == true
+                    }
+                } else {
+                    list
+                }
+
+                _filteredDownloads.value = filtered
+                _isEmpty.value = filtered.isEmpty()
+
+                // Actualizamos la lista base solo si no filtramos por ID (para mantener consistencia)
+                if (userId == null && projectId == null) {
+                    _downloads.value = list
+                }
+
+            }.onFailure { error ->
+                _errorMessage.value = error.message ?: "Error al filtrar"
+                _filteredDownloads.value = emptyList()
+                _isEmpty.value = true
+            }
+
+            _isLoading.value = false
         }
-
-        _filteredDownloads.value = filtered
-        _isEmpty.value = filtered.isEmpty()
     }
 
     fun clearFilters() {
-        _filteredDownloads.value = _downloads.value
-        _isEmpty.value = _downloads.value?.isEmpty() ?: true
+        loadDownloadHistory() // Recargar
     }
 
     fun clearError() {

@@ -1,120 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent"
-                                                   android:background="#1A1A1A">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1A1A1A">
 
     <!-- Top App Bar -->
-    <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+    <include
+            android:id="@+id/topAppBar"
+            layout="@layout/layout_top_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#0F172A"
-            android:elevation="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:titleTextColor="#FFFFFF">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <include
-                android:id="@+id/topAppBar"
-                layout="@layout/layout_top_app_bar"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contenido de Proyectos"
-                app:layout_constraintTop_toBottomOf="@id/topAppBar"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-    </com.google.android.material.appbar.MaterialToolbar>
-
-    <!-- Content -->
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            android:padding="20dp"
+    <!-- Progress Bar -->
+    <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:indeterminateTint="#B8FF3C" />
 
-        <!-- Title -->
+    <!-- Filtros -->
+    <LinearLayout
+            android:id="@+id/llFilters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gestión de Proyectos"
+                android:text="Estado:"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp" />
 
-        <!-- Card Container -->
-        <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="24dp"
+        <Spinner
+                android:id="@+id/spinnerFilter"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                app:cardBackgroundColor="#1E293B"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                android:background="@drawable/bg_role_badge"
+                android:popupBackground="#1E293B" />
 
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnNewProject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:src="@android:drawable/ic_input_add"
+                app:tint="#000000"
+                app:backgroundTint="#B8FF3C"
+                app:fabSize="mini" />
+    </LinearLayout>
 
-                <!-- Header -->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+    <!-- SwipeRefreshLayout con RecyclerView -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/llFilters"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-                    <Spinner
-                            android:id="@+id/spinnerFilter"
-                            android:layout_width="0dp"
-                            android:layout_height="48dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/bg_spinner"
-                            android:paddingHorizontal="12dp" />
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProjects"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                tools:listitem="@layout/item_project" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnNewProject"
-                            android:layout_width="wrap_content"
-                            android:layout_height="48dp"
-                            android:layout_marginStart="12dp"
-                            android:backgroundTint="#374151"
-                            android:text="NUEVO PROYECTO"
-                            android:textSize="11sp"
-                            app:cornerRadius="6dp" />
-                </LinearLayout>
+    <!-- Empty State (opcional) -->
+    <LinearLayout
+            android:id="@+id/layoutEmptyState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- Empty state -->
-                <TextView
-                        android:id="@+id/tvEmptyState"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="48dp"
-                        android:text="No hay proyectos"
-                        android:textColor="#6B7280"
-                        android:textSize="16sp" />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📁"
+                android:textSize="48sp"
+                android:layout_marginBottom="16dp" />
 
-                <!-- RecyclerView de proyectos -->
-                <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvProjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_weight="1"
-                        android:visibility="gone" />
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No hay proyectos"
+                android:textColor="#94A3B8"
+                android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

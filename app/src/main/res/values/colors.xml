@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ========== COLORES POR ROL ========== -->
+
+    <!-- ROL: ADMIN -->
+    <color name="rol_admin_accent">#FF3B3B</color>
+    <color name="rol_admin_accent_hover">#FF5252</color>
+    <color name="rol_admin_accent_bg">#2EFF3B3B</color> <!-- rgba(255, 59, 59, 0.18) -->
+    <color name="rol_admin_text_muted">#E8A2A2</color>
+
+    <!-- ROL: CLIENTE -->
+    <color name="rol_cliente_accent">#89E10F</color>
+    <color name="rol_cliente_accent_hover">#A4FF2B</color>
+    <color name="rol_cliente_accent_bg">#3389E10F</color> <!-- rgba(137,225,15,0.20) -->
+    <color name="rol_cliente_text_muted">#D9F8B3</color>
+
+    <!-- ROL: ARQUITECTO -->
+    <color name="rol_arquitecto_accent">#4DB2FF</color>
+    <color name="rol_arquitecto_accent_hover">#78CAFF</color>
+    <color name="rol_arquitecto_accent_bg">#334DB2FF</color> <!-- rgba(77,178,255,0.20) -->
+    <color name="rol_arquitecto_text_muted">#B9DFFF</color>
+
+    <!-- ROL: INGENIERO -->
+    <color name="rol_ingeniero_accent">#A259FF</color>
+    <color name="rol_ingeniero_accent_hover">#B774FF</color>
+    <color name="rol_ingeniero_accent_bg">#38A259FF</color> <!-- rgba(162,89,255,0.22) -->
+    <color name="rol_ingeniero_text_muted">#E0C6FF</color>
+
     <!-- Primary Colors -->
     <color name="primary_blue">#2563EB</color>
     <color name="primary_green">#B8FF3C</color>
@@ -36,6 +63,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray_500">#6B7280</color>
+    <color name="yellow_500">#EAB308</color>
+    <color name="green_500">#22C55E</color>
+    <color name="red_500">#EF4444</color>
+    <color name="blue_500">#3B82F6</color>
+    <color name="pink_500">#EC4899</color>
+    <color name="cyan_500">#06B6D4</color>
 
     <!-- Secondary Colors -->
     <color name="secondary_gray">#334155</color>
@@ -60,5 +94,20 @@
     <color name="refresh_color_1">#B8FF3C</color>
     <color name="refresh_color_2">#10B981</color>
     <color name="refresh_color_3">#3B82F6</color>
+
+
+    <color name="success">#10B981</color>
+    <color name="error">#EF4444</color>
+    <color name="warning">#F59E0B</color>
+
+    <color name="iconBlue">#3B82F6</color>      <!-- Usuarios, Audit general -->
+    <color name="iconGreen">#10B981</color>     <!-- Proyectos -->
+    <color name="iconYellow">#F59E0B</color>    <!-- Documentos -->
+    <color name="iconPurple">#8B5CF6</color>    <!-- Calendario/Reuniones -->
+    <color name="iconOrange">#F97316</color>    <!-- Kanban/Tareas -->
+    <color name="iconCyan">#06B6D4</color>      <!-- Planos BIM -->
+    <color name="iconPink">#EC4899</color>      <!-- Descargas -->
+    <color name="iconRed">#EF4444</color>       <!-- Eliminaciones -->
+    <color name="iconGray">#6B7280</color>      <!-- Otros -->
 
 </resources>

@@ -149,21 +149,26 @@ class UsersFragment : Fragment() {
     }
 
     private fun showDeleteDialog(userId: Long, userName: String) {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Eliminar Usuario")
-            .setMessage("¿Está seguro de eliminar a $userName?")
-            .setPositiveButton("Eliminar") { _, _ ->
-                // CAMBIO AQUÍ: Obtener token y pasarlo
-                val token = sessionManager.getToken()
-                if (token != null) {
-                    viewModel.deleteUser(userId, token) // <-- Pasa el token
-                } else {
-                    // Manejar sesión expirada, quizás
-                    Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
-                }
+        // Buscar el usuario en la lista
+        val user = viewModel.users.value?.find { it.id == userId }
+
+        if (user == null) {
+            Toast.makeText(requireContext(), "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Mostrar el diálogo pidiendo el motivo
+        val dialog = DeleteUserDialogFragment.newInstance(user) { motivo ->
+            // Callback cuando el usuario confirma con el motivo
+            val token = sessionManager.getToken()
+            if (token != null) {
+                viewModel.deleteUser(userId, motivo, token)
+            } else {
+                Toast.makeText(requireContext(), "Error de sesión", Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        dialog.show(childFragmentManager, "DeleteUserDialog")
     }
 
     private fun showToggleStatusDialog(userId: Long, userName: String, currentStatus: String?) {

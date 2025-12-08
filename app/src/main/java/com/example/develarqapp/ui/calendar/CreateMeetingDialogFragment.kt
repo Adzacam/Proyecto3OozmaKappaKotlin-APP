@@ -33,6 +33,7 @@ class CreateMeetingDialogFragment : DialogFragment() {
     private var projectsList: List<Project> = emptyList()
     private var usersList: List<User> = emptyList()
 
+
     private var selectedProjectId: Long? = null
     private var selectedStartCalendar = Calendar.getInstance()
     private var selectedEndCalendar = Calendar.getInstance()
@@ -41,6 +42,8 @@ class CreateMeetingDialogFragment : DialogFragment() {
 
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+    private var currentUserId: Long? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -51,6 +54,7 @@ class CreateMeetingDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogCreateMeetingBinding.inflate(inflater, container, false)
         sessionManager = SessionManager(requireContext())
+        currentUserId = sessionManager.getUserId()
         return binding.root
     }
 
@@ -63,7 +67,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Forzar carga si las listas están vacías en el ViewModel compartido
         val token = sessionManager.getToken()
         if (token != null) {
             if (viewModel.projects.value.isNullOrEmpty()) viewModel.loadProjects(token)
@@ -75,7 +78,9 @@ class CreateMeetingDialogFragment : DialogFragment() {
     }
 
     private fun setupClickListeners() {
-        binding.btnCancel.setOnClickListener { dismiss() }
+        binding.btnCancel.setOnClickListener {
+            dismiss()
+        }
 
         binding.btnCreate.setOnClickListener {
             validateAndCreateMeeting()
@@ -96,67 +101,56 @@ class CreateMeetingDialogFragment : DialogFragment() {
 
     private fun setupObservers() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
-            android.util.Log.d("CreateMeetingDialog", "📋 Proyectos recibidos en diálogo: ${projects.size}")
             projectsList = projects
 
             if (projects.isEmpty()) {
-                android.util.Log.w("CreateMeetingDialog", "⚠️ Lista de proyectos VACÍA")
                 Toast.makeText(context, "No hay proyectos disponibles", Toast.LENGTH_SHORT).show()
                 return@observe
             }
 
-            projects.forEachIndexed { index, project ->
-                android.util.Log.d("CreateMeetingDialog", "  [$index] ID: ${project.id}, Nombre: ${project.nombre}")
-            }
-
             val projectNames = projects.map { it.nombre }
-
-            android.util.Log.d("CreateMeetingDialog", "🎨 Configurando AutoCompleteTextView con: $projectNames")
             val adapter = ArrayAdapter(
                 requireContext(),
-                R.layout.spinner_item_white, // <--- CAMBIO IMPORTANTE AQUÍ
+                R.layout.spinner_item_white,
                 projectNames
             )
-            // Asegurar que el dropdown también use el layout correcto o uno legible
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
             binding.actvProject.setAdapter(adapter)
-            // ✅ IMPORTANTE: Habilitar que se muestre el dropdown
             binding.actvProject.threshold = 0
 
-            // ✅ Mostrar dropdown al ganar foco
             binding.actvProject.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus && projectsList.isNotEmpty()) {
                     binding.actvProject.showDropDown()
                 }
             }
 
-            // ✅ Mostrar dropdown al hacer click
             binding.actvProject.setOnClickListener {
                 if (projectsList.isNotEmpty()) {
                     binding.actvProject.showDropDown()
                 }
             }
 
-            // ✅ Manejar selección de proyecto
-            binding.actvProject.setOnItemClickListener { parent, _, position, _ ->
+            binding.actvProject.setOnItemClickListener { _, _, position, _ ->
                 selectedProjectId = projectsList[position].id
                 binding.actvProject.setText(projectsList[position].nombre, false)
-                // Limpiar error si existía
                 binding.tilProject.error = null
             }
         }
 
         viewModel.users.observe(viewLifecycleOwner) { users ->
-            android.util.Log.d("CreateMeetingDialog", "👥 Usuarios recibidos en diálogo: ${users.size}")
             usersList = users
-
             if (users.isEmpty()) {
-                android.util.Log.w("CreateMeetingDialog", "⚠️ Lista de usuarios VACÍA")
                 Toast.makeText(context, "No hay usuarios disponibles", Toast.LENGTH_SHORT).show()
-            } else {
-                users.forEachIndexed { index, user ->
-                    android.util.Log.d("CreateMeetingDialog", "  [$index] ID: ${user.id}, Nombre: ${user.fullName}")
+                return@observe
+            }
+
+            currentUserId?.let { userId ->
+                val currentUser = users.find { it.id == userId }
+                if (currentUser != null && !selectedParticipantIds.contains(userId)) {
+                    selectedParticipantIds.add(userId)
+                    selectedParticipantNames.add(currentUser.fullName)
+                    binding.etParticipants.setText("${selectedParticipantIds.size} seleccionado(s)")
                 }
             }
         }
@@ -175,8 +169,9 @@ class CreateMeetingDialogFragment : DialogFragment() {
 
         viewModel.operationSuccess.observe(viewLifecycleOwner) { success ->
             if (success) {
-                dismiss()
+                Toast.makeText(context, "Reunión creada exitosamente", Toast.LENGTH_SHORT).show()
                 viewModel.resetOperationSuccess()
+                dismiss()
             }
         }
     }
@@ -190,7 +185,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
                 set(year, month, dayOfMonth)
             }
 
-            // VALIDACIÓN: No permitir fechas pasadas
             val todayStart = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
@@ -208,20 +202,17 @@ class CreateMeetingDialogFragment : DialogFragment() {
 
                 val now = Calendar.getInstance()
 
-                // VALIDACIÓN: Si es hoy, no permitir horas pasadas
                 if (isSameDay(calendar, now) && calendar.before(now)) {
                     Toast.makeText(context, "No puedes seleccionar horas pasadas", Toast.LENGTH_SHORT).show()
                     return@TimePickerDialog
                 }
 
-                // ✅ VALIDACIÓN: Fecha de inicio y fin deben ser el mismo día
                 if (!isStart) {
                     if (!isSameDay(selectedStartCalendar, calendar)) {
                         Toast.makeText(context, "La reunión debe ser en el mismo día", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
                     }
 
-                    // ✅ VALIDACIÓN: Fecha fin debe ser después de inicio
                     if (calendar.timeInMillis <= selectedStartCalendar.timeInMillis) {
                         Toast.makeText(context, "La hora de fin debe ser posterior a la de inicio", Toast.LENGTH_SHORT).show()
                         return@TimePickerDialog
@@ -233,7 +224,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
                     binding.etStartTime.setText(selectedDateTime)
                     binding.tilStartTime.error = null
 
-                    // ✅ Auto-ajustar fecha fin si es inválida
                     if (selectedEndCalendar.timeInMillis <= selectedStartCalendar.timeInMillis ||
                         !isSameDay(selectedStartCalendar, selectedEndCalendar)) {
                         selectedEndCalendar = selectedStartCalendar.clone() as Calendar
@@ -297,7 +287,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
             return
         }
 
-        // Limpiar errores anteriores
         binding.tilTitle.error = null
         binding.tilProject.error = null
         binding.tilStartTime.error = null
@@ -306,7 +295,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
         val title = binding.etTitle.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
 
-        // Validaciones
         var hasError = false
 
         if (title.isEmpty()) {
@@ -329,7 +317,6 @@ class CreateMeetingDialogFragment : DialogFragment() {
             hasError = true
         }
 
-        // ✅ VALIDACIÓN ADICIONAL: Verificar que la reunión sea en el mismo día
         if (binding.etEndTime.text.toString().isNotEmpty()) {
             if (!isSameDay(selectedStartCalendar, selectedEndCalendar)) {
                 Toast.makeText(context, "La reunión debe ser en el mismo día", Toast.LENGTH_SHORT).show()

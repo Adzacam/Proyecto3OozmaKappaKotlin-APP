@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0F172A"
+        android:padding="24dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/badge_background"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="EDITAR HITO"
+                    android:textColor="#EC4899"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Modifica los datos del hito"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Nombre del Hito"
+                android:textColorHint="#94A3B8"
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#EC4899"
+                app:hintTextColor="#EC4899"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombreHito"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Descripción (Opcional)"
+                android:textColorHint="#94A3B8"
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#EC4899"
+                app:hintTextColor="#EC4899"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDescripcion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:inputType="textMultiLine"
+                    android:minLines="3"
+                    android:maxLines="5" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Fecha del Hito"
+                android:textColorHint="#94A3B8"
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#EC4899"
+                app:hintTextColor="#EC4899"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconTint="#EC4899"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFechaHito"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Estado"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+        <Spinner
+                android:id="@+id/spinnerEstado"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/spinner_background"
+                android:layout_marginBottom="16dp" />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Encargado"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+        <Spinner
+                android:id="@+id/spinnerEncargado"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/spinner_background"
+                android:layout_marginBottom="24dp" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+            <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Cancelar"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13sp"
+                    android:backgroundTint="#64748B"
+                    app:cornerRadius="8dp"
+                    android:layout_marginEnd="8dp" />
+
+            <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Guardar"
+                    android:textColor="#000000"
+                    android:textSize="13sp"
+                    android:backgroundTint="#B8FF3C"
+                    app:cornerRadius="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

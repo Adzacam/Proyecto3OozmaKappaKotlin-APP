@@ -3,66 +3,78 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+            android:checkableBehavior="single"
+            android:id="@+id/main_menu_group">
 
         <!-- Dashboard - Visible para todos -->
         <item
                 android:id="@+id/nav_dashboard"
                 android:icon="@drawable/ic_dashboard"
-                android:title="Dashboard" />
+                android:title="Dashboard"
+                android:checkable="true" />
 
         <!-- Usuarios - Solo admin -->
         <item
                 android:id="@+id/nav_employees"
                 android:icon="@drawable/ic_employees"
                 android:title="Usuarios"
-                android:visible="false" />
+                android:visible="false"
+                android:checkable="true" />
 
         <!-- Proyectos - Visible para todos -->
         <item
                 android:id="@+id/nav_projects"
                 android:icon="@drawable/ic_projects"
-                android:title="Proyectos" />
+                android:title="Proyectos"
+                android:checkable="true" />
 
         <!-- Tablero Kanban - Visible para todos -->
         <item
                 android:id="@+id/nav_kanban"
                 android:icon="@drawable/ic_kanban"
-                android:title="Tablero Kanban" />
+                android:title="Tablero Kanban"
+                android:checkable="true" />
 
         <!-- Calendario - Roles específicos -->
         <item
                 android:id="@+id/nav_calendar"
                 android:icon="@drawable/ic_calendar"
                 android:title="Calendario"
-                android:visible="false" />
+                android:visible="false"
+                android:checkable="true" />
 
         <!-- Documentos - Roles específicos -->
         <item
                 android:id="@+id/nav_documents"
                 android:icon="@drawable/ic_documents"
                 android:title="Documentos"
-                android:visible="false" />
+                android:visible="false"
+                android:checkable="true" />
 
         <!-- Historial Descargas - Solo admin -->
         <item
                 android:id="@+id/nav_download_history"
                 android:icon="@drawable/ic_downloads"
                 android:title="Historial Descargas"
-                android:visible="false" />
+                android:visible="false"
+                android:checkable="true" />
+
         <!-- Planos BIM - Roles específicos -->
         <item
                 android:id="@+id/nav_bim_plans"
                 android:icon="@drawable/ic_bimplan"
                 android:title="Planos BIM"
-                android:visible="false" />
+                android:visible="false"
+                android:checkable="true" />
+
+        <!-- Auditoría - Solo admin -->
         <item
                 android:id="@+id/nav_auditoria"
                 android:icon="@drawable/ic_audit"
                 android:title="Auditoría"
-                android:visible="false" />
-
-
+                android:visible="false"
+                android:checkable="true" />
     </group>
 
     <item android:title="Cuenta">
@@ -71,19 +83,22 @@
             <item
                     android:id="@+id/nav_profile"
                     android:icon="@drawable/ic_profile"
-                    android:title="Mi Perfil" />
+                    android:title="Mi Perfil"
+                    android:checkable="true" />
 
             <!-- Notificaciones -->
             <item
                     android:id="@+id/nav_notifications"
                     android:icon="@drawable/ic_notifications"
-                    android:title="Notificaciones" />
+                    android:title="Notificaciones"
+                    android:checkable="true" />
 
             <!-- Configuración -->
             <item
                     android:id="@+id/nav_settings"
                     android:icon="@drawable/ic_settings"
-                    android:title="Configuración" />
+                    android:title="Configuración"
+                    android:checkable="true" />
 
             <!-- Cerrar Sesión -->
             <item

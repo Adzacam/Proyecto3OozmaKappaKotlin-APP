@@ -5,6 +5,7 @@ import com.example.develarqapp.data.model.*
 import com.example.develarqapp.data.model.Project
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.example.develarqapp.utils.AuditManager
 
 class CalendarRepository {
 
@@ -112,7 +113,10 @@ class CalendarRepository {
     suspend fun deleteMeeting(meetingId: Long, token: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = api.deleteMeeting(meetingId, "Bearer $token")
+                // ✅ Usar AuditManager
+                val deviceInfo = AuditManager.getDeviceInfo()
+
+                val response = api.deleteMeeting(meetingId, deviceInfo, "Bearer $token")
 
                 if (response.isSuccessful && response.body() != null) {
                     val genericResponse = response.body()!!

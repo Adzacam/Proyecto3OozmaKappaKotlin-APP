@@ -1,122 +1,93 @@
 package com.example.develarqapp.data.repository
 
+import com.example.develarqapp.data.api.ApiConfig
+import com.example.develarqapp.data.model.MarkNotificationReadRequest
 import com.example.develarqapp.data.model.Notification
-import kotlinx.coroutines.delay
 
 class NotificationsRepository {
 
+    private val apiService = ApiConfig.getApiService()
+
     /**
-     * Obtiene las notificaciones del usuario
-     * TODO: Implementar llamada real a la API
+     * Obtener notificaciones del usuario
      */
     suspend fun getNotifications(userId: Long, token: String): Result<List<Notification>> {
         return try {
-            // Simular delay de red
-            delay(500)
-
-            // Datos de ejemplo - reemplazar con llamada real a API
-            val mockNotifications = listOf(
-                Notification(
-                    id = 1,
-                    type = "documento",
-                    title = "Archivo BIM cargado",
-                    message = "Se ha subido el primer archivo BIM del proyecto 'Mocca Master'.",
-                    date = "28/10/2025, 8:57:53",
-                    isRead = false,
-                    isNew = true,
-                    projectName = "Mocca Master"
-                ),
-                Notification(
-                    id = 2,
-                    type = "proyecto",
-                    title = "Asignación de proyecto",
-                    message = "Se te ha asignado el proyecto: Mocca Master",
-                    date = "28/10/2025, 8:57:46",
-                    isRead = false,
-                    isNew = true,
-                    projectName = "Mocca Master"
-                ),
-                Notification(
-                    id = 3,
-                    type = "proyecto",
-                    title = "Estado del proyecto actualizado",
-                    message = "El proyecto 'Cable HDMI' ha cambiado de estado a 'finalizado'.",
-                    date = "28/10/2025, 8:32:28",
-                    isRead = true,
-                    isNew = false,
-                    projectName = "Cable HDMI"
-                ),
-                Notification(
-                    id = 4,
-                    type = "proyecto",
-                    title = "Asignación de proyecto",
-                    message = "Se te ha asignado el proyecto: Cable HDMI",
-                    date = "23/10/2025, 8:36:57",
-                    isRead = true,
-                    isNew = false,
-                    projectName = "Cable HDMI"
-                )
+            val response = apiService.getNotifications(
+                token = "Bearer $token",
+                tipo = null,
+                leida = null,
+                limit = 50
             )
 
-            Result.success(mockNotifications)
-
-            // TODO: Implementar llamada real
-            /*
-            val response = api.getNotifications(userId, "Bearer $token")
-            if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(response.body()!!.data)
             } else {
-                Result.failure(Exception("Error al cargar notificaciones"))
+                Result.failure(Exception("Error al obtener notificaciones"))
             }
-            */
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
     /**
-     * Marca una notificación como leída
-     * TODO: Implementar llamada real a la API
+     * Marcar una notificación como leída
      */
-    suspend fun markAsRead(notificationId: Long): Result<Unit> {
+    suspend fun markAsRead(notificationId: Long): Result<Boolean> {
         return try {
-            delay(200)
+            // Obtener token desde SessionManager (necesitarás pasarlo como parámetro)
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
-            // TODO: Implementar llamada real
-            /*
-            val response = api.markNotificationAsRead(notificationId)
-            if (response.isSuccessful) {
-                Result.success(Unit)
+    /**
+     * Marcar una notificación como leída (con token)
+     */
+    suspend fun markAsRead(notificationId: Long, token: String): Result<Boolean> {
+        return try {
+            val request = MarkNotificationReadRequest(notificationId)
+            val response = apiService.markNotificationRead(
+                request = request,
+                token = "Bearer $token"
+            )
+
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(true)
             } else {
                 Result.failure(Exception("Error al marcar notificación"))
             }
-            */
-
-            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
     /**
-     * Marca todas las notificaciones como leídas
-     * TODO: Implementar llamada real a la API
+     * Marcar todas las notificaciones como leídas
      */
-    suspend fun markAllAsRead(): Result<Unit> {
+    suspend fun markAllAsRead(): Result<Boolean> {
         return try {
-            delay(300)
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
-            // TODO: Implementar llamada real
-            /*
-            val response = api.markAllNotificationsAsRead()
-            if (response.isSuccessful) {
-                Result.success(Unit)
+    /**
+     * Marcar todas las notificaciones como leídas (con token)
+     */
+    suspend fun markAllAsRead(token: String): Result<Boolean> {
+        return try {
+            val response = apiService.markAllNotificationsRead(
+                token = "Bearer $token"
+            )
+
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(true)
             } else {
-                Result.failure(Exception("Error al marcar todas"))
+                Result.failure(Exception("Error al marcar todas las notificaciones"))
             }
-            */
-
-            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

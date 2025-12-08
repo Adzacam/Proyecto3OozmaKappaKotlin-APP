@@ -79,7 +79,7 @@ class DownloadHistoryFragment : Fragment() {
                 resources.getColor(android.R.color.holo_green_light, null),
                 resources.getColor(android.R.color.holo_orange_light, null)
             )
-
+            setProgressViewOffset(false, 0, 200)
             setOnRefreshListener {
                 viewModel.loadDownloadHistory()
             }

@@ -1,9 +1,36 @@
 package com.example.develarqapp.data.model
 
-import com.example.develarqapp.data.model.User
 import com.google.gson.annotations.SerializedName
 
-// Modelo completo de Usuario
+// Request mejorado para eliminar usuario con motivo y device info
+data class DeleteUserRequest(
+    @SerializedName("id")
+    val id: Long,
+
+    @SerializedName("motivo")
+    val motivo: String? = null,
+
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+
+    @SerializedName("android_version")
+    val androidVersion: String? = null,
+
+    @SerializedName("sdk_version")
+    val sdkVersion: Int? = null
+)
+
+// Response específico para validar proyectos activos
+data class DeleteUserResponse(
+    @SerializedName("success")
+    val success: Boolean,
+
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("has_active_projects")
+    val hasActiveProjects: Boolean? = null
+)
 
 // Request para crear usuario
 data class CreateUserRequest(
@@ -23,7 +50,17 @@ data class CreateUserRequest(
     val telefono: String?,
 
     @SerializedName("rol")
-    val rol: String
+    val rol: String,
+
+    // Campos auditoría
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+
+    @SerializedName("android_version")
+    val androidVersion: String? = null,
+
+    @SerializedName("sdk_version")
+    val sdkVersion: Int? = null
 )
 
 // Request para actualizar usuario
@@ -47,13 +84,17 @@ data class UpdateUserRequest(
     val rol: String,
 
     @SerializedName("password")
-    val password: String?
-)
+    val password: String?,
 
-// Request para eliminar/desactivar usuario
-data class DeleteUserRequest(
-    @SerializedName("id")
-    val id: Long
+    // Campos auditoría
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+
+    @SerializedName("android_version")
+    val androidVersion: String? = null,
+
+    @SerializedName("sdk_version")
+    val sdkVersion: Int? = null
 )
 
 // Response para lista de usuarios

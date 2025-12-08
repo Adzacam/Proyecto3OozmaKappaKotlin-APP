@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/badge_background_2"
+            android:padding="24dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/badge_background"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="EDITAR TAREA"
+                    android:textColor="#3B82F6"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Modifica los datos de la tarea"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Código de tarea (solo vista) -->
+        <TextView
+                android:id="@+id/tvTaskCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TASK-001"
+                android:textColor="#6B82F6"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_event_type_badge"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:layout_marginBottom="16dp"/>
+
+        <!-- Título -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Título de la tarea *"
+                android:textColorHint="#94A3B8"
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#3B82F6"
+                app:hintTextColor="#3B82F6"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTaskTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:maxLines="2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Descripción -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Descripción"
+                android:textColorHint="#94A3B8"
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#3B82F6"
+                app:hintTextColor="#3B82F6"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTaskDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:maxLines="4"
+                    android:minLines="3"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Estado -->
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Estado *"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+        <Spinner
+                android:id="@+id/spinnerStatus"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_spinner"
+                android:layout_marginBottom="16dp"/>
+
+        <!-- Prioridad -->
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prioridad *"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+        <Spinner
+                android:id="@+id/spinnerPriority"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_spinner"
+                android:layout_marginBottom="16dp"/>
+
+        <!-- Asignar a -->
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Asignar a"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+        <Spinner
+                android:id="@+id/spinnerAssignee"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_spinner"
+                android:layout_marginBottom="16dp"/>
+
+        <!-- Fecha límite -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Fecha límite"
+                android:textColorHint="#94A3B8"
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#3B82F6"
+                app:hintTextColor="#3B82F6"
+                app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
+                app:startIconTint="#3B82F6"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDueDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:inputType="none"
+                    android:textColor="#FFFFFF" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Info adicional -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/badge_background"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp">
+
+            <TextView
+                    android:id="@+id/tvCreatedBy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Creado por: Usuario"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+
+            <TextView
+                    android:id="@+id/tvCreatedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Fecha: 01/12/2025"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+
+            <TextView
+                    android:id="@+id/tvUpdatedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Última modificación: 05/12/2025"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Botones -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+            <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Cancelar"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13sp"
+                    android:backgroundTint="#64748B"
+                    app:cornerRadius="8dp"
+                    android:layout_marginEnd="8dp" />
+
+            <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Guardar Cambios"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13sp"
+                    android:backgroundTint="#3B82F6"
+                    app:cornerRadius="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

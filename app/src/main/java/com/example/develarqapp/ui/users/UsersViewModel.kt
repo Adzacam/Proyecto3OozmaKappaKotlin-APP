@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.develarqapp.data.api.ApiConfig
 import com.example.develarqapp.data.model.*
+import com.example.develarqapp.utils.DeviceInfoUtil
 import com.example.develarqapp.utils.PasswordValidator
 import com.example.develarqapp.utils.Validator
 import kotlinx.coroutines.launch
@@ -14,12 +15,11 @@ class UsersViewModel : ViewModel() {
 
     private val apiService = ApiConfig.getApiService()
 
-    // ... (tus LiveData _users, _deletedUsers, etc. no cambian) ...
-    private val _users = MutableLiveData<List<com.example.develarqapp.data.model.User>>()
-    val users: LiveData<List<com.example.develarqapp.data.model.User>> = _users
+    private val _users = MutableLiveData<List<User>>()
+    val users: LiveData<List<User>> = _users
 
-    private val _deletedUsers = MutableLiveData<List<com.example.develarqapp.data.model.User>>()
-    val deletedUsers: LiveData<List<com.example.develarqapp.data.model.User>> = _deletedUsers
+    private val _deletedUsers = MutableLiveData<List<User>>()
+    val deletedUsers: LiveData<List<User>> = _deletedUsers
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -30,14 +30,12 @@ class UsersViewModel : ViewModel() {
     private val _operationSuccess = MutableLiveData<String?>()
     val operationSuccess: LiveData<String?> = _operationSuccess
 
-
-    fun loadUsers(token: String) { // <-- CAMBIO 1: Recibir token
+    fun loadUsers(token: String) {
         _isLoading.value = true
         _error.value = null
 
         viewModelScope.launch {
             try {
-                // CAMBIO 2: Usar el token en la llamada
                 val response = apiService.getUsers("Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {
@@ -53,13 +51,12 @@ class UsersViewModel : ViewModel() {
         }
     }
 
-    fun loadDeletedUsers(token: String) { // <-- CAMBIO 1
+    fun loadDeletedUsers(token: String) {
         _isLoading.value = true
         _error.value = null
 
         viewModelScope.launch {
             try {
-                // CAMBIO 2
                 val response = apiService.getDeletedUsers("Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {
@@ -75,66 +72,25 @@ class UsersViewModel : ViewModel() {
         }
     }
 
-    fun updateUser(
-        id: Long,
-        name: String,
-        apellido: String,
-        email: String,
-        phone: String?,
-        rol: String,
-        password: String? = null,
-        token: String // <-- CAMBIO 1
-    ) {
-        // Validaciones
-        val validation = validateUpdateInputs(name, apellido, email, rol, password)
-        if (!validation.isValid) {
-            _error.value = validation.message
-            return
-        }
-
+    fun deleteUser(userId: Long, motivo: String, token: String) {
         _isLoading.value = true
 
         viewModelScope.launch {
             try {
-                val request = UpdateUserRequest(
-                    id = id,
-                    name = name.trim(),
-                    apellido = apellido.trim(),
-                    email = email.trim(),
-                    telefono = phone?.trim(),
-                    rol = rol,
-                    password = password?.trim()
+
+                val request = DeleteUserRequest(
+                    id = userId,
+                    motivo = motivo,
+                    deviceModel = DeviceInfoUtil.getDeviceModel(),
+                    androidVersion = DeviceInfoUtil.getAndroidVersion(),
+                    sdkVersion = DeviceInfoUtil.getSdkVersion()
                 )
 
-                // CAMBIO 2
-                val response = apiService.updateUser(request, "Bearer $token")
-
-                if (response.isSuccessful && response.body()?.success == true) {
-                    _operationSuccess.value = "Usuario actualizado exitosamente"
-                    loadUsers(token) // Recargar lista (pasando el token)
-                } else {
-                    _error.value = response.body()?.message ?: "Error al actualizar usuario"
-                }
-            } catch (e: Exception) {
-                _error.value = "Error de conexión: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun deleteUser(userId: Long, token: String) { // <-- CAMBIO 1
-        _isLoading.value = true
-
-        viewModelScope.launch {
-            try {
-                val request = DeleteUserRequest(userId)
-                // CAMBIO 2
                 val response = apiService.deleteUser(request, "Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _operationSuccess.value = "Usuario eliminado exitosamente"
-                    loadUsers(token) // Recargar lista
+                    loadUsers(token)
                 } else {
                     _error.value = response.body()?.message ?: "Error al eliminar usuario"
                 }
@@ -146,18 +102,23 @@ class UsersViewModel : ViewModel() {
         }
     }
 
-    fun restoreUser(userId: Long, token: String) { // <-- CAMBIO 1
+    fun restoreUser(userId: Long, token: String) {
         _isLoading.value = true
 
         viewModelScope.launch {
             try {
-                val request = DeleteUserRequest(userId)
-                // CAMBIO 2
+                // ✅ MODIFICADO: Agregar Device Info
+                val request = DeleteUserRequest(
+                    id = userId,
+                    deviceModel = DeviceInfoUtil.getDeviceModel(),
+                    androidVersion = DeviceInfoUtil.getAndroidVersion(),
+                    sdkVersion = DeviceInfoUtil.getSdkVersion()
+                )
                 val response = apiService.restoreUser(request, "Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _operationSuccess.value = "Usuario restaurado exitosamente"
-                    loadDeletedUsers(token) // Recargar lista
+                    loadDeletedUsers(token)
                 } else {
                     _error.value = response.body()?.message ?: "Error al restaurar usuario"
                 }
@@ -169,18 +130,23 @@ class UsersViewModel : ViewModel() {
         }
     }
 
-    fun toggleUserStatus(userId: Long, token: String) { // <-- CAMBIO 1
+    fun toggleUserStatus(userId: Long, token: String) {
         _isLoading.value = true
 
         viewModelScope.launch {
             try {
-                val request = DeleteUserRequest(userId)
-                // CAMBIO 2
+                // ✅ MODIFICADO: Agregar Device Info
+                val request = DeleteUserRequest(
+                    id = userId,
+                    deviceModel = DeviceInfoUtil.getDeviceModel(),
+                    androidVersion = DeviceInfoUtil.getAndroidVersion(),
+                    sdkVersion = DeviceInfoUtil.getSdkVersion()
+                )
                 val response = apiService.toggleUserStatus(request, "Bearer $token")
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _operationSuccess.value = response.body()?.message
-                    loadUsers(token) // Recargar lista
+                    loadUsers(token)
                 } else {
                     _error.value = response.body()?.message ?: "Error al cambiar estado"
                 }
@@ -192,8 +158,56 @@ class UsersViewModel : ViewModel() {
         }
     }
 
+    fun updateUser(
+        id: Long,
+        name: String,
+        apellido: String,
+        email: String,
+        phone: String?,
+        rol: String,
+        password: String? = null,
+        token: String
+    ) {
+        val validation = validateUpdateInputs(name, apellido, email, rol, password)
+        if (!validation.isValid) {
+            _error.value = validation.message
+            return
+        }
 
-    // ... (El resto de tus funciones privadas no cambian) ...
+        _isLoading.value = true
+
+        viewModelScope.launch {
+            try {
+                // ✅ MODIFICADO: Agregar Device Info
+                val request = UpdateUserRequest(
+                    id = id,
+                    name = name.trim(),
+                    apellido = apellido.trim(),
+                    email = email.trim(),
+                    telefono = phone?.trim(),
+                    rol = rol,
+                    password = password?.trim(),
+                    deviceModel = DeviceInfoUtil.getDeviceModel(),
+                    androidVersion = DeviceInfoUtil.getAndroidVersion(),
+                    sdkVersion = DeviceInfoUtil.getSdkVersion()
+                )
+
+                val response = apiService.updateUser(request, "Bearer $token")
+
+                if (response.isSuccessful && response.body()?.success == true) {
+                    _operationSuccess.value = "Usuario actualizado exitosamente"
+                    loadUsers(token)
+                } else {
+                    _error.value = response.body()?.message ?: "Error al actualizar usuario"
+                }
+            } catch (e: Exception) {
+                _error.value = "Error de conexión: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     private fun validateUpdateInputs(
         name: String,
         apellido: String,
@@ -201,7 +215,6 @@ class UsersViewModel : ViewModel() {
         rol: String,
         password: String?
     ): ValidationResult {
-        // ... (sin cambios)
         return when {
             name.trim().isEmpty() ->
                 ValidationResult(false, "El nombre es requerido")

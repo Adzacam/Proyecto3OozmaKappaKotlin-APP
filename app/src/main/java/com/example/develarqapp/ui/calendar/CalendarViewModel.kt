@@ -9,6 +9,7 @@ import com.example.develarqapp.data.model.MeetingRequest
 import com.example.develarqapp.data.model.Project
 import com.example.develarqapp.data.model.User
 import com.example.develarqapp.data.repository.CalendarRepository
+import com.example.develarqapp.utils.AuditManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -76,7 +77,8 @@ class CalendarViewModel : ViewModel() {
                 if (result.isSuccess) {
                     _projects.value = result.getOrNull() ?: emptyList()
                 }
-            } catch (e: Exception) { /* Error silencioso */ }
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -87,7 +89,8 @@ class CalendarViewModel : ViewModel() {
                 if (result.isSuccess) {
                     _users.value = result.getOrNull() ?: emptyList()
                 }
-            } catch (e: Exception) { /* Error silencioso */ }
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -123,13 +126,18 @@ class CalendarViewModel : ViewModel() {
         _isLoading.value = true
         _operationSuccess.value = false
 
+        // Usar AuditManager
+        val deviceInfo = AuditManager.getDeviceInfo()
         val request = MeetingRequest(
             proyectoId = projectId,
             titulo = title.trim(),
             descripcion = description?.trim(),
             fechaHora = startTime,
             fechaHoraFin = endTime,
-            participantes = participantIds
+            participantes = participantIds,
+            deviceModel = deviceInfo["device_model"] as String,
+            androidVersion = deviceInfo["android_version"] as String,
+            sdkVersion = deviceInfo["sdk_version"] as Int
         )
 
         viewModelScope.launch {
@@ -179,13 +187,19 @@ class CalendarViewModel : ViewModel() {
         _isLoading.value = true
         _operationSuccess.value = false
 
+
+        val deviceInfo = AuditManager.getDeviceInfo()
+
         val request = MeetingRequest(
             proyectoId = projectId,
             titulo = title.trim(),
             descripcion = description?.trim(),
             fechaHora = startTime,
             fechaHoraFin = endTime,
-            participantes = participantIds
+            participantes = participantIds,
+            deviceModel = deviceInfo["device_model"] as String,
+            androidVersion = deviceInfo["android_version"] as String,
+            sdkVersion = deviceInfo["sdk_version"] as Int
         )
 
         viewModelScope.launch {
@@ -219,7 +233,7 @@ class CalendarViewModel : ViewModel() {
                     try {
                         val meetingDate = dateFormat.parse(meeting.fechaHora)
                         meetingDate != null && meetingDate.after(now)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         false
                     }
                 }
@@ -229,7 +243,7 @@ class CalendarViewModel : ViewModel() {
                     try {
                         val meetingDate = dateFormat.parse(meeting.fechaHora)
                         meetingDate != null && meetingDate.before(now)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         false
                     }
                 }
@@ -254,9 +268,12 @@ class CalendarViewModel : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             try {
+                //  el repository ya usa AuditManager
                 val result = repository.deleteMeeting(meetingId, token)
+
                 if (result.isSuccess) {
                     _successMessage.value = "Reunión eliminada"
+                    _operationSuccess.value = true
                     loadMeetings(token)
                 } else {
                     _errorMessage.value = result.exceptionOrNull()?.message
@@ -291,7 +308,10 @@ class CalendarViewModel : ViewModel() {
         applyFilters()
     }
 
+
     fun clearError() { _errorMessage.value = null }
     fun clearSuccess() { _successMessage.value = null }
     fun resetOperationSuccess() { _operationSuccess.value = false }
+
+
 }

@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0F172A">
+        android:background="#1A1A1A">
 
     <!-- Top App Bar -->
     <include
@@ -16,12 +17,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Progress Bar para carga -->
+    <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"
+            android:indeterminateTint="#B8FF3C" />
+
     <!-- Content ScrollView -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/topAppBar"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:fillViewport="true">
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -29,36 +43,404 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-            <!-- Welcome Section -->
+            <!-- ============================================ -->
+            <!-- SECCIÓN DE BIENVENIDA -->
+            <!-- ============================================ -->
             <TextView
                     android:id="@+id/tvWelcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Bienvenido"
                     android:textColor="#FFFFFF"
-                    android:textSize="24sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="4dp" />
 
             <TextView
                     android:id="@+id/tvRole"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Admin"
+                    android:text="Rol"
                     android:textColor="#B8FF3C"
                     android:textSize="16sp"
                     android:layout_marginBottom="24dp" />
 
-            <!-- Engineer Section (Conditional) -->
-            <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cvEngineerSection"
+            <!-- ============================================ -->
+            <!-- MIS ASIGNACIONES (ADMIN, INGENIERO, ARQUITECTO) -->
+            <!-- ============================================ -->
+            <LinearLayout
+                    android:id="@+id/llMisAsignaciones"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📋 Mis Asignaciones"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                <!-- Grid de estadísticas personales -->
+                <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="2"
+                        android:rowCount="2"
+                        android:alignmentMode="alignBounds"
+                        android:layout_marginBottom="16dp">
+
+                    <!-- Mis Proyectos -->
+                    <include
+                            android:id="@+id/cardMisProyectos"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Mis Tareas -->
+                    <include
+                            android:id="@+id/cardMisTareas"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Mis Reuniones -->
+                    <include
+                            android:id="@+id/cardMisReuniones"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Mis Documentos -->
+                    <include
+                            android:id="@+id/cardMisDocumentos"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+                </GridLayout>
+
+                <!-- Gráfica de Mis Tareas por Estado -->
+                <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardMisTareasChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#1E293B"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Estado de Mis Tareas"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                                android:id="@+id/llMisTareasEstado"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Tareas Pendientes -->
+                <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTareasPendientes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#1E293B"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⚡ Tareas Pendientes"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                                android:id="@+id/llTareasPendientes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+
+                        <TextView
+                                android:id="@+id/tvNoTareas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="No tienes tareas pendientes"
+                                android:textColor="#64748B"
+                                android:textSize="14sp"
+                                android:padding="16dp"
+                                android:visibility="gone" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Próximas Reuniones -->
+                <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardProximasReuniones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#1E293B"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="24dp"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="📅 Próximas Reuniones"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                                android:id="@+id/llProximasReuniones"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+
+                        <TextView
+                                android:id="@+id/tvNoReuniones"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="No tienes reuniones próximas"
+                                android:textColor="#64748B"
+                                android:textSize="14sp"
+                                android:padding="16dp"
+                                android:visibility="gone" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ============================================ -->
+            <!-- VISTA GENERAL DEL SISTEMA (SOLO ADMIN) -->
+            <!-- ============================================ -->
+            <LinearLayout
+                    android:id="@+id/llVistaGeneral"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📊 Vista General del Sistema"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                <!-- Grid de estadísticas generales -->
+                <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="2"
+                        android:rowCount="3"
+                        android:alignmentMode="alignBounds"
+                        android:layout_marginBottom="16dp">
+
+                    <!-- Total Proyectos -->
+                    <include
+                            android:id="@+id/cardTotalProyectos"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Total Tareas -->
+                    <include
+                            android:id="@+id/cardTotalTareas"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Reuniones Sistema -->
+                    <include
+                            android:id="@+id/cardReunionesProximas"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Total Documentos -->
+                    <include
+                            android:id="@+id/cardTotalDocumentos"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Usuarios Activos -->
+                    <include
+                            android:id="@+id/cardUsuariosActivos"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+
+                    <!-- Notificaciones -->
+                    <include
+                            android:id="@+id/cardNotificaciones"
+                            layout="@layout/item_stat_card"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1" />
+                </GridLayout>
+
+                <!-- Gráfica de Proyectos por Estado -->
+                <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardProyectosChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#1E293B"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Proyectos por Estado"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                                android:id="@+id/llProyectosEstado"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Gráfica de Tareas por Estado -->
+                <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTareasChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#1E293B"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tareas por Estado"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                                android:id="@+id/llTareasEstado"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Actividad Reciente -->
+                <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardActividadReciente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#1E293B"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🕐 Actividad Reciente"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                                android:id="@+id/llActividadReciente"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ============================================ -->
+            <!-- PROYECTOS ASIGNADOS (INGENIERO/ARQUITECTO/CLIENTE) -->
+            <!-- ============================================ -->
+            <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardProyectosAsignados"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     app:cardBackgroundColor="#1E293B"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="4dp"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone">
 
                 <LinearLayout
                         android:layout_width="match_parent"
@@ -69,111 +451,31 @@
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sección de Ingeniero"
-                            android:textColor="#60A5FA"
-                            android:textSize="18sp"
+                            android:text="📁 Mis Proyectos"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
                             android:textStyle="bold"
-                            android:layout_marginBottom="8dp" />
+                            android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                            android:id="@+id/llProyectosAsignados"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
 
                     <TextView
+                            android:id="@+id/tvNoProyectos"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Contenido específico para ingenieros"
-                            android:textColor="#94A3B8"
-                            android:textSize="14sp" />
+                            android:text="No tienes proyectos asignados"
+                            android:textColor="#64748B"
+                            android:textSize="14sp"
+                            android:padding="16dp"
+                            android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Quick Actions -->
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Accesos Rápidos"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp" />
-
-            <!-- Grid of Quick Action Cards -->
-            <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="2"
-                    android:rowCount="2"
-                    android:alignmentMode="alignBounds"
-                    android:columnOrderPreserved="false">
-
-                <!-- Projects Card -->
-                <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="#1E293B"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="4dp">
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="📁"
-                                android:textSize="32sp"
-                                android:layout_marginBottom="8dp" />
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Proyectos"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Kanban Card -->
-                <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="#1E293B"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="4dp">
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="📋"
-                                android:textSize="32sp"
-                                android:layout_marginBottom="8dp" />
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Kanban"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </GridLayout>
-
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

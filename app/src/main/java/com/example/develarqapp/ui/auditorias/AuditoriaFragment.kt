@@ -14,6 +14,8 @@ import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentAuditoriaBinding
 import com.example.develarqapp.utils.SessionManager
 import com.example.develarqapp.utils.TopBarManager
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AuditoriaFragment : Fragment() {
 
@@ -110,6 +112,9 @@ class AuditoriaFragment : Fragment() {
         viewModel.filteredLogs.observe(viewLifecycleOwner) { logs ->
             binding.swipeRefresh.isRefreshing = false
             auditoriaAdapter.submitList(logs)
+
+            // ✅ Actualizar estadísticas
+            updateStatistics(logs)
         }
 
         viewModel.isEmpty.observe(viewLifecycleOwner) { isEmpty ->
@@ -130,6 +135,35 @@ class AuditoriaFragment : Fragment() {
                 viewModel.clearError()
             }
         }
+    }
+
+    /**
+     * ✅ Actualiza las estadísticas de auditoría
+     */
+    private fun updateStatistics(logs: List<com.example.develarqapp.data.model.AuditoriaLog>) {
+        // Total
+        binding.tvTotalCount.text = logs.size.toString()
+
+        // Hoy
+        val today = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val todayCount = logs.count { it.fecha.startsWith(today) }
+        binding.tvTodayCount.text = todayCount.toString()
+
+        // Esta semana
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -7)
+        val weekAgo = calendar.time
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
+
+        val weekCount = logs.count { log ->
+            try {
+                val logDate = dateFormat.parse(log.fecha)
+                logDate != null && logDate.after(weekAgo)
+            } catch (e: Exception) {
+                false
+            }
+        }
+        binding.tvWeekCount.text = weekCount.toString()
     }
 
     override fun onDestroyView() {

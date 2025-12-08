@@ -5,6 +5,7 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 require_once '../db_config/database.php';
+require_once '../db_config/audit_helper.php';
 
 // Verificar autenticación
 $headers = getallheaders();
@@ -14,29 +15,72 @@ if (!isset($headers['Authorization'])) {
 }
 
 try {
-    // ✅ CORRECCIÓN: Instanciar la clase Database
     $database = new Database();
     $pdo = $database->getConnection();
     
-    // Obtener todas las reuniones no eliminadas con información del proyecto
-    $query = "
-        SELECT 
-            r.id,
-            r.proyecto_id,
-            p.nombre as proyecto_nombre,
-            r.titulo,
-            r.descripcion,
-            r.fecha_hora,
-            r.fecha_hora_fin,
-            r.creador_id,
-            r.eliminado
-        FROM reuniones r
-        LEFT JOIN proyectos p ON r.proyecto_id = p.id
-        WHERE r.eliminado = 0
-        ORDER BY r.fecha_hora DESC
-    ";
+    // ✅ FIX 2: Obtener usuario y rol
+    $token = str_replace('Bearer ', '', $headers['Authorization']);
+    $usuario = obtenerUsuarioDesdeToken($pdo, $token);
     
-    $stmt = $pdo->query($query);
+    if (!$usuario) {
+        http_response_code(401);
+        echo json_encode(["success" => false, "message" => "Token inválido"]);
+        exit;
+    }
+    
+    // Obtener rol del usuario
+    $queryRole = "SELECT rol FROM users WHERE id = :user_id LIMIT 1";
+    $stmtRole = $pdo->prepare($queryRole);
+    $stmtRole->execute([':user_id' => $usuario['id']]);
+    $userRole = $stmtRole->fetch(PDO::FETCH_ASSOC);
+    
+    $isAdmin = ($userRole && strtolower($userRole['rol']) === 'admin');
+    
+    // ✅ FIX 2: Si NO es admin, filtrar solo sus reuniones
+    if ($isAdmin) {
+        // Admin ve todas las reuniones
+        $query = "
+            SELECT 
+                r.id,
+                r.proyecto_id,
+                p.nombre as proyecto_nombre,
+                r.titulo,
+                r.descripcion,
+                r.fecha_hora,
+                r.fecha_hora_fin,
+                r.creador_id,
+                r.eliminado
+            FROM reuniones r
+            LEFT JOIN proyectos p ON r.proyecto_id = p.id
+            WHERE r.eliminado = 0
+            ORDER BY r.fecha_hora DESC
+        ";
+        $stmt = $pdo->query($query);
+    } else {
+        // Usuarios normales solo ven reuniones donde son participantes
+        $query = "
+            SELECT DISTINCT
+                r.id,
+                r.proyecto_id,
+                p.nombre as proyecto_nombre,
+                r.titulo,
+                r.descripcion,
+                r.fecha_hora,
+                r.fecha_hora_fin,
+                r.creador_id,
+                r.eliminado
+            FROM reuniones r
+            LEFT JOIN proyectos p ON r.proyecto_id = p.id
+            INNER JOIN reuniones_usuarios ru ON r.id = ru.reunion_id
+            WHERE r.eliminado = 0 
+            AND ru.eliminado = 0
+            AND ru.user_id = :user_id
+            ORDER BY r.fecha_hora DESC
+        ";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([':user_id' => $usuario['id']]);
+    }
+    
     $meetings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Obtener participantes para cada reunión

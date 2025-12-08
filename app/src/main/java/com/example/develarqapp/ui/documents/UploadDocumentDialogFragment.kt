@@ -28,6 +28,7 @@ class UploadDocumentDialogFragment : DialogFragment() {
     private var selectedFileUri: Uri? = null
     private var projects: List<Project> = emptyList()
     private var preSelectedProjectId: Long? = null
+    private var onDocumentUploadedListener: (() -> Unit)? = null
 
     // File picker launcher
     private val filePickerLauncher = registerForActivityResult(
@@ -50,6 +51,19 @@ class UploadDocumentDialogFragment : DialogFragment() {
                     projectId?.let { putLong(ARG_PROJECT_ID, it) }
                     fileUri?.let { putParcelable(ARG_FILE_URI, it) }
                 }
+            }
+        }
+        fun newInstance(
+            projectId: Long? = null,
+            fileUri: Uri? = null,
+            onUploaded: (() -> Unit)? = null
+        ): UploadDocumentDialogFragment {
+            return UploadDocumentDialogFragment().apply {
+                arguments = Bundle().apply {
+                    projectId?.let { putLong(ARG_PROJECT_ID, it) }
+                    fileUri?.let { putParcelable(ARG_FILE_URI, it) }
+                }
+                onDocumentUploadedListener = onUploaded
             }
         }
     }
@@ -106,17 +120,29 @@ class UploadDocumentDialogFragment : DialogFragment() {
             binding.btnSubir.isEnabled = !isLoading
         }
 
-        // ✅ FIX: Cerrar diálogo y recargar cuando haya éxito
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty() && isVisible) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
 
-                // Recargar documentos ANTES de cerrar el diálogo
-                viewModel.loadDocuments()
+                onDocumentUploadedListener?.invoke()
 
-                // Cerrar el diálogo
                 dismiss()
+            }
+        }
+
+        viewModel.successMessage.observe(viewLifecycleOwner) { message ->
+            if (message.isNotEmpty() && isVisible) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                viewModel.loadDocuments()
+                viewModel.clearMessages()
+
+                binding.root.postDelayed({
+                    if (isVisible) {
+                        dismiss()
+                    }
+                }, 300) // 300ms de delay
             }
         }
 
@@ -126,6 +152,15 @@ class UploadDocumentDialogFragment : DialogFragment() {
                 viewModel.clearMessages()
             }
         }
+
+        viewModel.operationSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                onDocumentUploadedListener?.invoke()
+                viewModel.resetOperationSuccess()
+                dismiss()
+            }
+        }
+
     }
 
     private fun setupProjectSpinner() {

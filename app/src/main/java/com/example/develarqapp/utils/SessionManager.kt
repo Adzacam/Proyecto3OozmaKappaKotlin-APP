@@ -206,6 +206,13 @@ class SessionManager(context: Context) {
                 getUserRol().isNotEmpty()
     }
 
+    fun saveLastUnreadCount(count: Int) {
+        prefs.edit().putInt("last_unread_count", count).apply()
+    }
+
+    fun getLastUnreadCount(): Int {
+        return prefs.getInt("last_unread_count", 0)
+    }
     // ========================================
     // DEBUGGING METHODS (Solo para desarrollo)
     // ========================================
