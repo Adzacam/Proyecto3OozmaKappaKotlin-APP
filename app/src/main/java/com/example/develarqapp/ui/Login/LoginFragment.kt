@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentLoginBinding
 import com.example.develarqapp.utils.SessionManager
-import com.example.develarqapp.utils.TopBarManager
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null

@@ -105,7 +105,7 @@ class DeletedDocumentsAdapter(
                 } ?: 0L
 
                 Pair(formatted, daysAgo)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Pair(dateString, 0L)
             }
         }

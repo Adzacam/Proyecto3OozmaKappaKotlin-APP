@@ -1,5 +1,6 @@
 package com.example.develarqapp.ui.calendar
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
@@ -46,9 +47,8 @@ class EditMeetingDialogFragment : DialogFragment() {
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
-    private val TAG = "EditMeetingDialog"
-
     companion object {
+        private const val TAG = "EditMeetingDialog"
         private const val ARG_MEETING = "meeting"
 
         fun newInstance(meeting: Meeting): EditMeetingDialogFragment {
@@ -87,20 +87,16 @@ class EditMeetingDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ✅ Cargar datos de la reunión primero
         loadMeetingData()
-
         setupClickListeners()
         setupObservers()
 
         val token = sessionManager.getToken()
         if (token != null) {
-            // ✅ Forzar recarga si las listas están vacías
             if (viewModel.projects.value.isNullOrEmpty()) {
                 Log.d(TAG, "🔄 Recargando proyectos...")
                 viewModel.loadProjects(token)
             } else {
-                // Si ya hay proyectos, configurar el dropdown inmediatamente
                 setupProjectDropdown(viewModel.projects.value ?: emptyList())
             }
 
@@ -113,22 +109,19 @@ class EditMeetingDialogFragment : DialogFragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun loadMeetingData() {
         Log.d(TAG, "📋 Cargando datos de la reunión...")
 
-        // ✅ Cargar título
         binding.etTitle.setText(meeting.titulo)
         Log.d(TAG, "  Título: ${meeting.titulo}")
 
-        // ✅ Cargar descripción
         binding.etDescription.setText(meeting.descripcion ?: "")
         Log.d(TAG, "  Descripción: ${meeting.descripcion}")
 
-        // ✅ Guardar proyecto seleccionado
         selectedProjectId = meeting.proyectoId
         Log.d(TAG, "  Proyecto ID: $selectedProjectId")
 
-        // ✅ Parsear y mostrar fechas
         try {
             apiDateFormat.parse(meeting.fechaHora)?.let { startDate ->
                 selectedStartCalendar.time = startDate
@@ -147,7 +140,6 @@ class EditMeetingDialogFragment : DialogFragment() {
             Log.e(TAG, "❌ Error parseando fechas", e)
         }
 
-        // ✅ Cargar participantes
         meeting.participantes?.let { participantes ->
             selectedParticipantIds = participantes.map { it.userId }.toMutableList()
             selectedParticipantNames = participantes.map { it.nombre }.toMutableList()
@@ -205,8 +197,9 @@ class EditMeetingDialogFragment : DialogFragment() {
 
         viewModel.operationSuccess.observe(viewLifecycleOwner) { success ->
             if (success) {
-                dismiss()
+                Toast.makeText(context, "Reunión actualizada exitosamente", Toast.LENGTH_SHORT).show()
                 viewModel.resetOperationSuccess()
+                dismiss()
             }
         }
     }
@@ -227,7 +220,6 @@ class EditMeetingDialogFragment : DialogFragment() {
         binding.actvProject.setAdapter(adapter)
         binding.actvProject.threshold = 1000
 
-        // ✅ Preseleccionar el proyecto actual
         val currentProject = projects.find { it.id == meeting.proyectoId }
         currentProject?.let {
             Log.d(TAG, "✅ Preseleccionando proyecto: ${it.nombre}")
@@ -235,7 +227,6 @@ class EditMeetingDialogFragment : DialogFragment() {
             selectedProjectId = it.id
         }
 
-        // ✅ Configurar listeners
         binding.actvProject.setOnClickListener {
             binding.actvProject.showDropDown()
         }
@@ -426,7 +417,7 @@ class EditMeetingDialogFragment : DialogFragment() {
                 val token = sessionManager.getToken()
                 if (token != null) {
                     viewModel.deleteMeeting(meeting.id, token)
-                    dismiss()
+
                 }
             }
             .show()

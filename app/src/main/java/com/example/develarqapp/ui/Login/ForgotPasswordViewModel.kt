@@ -39,7 +39,7 @@ class ForgotPasswordViewModel : ViewModel() {
                 } else {
                     _resetState.value = ForgotPasswordState.Error(response.body()?.message ?: "Ocurrió un error.")
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _resetState.value = ForgotPasswordState.Error("Error de conexión. Inténtalo de nuevo.")
             } finally {
                 _isLoading.value = false

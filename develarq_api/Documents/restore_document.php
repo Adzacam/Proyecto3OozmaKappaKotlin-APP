@@ -1,91 +1,71 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, OPTIONS"); // Importante: Añadido OPTIONS
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// 1. MANEJO DE PRE-FLIGHT (CORS)
-// Esto evita errores de conexión antes de enviar los datos
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { http_response_code(200); exit(); }
 
 require_once '../db_config/database.php';
-require_once '../db_config/audit_helper.php'; 
+require_once '../db_config/audit_helper.php';
 
-// 2. PARCHE DE TOKEN PARA XAMPP
 $headers = getallheaders();
-if (!isset($headers['Authorization']) && isset($_SERVER['HTTP_AUTHORIZATION'])) {
-    $headers['Authorization'] = $_SERVER['HTTP_AUTHORIZATION'];
-}
-
-// 3. VALIDACIÓN BÁSICA (Solo verificamos que el token venga en la cabecera)
-if (!isset($headers['Authorization'])) {
-    http_response_code(401);
-    echo json_encode(["success" => false, "message" => "Token no proporcionado"]);
-    exit();
-}
-$authHeader = $headers['Authorization'];
+$authHeader = $headers['Authorization'] ?? '';
 $token = str_replace('Bearer ', '', $authHeader);
+
+$database = new Database(); $db = $database->getConnection();
 $usuario = obtenerUsuarioDesdeToken($db, $token);
-
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$usuario) {
-    http_response_code(401);
-    echo json_encode(["success" => false, "message" => "Token inválido"]);
-    exit();
-}
-
-$user_id = $usuario['id'];
+if (!$usuario) { http_response_code(401); echo json_encode(["success" => false, "message" => "Token inválido"]); exit(); }
 
 try {
     $data = json_decode(file_get_contents("php://input"));
-    
-    if (!isset($data->id)) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "message" => "ID de documento requerido"]);
-        exit();
-    }
-    
     $id = intval($data->id);
-    
-    // ✅ Obtener info antes de restaurar
-    $infoQuery = "SELECT d.nombre, p.nombre as proyecto_nombre 
-                  FROM documentos d 
-                  LEFT JOIN proyectos p ON d.proyecto_id = p.id 
-                  WHERE d.id = :id";
-    $infoStmt = $db->prepare($infoQuery);
-    $infoStmt->execute([':id' => $id]);
-    $docInfo = $infoStmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Restaurar documento
-    $query = "UPDATE documentos SET eliminado = 0, fecha_eliminacion = NULL WHERE id = :id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":id", $id);
-    
-    if ($stmt->execute()) {
-        // ✅ REGISTRAR EN AUDITORÍA
-        $accion = "Restauró el documento '{$docInfo['nombre']}' del proyecto '{$docInfo['proyecto_nombre']}'";
-        registrarAuditoria($db, $user_id, $accion, 'documentos', $id);
-        
-        http_response_code(200);
-        echo json_encode([
-            "success" => true,
-            "message" => "Documento restaurado exitosamente"
-        ]);
-    } else {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Error al restaurar documento"]);
+
+    // EDICIÓN: Obtener proyecto_id
+    $doc = $db->query("SELECT nombre, proyecto_id FROM documentos WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
+
+    if (!$doc) throw new Exception("Documento no encontrado");
+
+    $stmt = $db->prepare("UPDATE documentos SET eliminado = 0, fecha_eliminacion = NULL WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    // Auditoría
+    $device_info = extraerInfoDispositivo($data);
+    $descripcionAuditoria = "Restauró documento: '{$doc['nombre']}' de la papelera";
+
+    registrarAuditoriaCompleta(
+        $db, $usuario['id'], "Restauró el documento '{$doc['nombre']}'",
+        'documentos', $id, $device_info, $descripcionAuditoria
+    );
+
+    // ============================================
+    // NUEVA LÓGICA DE NOTIFICACIONES
+    // ============================================
+    try {
+        $query_usuarios = "SELECT DISTINCT user_id FROM proyectos_usuarios WHERE proyecto_id = :proyecto_id AND eliminado = 0";
+        $stmt_usuarios = $db->prepare($query_usuarios);
+        $stmt_usuarios->execute([':proyecto_id' => $doc['proyecto_id']]);
+
+        $query_notif = "INSERT INTO notificaciones (user_id, mensaje, tipo, asunto, url, created_at) VALUES (:user_id, :mensaje, 'documento', :asunto, :url, NOW())";
+        $stmt_notif = $db->prepare($query_notif);
+
+        while ($row = $stmt_usuarios->fetch(PDO::FETCH_ASSOC)) {
+            $stmt_notif->execute([
+                ':user_id' => $row['user_id'],
+                ':mensaje' => "El documento '{$doc['nombre']}' ha sido restaurado.",
+                ':asunto' => 'Documento restaurado',
+                ':url' => "http://tu-dominio/proyectos/{$doc['proyecto_id']}"
+            ]);
+        }
+    } catch (Exception $e) {
+        error_log("Error notificación: " . $e->getMessage());
     }
-    
+    // ============================================
+
+    http_response_code(200);
+    echo json_encode(["success" => true, "message" => "Documento restaurado"]);
+
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Error: " . $e->getMessage()
-    ]);
+    http_response_code(500); echo json_encode(["success" => false, "message" => $e->getMessage()]);
 }
 ?>

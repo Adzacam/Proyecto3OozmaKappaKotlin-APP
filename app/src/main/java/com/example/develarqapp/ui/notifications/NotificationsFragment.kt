@@ -1,5 +1,6 @@
 package com.example.develarqapp.ui.notifications
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +10,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.develarqapp.R
 import com.example.develarqapp.databinding.FragmentNotificationsBinding
 import com.example.develarqapp.utils.SessionManager
 import com.example.develarqapp.utils.TopBarManager
-import com.example.develarqapp.R
+
 
 class NotificationsFragment : Fragment() {
 
@@ -24,6 +26,9 @@ class NotificationsFragment : Fragment() {
     private lateinit var topBarManager: TopBarManager
     private lateinit var notificationsAdapter: NotificationsAdapter
 
+    // MediaPlayer para el sonido de notificación
+    private var notificationSound: MediaPlayer? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,6 +37,10 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         sessionManager = SessionManager(requireContext())
         topBarManager = TopBarManager(this, sessionManager)
+
+        // Inicializar sonido de notificación
+        notificationSound = MediaPlayer.create(requireContext(), R.raw.notification_sound)
+
         return binding.root
     }
 
@@ -48,10 +57,8 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun setupTopBar() {
-        // Usa el acceso directo de ViewBinding, es más limpio y seguro
         topBarManager.setupTopBar(binding.topAppBar.root)
     }
-
 
     private fun setupUI() {
         // Botón volver al inicio
@@ -61,7 +68,7 @@ class NotificationsFragment : Fragment() {
 
         // Botón marcar todas como leídas
         binding.btnMarcarTodasLeidas.setOnClickListener {
-            viewModel.markAllAsRead()
+            viewModel.markAllAsRead(sessionManager)
         }
 
         // Botón mostrar filtros
@@ -75,12 +82,13 @@ class NotificationsFragment : Fragment() {
         notificationsAdapter = NotificationsAdapter(
             onNotificationClick = { notification ->
                 if (!notification.isRead) {
-                    viewModel.markAsRead(notification.id)
+                    viewModel.markAsRead(notification.id, sessionManager)
                 }
                 // TODO: Navegar al detalle según el tipo de notificación
+                // Por ejemplo, si es de tipo "proyecto", navegar a ese proyecto
             },
             onMarkAsReadClick = { notification ->
-                viewModel.markAsRead(notification.id)
+                viewModel.markAsRead(notification.id, sessionManager)
             }
         )
 
@@ -99,12 +107,17 @@ class NotificationsFragment : Fragment() {
                 binding.tvEmptyState.isVisible = false
                 binding.rvNotifications.isVisible = true
                 notificationsAdapter.submitList(notifications)
+
+                // Reproducir sonido si hay notificaciones nuevas
+                if (notifications.any { it.isNew }) {
+                    viewModel.playNotificationSound(notificationSound)
+                }
             }
         }
 
         viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
             // Actualizar badge de notificaciones si es necesario
-            //binding.ivNotificationIcon.isVisible = count > 0
+            // binding.ivNotificationIcon.isVisible = count > 0
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -117,10 +130,19 @@ class NotificationsFragment : Fragment() {
                 viewModel.clearError()
             }
         }
+
+        viewModel.successMessage.observe(viewLifecycleOwner) { success ->
+            success?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                viewModel.clearSuccess()
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        notificationSound?.release()
+        notificationSound = null
         _binding = null
     }
 }

@@ -8,7 +8,16 @@ data class LoginRequest(
     val email: String,
 
     @SerializedName("password")
-    val password: String
+    val password: String,
+
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+
+    @SerializedName("android_version")
+    val androidVersion: String? = null,
+
+    @SerializedName("sdk_version")
+    val sdkVersion: Int? = null
 )
 // --- Respuestas (Responses) ---
 
@@ -53,6 +62,17 @@ data class UserData(
 data class ForgotPasswordRequest(
     @SerializedName("email")
     val email: String
+)
+
+data class LogoutRequest(
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+
+    @SerializedName("android_version")
+    val androidVersion: String? = null,
+
+    @SerializedName("sdk_version")
+    val sdkVersion: Int? = null
 )
 
 data class GenericResponse(
@@ -143,3 +163,119 @@ data class Task(
     val asignadoNombre: String?
 )
 
+// ============================================
+// Notificaciones
+// ============================================
+
+data class Notification(
+    @SerializedName("id")
+    val id: Long,
+
+    @SerializedName("mensaje")
+    val mensaje: String,
+
+    @SerializedName("tipo")
+    val tipo: String, // documento, proyecto, tarea, reunion, hito, avance
+
+    @SerializedName("asunto")
+    val asunto: String?,
+
+    @SerializedName("url")
+    val url: String?,
+
+    @SerializedName("leida")
+    val leida: Boolean,
+
+    @SerializedName("es_nueva")
+    val esNueva: Boolean,
+
+    @SerializedName("fecha_envio")
+    val fechaEnvio: String,
+
+    @SerializedName("created_at")
+    val createdAt: String
+) {
+    // Propiedades calculadas para la UI
+    val title: String
+        get() = asunto ?: "Notificación"
+
+    val message: String
+        get() = mensaje
+
+    val type: String
+        get() = tipo
+
+    val isRead: Boolean
+        get() = leida
+
+    val isNew: Boolean
+        get() = esNueva
+
+    val date: String
+        get() = formatDate(fechaEnvio)
+
+    val projectName: String?
+        get() = null // Se puede extraer del mensaje si es necesario
+
+    private fun formatDate(dateString: String): String {
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+            val date = sdf.parse(dateString)
+            val now = java.util.Date()
+            val diffInMillis = now.time - (date?.time ?: 0)
+            val diffInHours = diffInMillis / (1000 * 60 * 60)
+
+            when {
+                diffInHours < 1 -> "Hace ${diffInMillis / (1000 * 60)} min"
+                diffInHours < 24 -> "Hace ${diffInHours}h"
+                else -> {
+                    val outputFormat = java.text.SimpleDateFormat("dd/MM/yyyy, HH:mm", java.util.Locale.getDefault())
+                    outputFormat.format(date!!)
+                }
+            }
+        } catch (e: Exception) {
+            dateString
+        }
+    }
+}
+
+data class NotificationsResponse(
+    @SerializedName("success")
+    val success: Boolean,
+
+    @SerializedName("data")
+    val data: List<Notification>,
+
+    @SerializedName("no_leidas")
+    val noLeidas: Int,
+
+    @SerializedName("total")
+    val total: Int
+)
+
+data class MarkNotificationReadRequest(
+    @SerializedName("notification_id")
+    val notificationId: Long
+)
+// ============================================
+// Dashboard Stats
+// ============================================
+
+data class UserInfo(
+    @SerializedName("id")
+    val id: Long,
+
+    @SerializedName("nombre")
+    val nombre: String,
+
+    @SerializedName("rol")
+    val rol: String
+)
+
+data class EstadoCount(
+    @SerializedName("estado")
+    val estado: String,
+
+    @SerializedName("cantidad")
+    val cantidad: Int
+)

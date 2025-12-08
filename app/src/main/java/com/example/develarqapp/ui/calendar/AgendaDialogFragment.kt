@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.develarqapp.R
 import com.example.develarqapp.databinding.DialogAgendaBinding
 import com.example.develarqapp.utils.SessionManager
 
@@ -23,7 +24,9 @@ class AgendaDialogFragment : DialogFragment() {
     private lateinit var agendaAdapter: MeetingsAdapter
     private lateinit var sessionManager: SessionManager
 
-    private val TAG = "AgendaDialogFragment"
+    companion object {
+        private const val TAG = "AgendaDialogFragment"
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -54,10 +57,10 @@ class AgendaDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupSwipeRefresh()
         setupObservers()
         setupClickListeners()
 
-        // ✅ Forzar recarga de reuniones al abrir la agenda
         val token = sessionManager.getToken()
         if (token != null) {
             Log.d(TAG, "🔄 Recargando reuniones en Agenda...")
@@ -106,15 +109,28 @@ class AgendaDialogFragment : DialogFragment() {
             .show()
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.apply {
+            setColorSchemeColors(
+                resources.getColor(R.color.primaryColor, null),
+                resources.getColor(android.R.color.holo_green_light, null),
+                resources.getColor(android.R.color.holo_orange_light, null)
+            )
+            // Ajuste visual para que no choque con otros elementos
+            setProgressViewOffset(false, 0, 150)
+
+            setOnRefreshListener {
+                val token = sessionManager.getToken()
+                if (token != null) {
+                    viewModel.loadMeetings(token)
+                }
+            }
+        }
+    }
+
     private fun setupObservers() {
-        // ✅ Observar las reuniones filtradas
         viewModel.filteredMeetings.observe(viewLifecycleOwner) { meetings ->
             Log.d(TAG, "📅 Reuniones recibidas en Agenda: ${meetings.size}")
-
-            meetings.forEachIndexed { index, meeting ->
-                Log.d(TAG, "  [$index] ${meeting.titulo} - ${meeting.fechaHora}")
-            }
-
             binding.tvNoMeetings.isVisible = meetings.isEmpty()
             binding.recyclerViewAgenda.isVisible = meetings.isNotEmpty()
             agendaAdapter.submitList(meetings)
@@ -122,12 +138,41 @@ class AgendaDialogFragment : DialogFragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.isVisible = isLoading
+
+            if (!isLoading) {
+                binding.swipeRefresh.isRefreshing = false
+            }
+
             Log.d(TAG, "⏳ Loading: $isLoading")
+        }
+
+        viewModel.operationSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "Reunión eliminada exitosamente",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+                viewModel.resetOperationSuccess()
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    it,
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                viewModel.clearError()
+                binding.swipeRefresh.isRefreshing = false
+            }
         }
     }
 
     private fun setupClickListeners() {
         binding.btnClose.setOnClickListener {
+            (parentFragment as? CalendarFragment)?.setViewModeToDay()
             dismiss()
         }
     }

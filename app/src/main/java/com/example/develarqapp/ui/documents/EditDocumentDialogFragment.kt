@@ -8,13 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.example.develarqapp.R
 import com.example.develarqapp.data.model.Document
 import com.example.develarqapp.data.model.DocumentType
@@ -32,9 +30,9 @@ class EditDocumentDialogFragment : DialogFragment() {
     private var updateMode: UpdateMode = UpdateMode.KEEP_FILE
 
     enum class UpdateMode {
-        KEEP_FILE,      // Mantener archivo actual
-        NEW_FILE,       // Subir nuevo archivo
-        EXTERNAL_LINK   // Usar enlace externo
+        KEEP_FILE,
+        NEW_FILE,
+        EXTERNAL_LINK
     }
 
     // File picker launcher
@@ -109,23 +107,35 @@ class EditDocumentDialogFragment : DialogFragment() {
         }
 
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
-            if (message.isNotEmpty()) {
-                if (isVisible) {
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                    viewModel.loadDocuments()
-                    viewModel.clearMessages()
+            if (message.isNotEmpty() && isVisible) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 
-                    dismiss()
-                }
+                viewModel.loadDocuments()
+
+                viewModel.clearMessages()
+
+                binding.root.postDelayed({
+                    if (isVisible) {
+                        dismiss()
+                    }
+                }, 300)
             }
         }
-
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty() && isVisible) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                viewModel.clearMessages()
+            }
+        }
+        viewModel.operationSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                viewModel.resetOperationSuccess()
+                dismiss()
             }
         }
     }
+
     private fun setupProjectSpinner() {
         if (projects.isEmpty()) return
 

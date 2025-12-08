@@ -1,18 +1,16 @@
 package com.example.develarqapp.data.repository
 
-import android.app.Application
+import android.content.Context
 import com.example.develarqapp.data.api.ApiConfig
-import com.example.develarqapp.data.model.DownloadHistory
-import com.example.develarqapp.data.model.RegisterDownloadRequest
+import com.example.develarqapp.data.model.DownloadRecord
 import com.example.develarqapp.utils.SessionManager
 
-
-class DownloadHistoryRepository(application: Application) {
+class DownloadHistoryRepository(context: Context) {
 
     private val apiService = ApiConfig.getApiService()
-    private val sessionManager = SessionManager(application)
+    private val sessionManager = SessionManager(context)
 
-    suspend fun getDownloadHistory(): Result<List<DownloadHistory>> {
+    suspend fun getDownloadHistory(): Result<List<DownloadRecord>> {
         return try {
             val token = sessionManager.getToken()
                 ?: return Result.failure(Exception("Token no disponible"))
@@ -23,20 +21,21 @@ class DownloadHistoryRepository(application: Application) {
                 val downloads = response.body()?.data ?: emptyList()
                 Result.success(downloads)
             } else {
-                val errorMsg = response.body()?.message ?: "Error al cargar historial"
-                Result.failure(Exception(errorMsg))
+                // Si el modelo no tiene 'message', usamos uno genérico
+                Result.failure(Exception("Error al cargar historial"))
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
+    // ✅ Cambiado Return Type a DownloadRecord
     suspend fun getFilteredHistory(
         userId: Long? = null,
         projectId: Long? = null,
         startDate: String? = null,
         endDate: String? = null
-    ): Result<List<DownloadHistory>> {
+    ): Result<List<DownloadRecord>> {
         return try {
             val token = sessionManager.getToken()
                 ?: return Result.failure(Exception("Token no disponible"))
@@ -49,12 +48,10 @@ class DownloadHistoryRepository(application: Application) {
                 val downloads = response.body()?.data ?: emptyList()
                 Result.success(downloads)
             } else {
-                val errorMsg = response.body()?.message ?: "Error al filtrar historial"
-                Result.failure(Exception(errorMsg))
+                Result.failure(Exception("Error al filtrar historial"))
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-
 }

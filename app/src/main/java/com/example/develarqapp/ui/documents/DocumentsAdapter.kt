@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.develarqapp.R
 import com.example.develarqapp.data.model.Document
 import com.example.develarqapp.data.model.DocumentType
 import com.example.develarqapp.databinding.ItemDocumentBinding
@@ -92,7 +91,7 @@ class DocumentsAdapter(
                 val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                 val date = inputFormat.parse(dateString)
                 date?.let { outputFormat.format(it) } ?: dateString
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 dateString
             }
         }

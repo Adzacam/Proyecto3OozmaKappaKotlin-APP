@@ -67,7 +67,16 @@ data class MeetingRequest(
     val fechaHoraFin: String?,
 
     @SerializedName("participantes")
-    val participantes: List<Long> // IDs de usuarios
+    val participantes: List<Long>, // IDs de usuarios
+
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
+
+    @SerializedName("android_version")
+    val androidVersion: String? = null,
+
+    @SerializedName("sdk_version")
+    val sdkVersion: Int? = null
 )
 
 data class MeetingsResponse(

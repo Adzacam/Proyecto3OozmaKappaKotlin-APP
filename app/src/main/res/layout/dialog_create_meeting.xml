@@ -4,32 +4,54 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#1E293B"
-        android:padding="20dp">
+        android:background="#0F172A"
+        android:padding="24dp">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Programar Nueva Reunión"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="24dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilTitle"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <!-- Header -->
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/badge_background"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PROGRAMAR NUEVA REUNIÓN"
+                    android:textColor="#8B5CF6"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Agenda una reunión de proyecto"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Título -->
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Título"
                 android:textColorHint="#94A3B8"
-                app:boxStrokeColor="#B8FF3C"
-                app:hintTextColor="#B8FF3C">
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#8B5CF6"
+                app:hintTextColor="#8B5CF6"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etTitle"
@@ -38,16 +60,19 @@
                     android:inputType="textCapSentences"
                     android:textColor="#FFFFFF" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Proyecto -->
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilProject"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Proyecto"
                 android:textColorHint="#94A3B8"
-                app:boxStrokeColor="#B8FF3C"
-                app:hintTextColor="#B8FF3C"
-                android:layout_marginTop="16dp">
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#8B5CF6"
+                app:hintTextColor="#8B5CF6">
 
             <AutoCompleteTextView
                     android:id="@+id/actvProject"
@@ -57,11 +82,12 @@
                     android:textColor="#FFFFFF" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Fechas -->
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilStartTime"
@@ -71,8 +97,9 @@
                     android:layout_weight="1"
                     android:hint="Inicio"
                     android:textColorHint="#94A3B8"
-                    app:boxStrokeColor="#B8FF3C"
-                    app:hintTextColor="#B8FF3C"
+                    app:boxBackgroundColor="#1E293B"
+                    app:boxStrokeColor="#8B5CF6"
+                    app:hintTextColor="#8B5CF6"
                     android:layout_marginEnd="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -94,8 +121,9 @@
                     android:layout_weight="1"
                     android:hint="Fin (Opcional)"
                     android:textColorHint="#94A3B8"
-                    app:boxStrokeColor="#B8FF3C"
-                    app:hintTextColor="#B8FF3C"
+                    app:boxBackgroundColor="#1E293B"
+                    app:boxStrokeColor="#8B5CF6"
+                    app:hintTextColor="#8B5CF6"
                     android:layout_marginStart="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -110,16 +138,18 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <!-- Participantes -->
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilParticipants"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Participantes"
                 android:textColorHint="#94A3B8"
-                app:boxStrokeColor="#B8FF3C"
-                app:hintTextColor="#B8FF3C"
-                android:layout_marginTop="16dp">
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#8B5CF6"
+                app:hintTextColor="#8B5CF6">
 
             <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etParticipants"
@@ -133,16 +163,18 @@
                     android:text="0 seleccionado(s)"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Descripción -->
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDescription"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Descripción (Opcional)"
                 android:textColorHint="#94A3B8"
-                app:boxStrokeColor="#B8FF3C"
-                app:hintTextColor="#B8FF3C"
-                android:layout_marginTop="16dp">
+                app:boxBackgroundColor="#1E293B"
+                app:boxStrokeColor="#8B5CF6"
+                app:hintTextColor="#8B5CF6">
 
             <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDescription"
@@ -160,35 +192,36 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:visibility="gone"
-                android:layout_marginTop="24dp" />
+                android:layout_marginBottom="16dp" />
 
+        <!-- Botones -->
         <LinearLayout
                 android:id="@+id/llButtons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="24dp">
+                android:gravity="end">
 
             <Button
                     android:id="@+id/btnCancel"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
                     android:text="Cancelar"
                     android:textColor="#FFFFFF"
-                    app:strokeColor="#94A3B8"
+                    android:textSize="13sp"
+                    android:backgroundTint="#64748B"
+                    app:cornerRadius="8dp"
                     android:layout_marginEnd="8dp" />
 
             <Button
                     android:id="@+id/btnCreate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
                     android:text="Crear Reunión"
                     android:textColor="#000000"
+                    android:textSize="13sp"
                     android:backgroundTint="#B8FF3C"
-                    android:layout_marginStart="8dp" />
+                    app:cornerRadius="8dp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

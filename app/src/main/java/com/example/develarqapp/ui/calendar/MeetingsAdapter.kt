@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.develarqapp.data.model.Meeting
-import com.example.develarqapp.databinding.ItemMeetingBinding // Asegúrate que este layout exista
+import com.example.develarqapp.databinding.ItemMeetingBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,7 +17,6 @@ class MeetingsAdapter(
 ) : ListAdapter<Meeting, MeetingsAdapter.MeetingViewHolder>(MeetingDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MeetingViewHolder {
-        // Asegúrate de que tu layout se llame 'item_meeting.xml'
         val binding = ItemMeetingBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -50,19 +49,13 @@ class MeetingsAdapter(
                 }
                 tvMeetingParticipants.text = participantesText
 
-                // Mostrar descripción si existe
                 if (!meeting.descripcion.isNullOrEmpty()) {
                     tvMeetingDescription.text = meeting.descripcion
-                } else {
-                    tvMeetingDescription.text = "Sin descripción"
-                }
-
-                // Click en toda la card
+                } else tvMeetingDescription.text = "Sin descripción"
                 root.setOnClickListener {
                     onMeetingClick(meeting)
                 }
 
-                // Botón eliminar
                 btnDeleteMeeting.setOnClickListener {
                     onDeleteClick(meeting)
                 }
@@ -75,7 +68,7 @@ class MeetingsAdapter(
                 val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                 val date = inputFormat.parse(dateTimeStr)
                 date?.let { outputFormat.format(it) } ?: dateTimeStr
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 dateTimeStr
             }
         }

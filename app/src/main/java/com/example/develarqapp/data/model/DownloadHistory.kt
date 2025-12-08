@@ -1,5 +1,6 @@
 package com.example.develarqapp.data.model
 
+import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class DownloadHistory(
@@ -15,10 +16,11 @@ data class DownloadHistory(
 ) : Serializable
 
 data class DownloadHistoryResponse(
-    val success: Boolean,
-    val message: String?,
-    val data: List<DownloadHistory>?
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("data") val data: List<DownloadRecord>?
 )
+
+
 data class RegisterDownloadRequest(
-    val documento_id: Long
+    @SerializedName("documento_id") val documento_id: Long
 )

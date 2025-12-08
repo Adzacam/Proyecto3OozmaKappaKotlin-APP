@@ -43,13 +43,16 @@ if (!$userRole || strtolower($userRole['rol']) !== 'admin') {
 }
 
 try {
+    // ✅ Incluir tabla_afectada en la consulta
     $query = "SELECT 
                 a.id,
                 CONCAT(u.name, ' ', u.apellido) as usuario,
                 a.accion,
                 a.id_registro_afectado as registro,
                 DATE_FORMAT(a.fecha_accion, '%d/%m/%Y, %H:%i:%s') as fecha,
-                a.ip_address
+                a.ip_address,
+                a.descripcion_detallada,
+                a.tabla_afectada
               FROM auditoria_logs a
               INNER JOIN users u ON a.user_id = u.id
               ORDER BY a.fecha_accion DESC";
@@ -70,3 +73,4 @@ try {
     ]);
 }
 ?>
+

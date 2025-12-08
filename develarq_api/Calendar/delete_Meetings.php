@@ -22,12 +22,26 @@ if ($reunion_id <= 0) {
     exit;
 }
 
+// Obtener datos del body
+$data = json_decode(file_get_contents('php://input'), true);
+
 try {
     $database = new Database();
     $pdo = $database->getConnection();
+    
+    // Obtener usuario desde token
+    $token = str_replace('Bearer ', '', $headers['Authorization']);
+    $usuario = obtenerUsuarioDesdeToken($pdo, $token);
+    
+    if (!$usuario) {
+        http_response_code(401);
+        echo json_encode(["success" => false, "message" => "Token inválido"]);
+        exit;
+    }
+    
     $pdo->beginTransaction();
     
-    // Verificar que la reunión existe y obtener información
+    // Verificar que la reunión existe
     $checkQuery = "
         SELECT r.id, r.titulo, r.proyecto_id, p.nombre as proyecto_nombre 
         FROM reuniones r
@@ -43,24 +57,23 @@ try {
         echo json_encode(['success' => false, 'message' => 'Reunión no encontrada o ya eliminada']);
         exit;
     }
-    
-    // Obtener participantes antes de eliminar para notificar
+
+    // Obtener participantes antes de eliminar
     $participantesQuery = "
         SELECT user_id 
         FROM reuniones_usuarios 
-        WHERE reunion_id = :reunion_id 
-        AND eliminado = 0
+        WHERE reunion_id = :reunion_id AND eliminado = 0
     ";
     $stmt = $pdo->prepare($participantesQuery);
     $stmt->execute(['reunion_id' => $reunion_id]);
     $participantes = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
-    // Marcar reunión como eliminada (soft delete)
+    // Marcar reunión como eliminada
     $deleteQuery = "UPDATE reuniones SET eliminado = 1, updated_at = NOW() WHERE id = :id";
     $stmt = $pdo->prepare($deleteQuery);
     $stmt->execute(['id' => $reunion_id]);
     
-    // También marcar participantes como eliminados
+    // Marcar participantes como eliminados
     $deleteParticipantesQuery = "
         UPDATE reuniones_usuarios 
         SET eliminado = 1, updated_at = NOW() 
@@ -68,36 +81,33 @@ try {
     ";
     $stmt = $pdo->prepare($deleteParticipantesQuery);
     $stmt->execute(['reunion_id' => $reunion_id]);
+
+    // ✅ AUDITORÍA usando función centralizada
+    $device_info = extraerInfoDispositivo($data);
+
+    $descripcionAuditoria = "Eliminó reunión: '{$reunion['titulo']}'\n";
+    $descripcionAuditoria .= "Proyecto: {$reunion['proyecto_nombre']}\n";
+    $descripcionAuditoria .= "ID reunión: {$reunion_id}";
+
+    registrarAuditoriaCompleta(
+        $pdo,
+        $usuario['id'],
+        "Eliminó la reunión '{$reunion['titulo']}' del proyecto '{$reunion['proyecto_nombre']}'",
+        'reuniones',
+        $reunion_id,
+        $device_info,
+        $descripcionAuditoria
+    );
     
-    // ===== NOTIFICACIONES =====
-    // Notificar a los participantes sobre la cancelación
+    // Notificaciones
     if (!empty($participantes)) {
-        
-        $url = null; // URL eliminada
-        
         $notificacionQuery = "
             INSERT INTO notificaciones (
-                user_id, 
-                mensaje, 
-                tipo, 
-                asunto, 
-                url,
-                leida,
-                eliminado,
-                fecha_envio,
-                created_at,
-                updated_at
+                user_id, mensaje, tipo, asunto, url, leida, eliminado,
+                fecha_envio, created_at, updated_at
             ) VALUES (
-                :user_id, 
-                :mensaje, 
-                'reunion', 
-                'Reunión cancelada', 
-                :url,
-                0,
-                0,
-                NOW(),
-                NOW(),
-                NOW()
+                :user_id, :mensaje, 'reunion', 'Reunión cancelada', 
+                NULL, 0, 0, NOW(), NOW(), NOW()
             )
         ";
         
@@ -105,12 +115,7 @@ try {
         
         foreach ($participantes as $user_id) {
             $mensaje = "La reunión '{$reunion['titulo']}' del proyecto '{$reunion['proyecto_nombre']}' ha sido cancelada.";
-            
-            $stmtNotificacion->execute([
-                'user_id' => $user_id,
-                'mensaje' => $mensaje,
-                'url' => $url
-            ]);
+            $stmtNotificacion->execute(['user_id' => $user_id, 'mensaje' => $mensaje]);
         }
     }
     
@@ -120,9 +125,6 @@ try {
         'success' => true,
         'message' => 'Reunión eliminada exitosamente'
     ]);
-
-    $accion = "Eliminó la reunión '{$reunion['titulo']}' del proyecto '{$reunion['proyecto_nombre']}'";
-    registrarAuditoria($pdo, $user_id, $accion, 'reuniones', $reunion_id);
     
 } catch (PDOException $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

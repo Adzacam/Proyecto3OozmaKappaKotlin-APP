@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -10,7 +11,7 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp"
         app:strokeColor="#EF4444"
-        app:strokeWidth="1dp">
+        app:strokeWidth="2dp">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -18,17 +19,26 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-        <!-- Header -->
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
+            <ImageView
+                    android:id="@+id/ivIcon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_delete"
+                    app:tint="#EF4444"
+                    android:background="@drawable/circle_background_dark"
+                    android:padding="10dp" />
+
             <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginStart="12dp"
                     android:orientation="vertical">
 
                 <TextView
@@ -37,8 +47,11 @@
                         android:layout_height="wrap_content"
                         android:text="Nombre del Documento"
                         android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
 
                 <TextView
                         android:id="@+id/tvDocumentDescription"
@@ -47,70 +60,66 @@
                         android:layout_marginTop="4dp"
                         android:text="Descripción del documento"
                         android:textColor="#94A3B8"
-                        android:textSize="14sp" />
+                        android:textSize="12sp"
+                        android:maxLines="2"
+                        android:ellipsize="end" />
             </LinearLayout>
 
             <TextView
                     android:id="@+id/tvDocumentType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/badge_background"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
+                    android:background="@drawable/bg_event_type_badge"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
                     android:text="PDF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
+                    android:textColor="#60A5FA"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Info Row -->
-        <LinearLayout
+        <View
                 android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="12dp"
+                android:background="#334155" />
+
+        <TextView
+                android:id="@+id/tvDocumentProject"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                android:drawableStart="@android:drawable/ic_menu_myplaces"
+                android:drawablePadding="8dp"
+                android:drawableTint="#B8FF3C"
+                android:text="Proyecto"
+                android:textColor="#CBD5E1"
+                android:textSize="12sp" />
 
-            <TextView
-                    android:id="@+id/tvDocumentProject"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableStart="@android:drawable/ic_menu_myplaces"
-                    android:drawablePadding="8dp"
-                    android:drawableTint="#B8FF3C"
-                    android:text="Proyecto"
-                    android:textColor="#CBD5E1"
-                    android:textSize="13sp" />
-        </LinearLayout>
-
-        <!-- Deleted Date -->
         <TextView
                 android:id="@+id/tvDeletedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:drawableStart="@android:drawable/ic_menu_delete"
+                android:layout_marginTop="4dp"
+                android:drawableStart="@android:drawable/ic_menu_recent_history"
                 android:drawablePadding="8dp"
-                android:drawableTint="#EF4444"
+                android:drawableTint="#F87171"
                 android:text="Eliminado: 23/10/2025 (5 días)"
                 android:textColor="#F87171"
                 android:textSize="12sp" />
 
-        <!-- Warning -->
         <TextView
                 android:id="@+id/tvWarning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="#FEE2E2"
+                android:background="#2EEF4444"
                 android:padding="8dp"
                 android:text="⚠️ Se eliminará permanentemente en 5 días"
-                android:textColor="#DC2626"
+                android:textColor="#F59E0B"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-        <!-- Action Buttons -->
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,21 +132,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
                     android:layout_marginEnd="8dp"
-                    android:backgroundTint="#10B981"
+                    android:backgroundTint="#B8FF3C"
                     android:text="Restaurar"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#000000"
                     android:textSize="12sp"
-                    app:cornerRadius="6dp" />
+                    app:cornerRadius="8dp" />
 
             <Button
                     android:id="@+id/btnPermanentDelete"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    android:backgroundTint="#DC2626"
-                    android:text="Eliminar Permanente"
+                    android:backgroundTint="#EF4444"
+                    android:text="Eliminar"
                     android:textColor="#FFFFFF"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
+                    android:textSize="12sp"
+                    app:cornerRadius="8dp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

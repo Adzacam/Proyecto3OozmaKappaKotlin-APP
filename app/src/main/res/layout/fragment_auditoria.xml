@@ -4,7 +4,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0F172A">
+        android:background="#1A1A1A">
 
     <include
             android:id="@+id/topAppBar"
@@ -32,6 +32,106 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
 
+        <!-- Estadísticas rápidas -->
+        <LinearLayout
+                android:id="@+id/llStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <!-- Total -->
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_type_badge">
+
+                <TextView
+                        android:id="@+id/tvTotalCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#3B82F6"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total"
+                        android:textColor="#94A3B8"
+                        android:textSize="11sp" />
+            </LinearLayout>
+
+            <Space
+                    android:layout_width="8dp"
+                    android:layout_height="wrap_content" />
+
+            <!-- Hoy -->
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_type_badge">
+
+                <TextView
+                        android:id="@+id/tvTodayCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#10B981"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hoy"
+                        android:textColor="#94A3B8"
+                        android:textSize="11sp" />
+            </LinearLayout>
+
+            <Space
+                    android:layout_width="8dp"
+                    android:layout_height="wrap_content" />
+
+            <!-- Esta semana -->
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:background="@drawable/bg_type_badge">
+
+                <TextView
+                        android:id="@+id/tvWeekCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#F59E0B"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Semana"
+                        android:textColor="#94A3B8"
+                        android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+
         <!-- Búsqueda -->
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSearch"
@@ -45,7 +145,7 @@
                 app:boxCornerRadiusTopStart="8dp"
                 app:startIconDrawable="@drawable/ic_search"
                 app:startIconTint="#64748B"
-                app:layout_constraintTop_toBottomOf="@id/tvTitle">
+                app:layout_constraintTop_toBottomOf="@id/llStats">
 
             <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etSearch"

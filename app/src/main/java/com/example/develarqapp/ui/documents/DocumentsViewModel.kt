@@ -47,9 +47,15 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
     private val _downloadedFile = MutableLiveData<File>()
     val downloadedFile: LiveData<File> = _downloadedFile
 
+    private val _operationSuccess = MutableLiveData<Boolean>()
+    val operationSuccess: LiveData<Boolean> = _operationSuccess
+
     // Filtros
     private val _filters = MutableLiveData(DocumentFilters())
     val filters: LiveData<DocumentFilters> = _filters
+    fun resetOperationSuccess() {
+        _operationSuccess.value = false
+    }
 
     // ========== CARGAR DOCUMENTOS ==========
 
@@ -133,6 +139,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
             result.onSuccess { document ->
                 _successMessage.value = "Documento subido exitosamente"
+                _operationSuccess.value = true
                 loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al subir documento"
@@ -172,6 +179,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
             result.onSuccess { message ->
                 _successMessage.value = message
+                _operationSuccess.value = true
                 loadDocuments()
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Error al actualizar documento"
@@ -217,7 +225,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    // ✅ NUEVO: ELIMINAR PERMANENTEMENTE
+
     fun permanentDeleteDocument(documentId: Long) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -235,7 +243,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    // ✅ NUEVO: PURGAR DOCUMENTOS ANTIGUOS (30+ días)
+
     fun purgeOldDocuments() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -264,7 +272,7 @@ class DocumentsViewModel(application: Application) : AndroidViewModel(applicatio
 
                 result.onSuccess { mensaje ->
                     _successMessage.value = mensaje
-                    // ✅ Registrar la descarga en el historial
+
                     registerDownload(document.id)
                 }.onFailure { error ->
                     _errorMessage.value = "Error al iniciar descarga: ${error.message}"
